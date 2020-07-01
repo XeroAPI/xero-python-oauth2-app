@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div>
+        <h2>{{ title }}</h2>
+        {% if sub_title %}<h3>{{ sub_title }}</h3>{% endif %}
+        <ul>
+        {%for i in range(0, len)%}
+            <li>{{msg[i]}}</li> 
+        {%endfor%} 
+        </ul>
+        {% if result_list %}
+        <ul>
+            {% for message in result_list %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <pre class="prettyprint"><code class="language-javascript">{{ code }}</code></pre>
+    </div>
+{% endblock %}

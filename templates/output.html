@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div>
-        <h2>{{ title }}</h2>
-        {% if sub_title %}<h3>{{ sub_title }}</h3>{% endif %}
+
+    <h4 class="card-header">{{ title }}</h4>
+    <div class="card-body">
+    {% if sub_title %}<h4 class="card-title">{{ sub_title }}</h4>{% endif %}
+    <p class="card-text">
         <ul>
         {%for i in range(0, len)%}
             <li>{{msg[i]}}</li> 
@@ -17,5 +19,6 @@
         </ul>
         {% endif %}
         <pre class="prettyprint"><code class="language-javascript">{{ code }}</code></pre>
+    </p>
     </div>
 {% endblock %}

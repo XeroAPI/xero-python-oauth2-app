@@ -10,72 +10,640 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+<script>
+// Hide submenus
+$('#body-row .collapse').collapse('hide'); 
+
+// Collapse/Expand icon
+$('#collapse-icon').addClass('fa-angle-double-left'); 
+
+// Collapse click
+$('[data-toggle=sidebar-colapse]').click(function() {
+    SidebarCollapse();
+});
+
+function SidebarCollapse () {
+    $('.menu-collapsed').toggleClass('d-none');
+    $('.sidebar-submenu').toggleClass('d-none');
+    $('.submenu-icon').toggleClass('d-none');
+    $('#sidebar-container').toggleClass('sidebar-expanded sidebar-collapsed');
+    
+    // Treating d-flex/d-none on separators with title
+    var SeparatorTitle = $('.sidebar-separator-title');
+    if ( SeparatorTitle.hasClass('d-flex') ) {
+        SeparatorTitle.removeClass('d-flex');
+    } else {
+        SeparatorTitle.addClass('d-flex');
+    }
+    
+    // Collapse/Expand icon
+    $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
+}
+</script>
+<style>
+#body-row {
+    margin-left:0;
+    margin-right:0;
+}
+#sidebar-container {
+    min-height: 100vh;   
+    background-color: #333;
+    padding: 0;
+}
+.row{
+    margin-top:56px;
+}
+/* Sidebar sizes when expanded and expanded */
+.sidebar-expanded {
+    width: 230px;
+}
+.sidebar-collapsed {
+    width: 60px;
+}
+
+/* Menu item*/
+#sidebar-container .list-group a {
+    height: 50px;
+    color: white;
+    background-color: #292b2c;
+}
+
+/* Submenu item*/
+#sidebar-container .list-group .sidebar-submenu a {
+    height: 45px;
+    padding-left: 30px;
+}
+.sidebar-submenu {
+    font-size: 0.9rem;
+}
+
+/* Separators */
+.sidebar-separator-title {
+    background-color: #333;
+    height: 35px;
+}
+.sidebar-separator {
+    background-color: #333;
+    height: 25px;
+}
+.logo-separator {
+    background-color: #333;    
+    height: 60px;
+}
+
+/* Closed submenu icon */
+#sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
+  content: " \f0d7";
+  font-family: FontAwesome;
+  display: inline;
+  text-align: right;
+  padding-left: 10px;
+}
+/* Opened submenu icon */
+#sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
+  content: " \f0da";
+  font-family: FontAwesome;
+  display: inline;
+  text-align: right;
+  padding-left: 10px;
+}
+</style>
 </head>
 <body>
-
-  <nav class="navbar navbar-expand-md navbar-dark  bg-dark">
-  <a class="navbar-brand" href="{{ url_for('index') }}">Xero Python App</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+ <a class="nav-link" style="color:#FFFFFF" href="#">xero-python</a>
+  <!--
+  <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse" id="navbarCollapse">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
+  -->
+  <div class="container">
+  <!--
+    <a class="navbar-brand" href="#">
+    <span class="menu-collapsed">xero-python</span>
+  </a>
+  -->
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item active">
         <a class="nav-link" href="{{ url_for('login') }}">Login</a>
       </li>
       <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+        <a class="nav-link" href="{{ url_for('tenants') }}">Tenants</a>
       </li>
       <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('tenants') }}">Tenants</a>
+        <a class="nav-link" href="{{ url_for('refresh_token') }}">Refresh Token </a>
       </li>
-      <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('export_token') }}">Export Token</a>
-      </li>
-      <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('refresh_token') }}">Refresh Token</a>
-      </li>
-    </ul>
-  </div>
-</nav>
 
-<div class="container-fluid">
-  <div class="row">
-    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-      <div class="sidebar-sticky pt-3">
-        <ul class="nav flex-column">
-          <li class="nav-item">
-            <a class="nav-link active" href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-              Dashboard <span class="sr-only">(current)</span>
+        <!-- notification -->
+        <!--
+        <li class="nav-item dropdown"> <a id="notifications" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link"><i class="fa fa-bell-o"></i><span class="badge bg-red">12</span></a>
+          <ul aria-labelledby="notifications" class="dropdown-menu">
+            <li><a rel="nofollow" href="#" class="dropdown-item">
+                <div class="notification">
+                  <div class="notification-content"><i class="fa fa-envelope bg-green"></i>You have 6 new messages </div>
+                  <div class="notification-time"><small>4 minutes ago</small></div>
+                </div></a></li>
+            <li><a rel="nofollow" href="#" class="dropdown-item">
+                <div class="notification">
+                  <div class="notification-content"><i class="fa fa-twitter bg-blue"></i>You have 2 followers</div>
+                  <div class="notification-time"><small>4 minutes ago</small></div>
+                </div></a></li>
+            <li><a rel="nofollow" href="#" class="dropdown-item">
+                <div class="notification">
+                  <div class="notification-content"><i class="fa fa-upload bg-orange"></i>Server Rebooted</div>
+                  <div class="notification-time"><small>4 minutes ago</small></div>
+                </div></a></li>
+            <li><a rel="nofollow" href="#" class="dropdown-item">
+                <div class="notification">
+                  <div class="notification-content"><i class="fa fa-twitter bg-blue"></i>You have 2 followers</div>
+                  <div class="notification-time"><small>10 minutes ago</small></div>
+                </div></a></li>
+            <li><a rel="nofollow" href="#" class="dropdown-item all-notifications text-center"> <strong>view all notifications</strong></a></li>
+          </ul>
+        </li>
+        -->
+        <!-- Messages -->
+        <!--
+        <li class="nav-item dropdown"> <a id="messages" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link"><i class="fa fa-envelope-o"></i><span class="badge bg-orange">10</span></a>
+          <ul aria-labelledby="notifications" class="dropdown-menu">
+            <li><a rel="nofollow" href="#" class="dropdown-item d-flex">
+                <div class="msg-profile"> <img src="img/avatar-1.jpg" alt="..." class="img-fluid rounded-circle"></div>
+                <div class="msg-body">
+                  <h3 class="h5">Jason Doe</h3><span>Sent You Message</span>
+                </div></a></li>
+            <li><a rel="nofollow" href="#" class="dropdown-item d-flex">
+                <div class="msg-profile"> <img src="img/avatar-2.jpg" alt="..." class="img-fluid rounded-circle"></div>
+                <div class="msg-body">
+                  <h3 class="h5">Frank Williams</h3><span>Sent You Message</span>
+                </div></a></li>
+            <li><a rel="nofollow" href="#" class="dropdown-item d-flex">
+                <div class="msg-profile"> <img src="img/avatar-3.jpg" alt="..." class="img-fluid rounded-circle"></div>
+                <div class="msg-body">
+                  <h3 class="h5">Ashley Wood</h3><span>Sent You Message</span>
+                </div></a></li>
+            <li><a rel="nofollow" href="#" class="dropdown-item all-notifications text-center"> <strong>Read all messages    </strong></a></li>
+          </ul>
+        </li>
+        -->
+        <!-- profile -->
+        <li class="dropdown">
+          <a id="profile" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle nav-link">
+            <i class="fa fa-user-circle-o"></i></a>
+          <ul aria-labelledby="notifications" class="dropdown-menu dropdown-profile" id="userprof">
+            <li><a href="#"><i class="fa fa-user p-1 pb-2"></i> User Profile</a>
+            </li>
+            <li><a href="#"><i class="fa fa-cog p-1"></i> Settings</a></li>
+            <li class="dropdown-divider"></li>
+            <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out p-1 "></i> Logout</a>
+            </li>
+             
+      </ul>
+
+      <!-- This menu is hidden in bigger devices with d-sm-none. 
+           The sidebar isn't proper for smaller screens imo, so this dropdown menu can keep all the useful sidebar itens exclusively for smaller screens  -->
+      </li><li class="nav-item dropdown d-sm-block d-md-none">
+        <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Menu
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" href="#">Dashboard</a>
+            <a class="dropdown-item" href="#">Profile</a>
+            <a class="dropdown-item" href="#">Tasks</a>
+            <a class="dropdown-item" href="#">Etc ...</a>
+        </div>
+      </li><!-- Smaller devices menu END -->
+      <li class="nav-item"><a href="#loginpage" class="nav-link"><span class="fa fa-sign-out" aria-hidden="true"></span>Logout</a></li>
+    
+  </ul></div>
+  </div>
+</nav><!-- NavBar END -->
+
+<!-- Bootstrap row -->
+<div class="row" id="body-row">
+  <!-- Sidebar -->
+    <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
+        <!-- Bootstrap List Group -->
+        <ul class="list-group">
+            <!-- Separator with title -->
+            <li class="list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
+                <small>ENDPOINTS</small>
+            </li>
+            <!-- /END Separator -->
+            <!-- Menu with submenu -->
+            <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-start align-items-center">
+                    <span class="fa fa-dashboard fa-fw mr-3"></span> 
+                    <span class="menu-collapsed">Accounting</span>
+                </div>
             </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link"  href="{{ url_for('accounts') }}">Accounts</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link"  href="{{ url_for('create_contact_person') }}">Contacts</a>
-          </li>
+            <!-- ACCOUNTING -->
+            <div id="submenu1" class="collapse sidebar-submenu">
+                <a href="#submenu1_1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <!-- ACCOUNTS -->
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Accounts</span>
+                  </div>
+                </a>
+                <div id="submenu1_1" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('accounting_account_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                  <a href="{{ url_for('accounting_account_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (one)</span>
+                  </a>
+                  <a href="{{ url_for('accounting_account_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create</span>
+                  </a>
+                </div> 
+                <!-- CONTACTS -->
+                <a href="#submenu1_2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Contacts</span>
+                  </div>
+                </a>
+                <div id="submenu1_2" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('create_contact_person') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create (one)</span>
+                  </a>
+                  <a href="{{ url_for('create_multiple_contacts') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create (multiple)</span>
+                  </a>
+                </div>
+
+                <!-- INVOICES -->
+                <a href="#submenu1_3" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Invoices</span>
+                  </div>
+                </a>
+                <div id="submenu1_3" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('get_invoices') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+            </div>
+
+
+
+
+            <!-- ASSETS Menu with submenu -->
+            <a href="#submenu2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-start align-items-center">
+                    <span class="fa fa-dashboard fa-fw mr-3"></span> 
+                    <span class="menu-collapsed">Assets</span>
+                </div>
+            </a>
+            <!-- ASSETS -->
+            <div id="submenu2" class="collapse sidebar-submenu">
+                <a href="#submenu2_1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <!-- ASSETS -->
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Assets</span>
+                  </div>
+                </a>
+                <div id="submenu2_1" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('assets_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                  <a href="{{ url_for('assets_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (one)</span>
+                  </a>
+                  <a href="{{ url_for('assets_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create</span>
+                  </a>
+              </div>
+
+              <a href="#submenu2_2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <!-- ASSETS -->
+                <div class="d-flex w-100 justify-content-start align-items-center">
+                    <span class="fa fa-user fa-fw mr-3"></span>
+                    <span class="menu-collapsed">Asset Types</span>
+                </div>
+                </a>
+                <div id="submenu2_2" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('asset_types_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                  <a href="{{ url_for('asset_types_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create</span>
+                  </a>
+                </div>
+
+                <a href="#submenu2_3" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <!-- ASSETS -->
+                <div class="d-flex w-100 justify-content-start align-items-center">
+                    <span class="fa fa-user fa-fw mr-3"></span>
+                    <span class="menu-collapsed">Asset Settings</span>
+                </div>
+                </a>
+                <div id="submenu2_3" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('asset_settings_read') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div>
+            </div>
+
+            
+           
+            <a href="#submenu3" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-start align-items-center">
+                    <span class="fa fa-user fa-fw mr-3"></span>
+                    <span class="menu-collapsed">Projects</span>
+                </div>
+            </a>
+            <!-- PROJECTS content -->
+            <div id="submenu3" class="collapse sidebar-submenu">
+                
+                <a href="#submenu3_1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <!-- PROJECTS -->
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Projects</span>
+                  </div>
+                </a>
+                <div id="submenu3_1" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('projects_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                  <a href="{{ url_for('projects_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (one)</span>
+                  </a>
+                  <a href="{{ url_for('projects_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create</span>
+                  </a>
+                  <a href="{{ url_for('projects_update') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Update</span>
+                  </a>
+                  <a href="{{ url_for('projects_patch') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Patch</span>
+                  </a>
+                </div>
+                
+                <a href="#submenu3_2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <!-- PROJECT USERS -->
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Project Users</span>
+                  </div>
+                </a>
+                <div id="submenu3_2" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('projectusers_read') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- TASKS -->
+                <a href="#submenu3_3" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Tasks</span>
+                  </div>
+                </a>
+                <div id="submenu3_3" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('tasks_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                  <a href="{{ url_for('tasks_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (one)</span>
+                  </a>
+                </div>
+
+                <!-- TIME -->
+                <a href="#submenu3_4" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Time</span>
+                  </div>
+                </a>
+                <div id="submenu3_4" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('time_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                  <a href="{{ url_for('time_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (one)</span>
+                  </a>
+                   <a href="{{ url_for('time_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create</span>
+                  </a>
+                </div>
+            </div> 
+
+            <a href="#submenu4" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-start align-items-center">
+                    <span class="fa fa-user fa-fw mr-3"></span>
+                    <span class="menu-collapsed">Payroll AU</span>
+                </div>
+            </a>
+            <!-- PAYROLL AU content -->
+            <div id="submenu4" class="collapse sidebar-submenu">
+                <a href="#submenu4_1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Employee</span>
+                  </div>
+                </a>
+                <div id="submenu4_1" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_employees') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div> 
+                <div id="submenu4_1" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_employees_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create</span>
+                  </a>
+                </div> 
+                <a href="#submenu4_2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Leave Applications</span>
+                  </div>
+                </a>
+                <div id="submenu4_2" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_leave_application') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div> 
+                <a href="#submenu4_3" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Pay Items</span>
+                  </div>
+                </a>
+                <div id="submenu4_3" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_pay_items') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div> 
+                <a href="#submenu4_4" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Payroll Calendar</span>
+                  </div>
+                </a>
+                <div id="submenu4_4" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_payroll_calendars') }}"  class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div> 
+                <a href="#submenu4_5" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Pay Runs</span>
+                  </div>
+                </a>
+                <div id="submenu4_5" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_pay_runs') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div> 
+                <a href="#submenu4_6" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Pay Slips</span>
+                  </div>
+                </a>
+                <div id="submenu4_6" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_pay_slips') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div> 
+                <a href="#submenu4_7" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Settings</span>
+                  </div>
+                </a>
+                <div id="submenu4_7" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_settings') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div> 
+                <a href="#submenu4_8" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">SuperFunds</span>
+                  </div>
+                </a>
+                <div id="submenu4_8" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_superfunds') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div> 
+                <a href="#submenu4_9" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">SuperFund Products</span>
+                  </div>
+                </a>
+                <div id="submenu4_9" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_superfund_products') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div> 
+                <a href="#submenu4_10" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Timesheets</span>
+                  </div>
+                </a>
+                <div id="submenu4_10" class="collapse sidebar-submenu">
+                  <a href="{{ url_for('payroll_au_timesheets') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div> 
+            </div> 
         </ul>
-      </div>
-    </nav>
-
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
-      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        {% block content %}
-      </div>
-    </main>
-  </div>
-</div>
+    </div>
 
 
+    <!-- MAIN -->
+    <div class="col">
+       &nbsp;
+        <!--
+        <div class="alert alert-success" role="alert">
+            <strong>Well done!</strong> You successfully read this important alert message.
+        </div>
+        -->
+        <div class="card">
+          {% block content %}
+        </div>
+    </div><!-- Main Col END -->    
+</div><!-- body-row END -->
 
-
-
-
-
-<a href="{{ url_for('create_multiple_contacts') }}">Create Multiple Contacts</a> |
-<a href="{{ url_for('get_invoices') }}">Invoices</a> |
 
 {% endblock %}
 <!--<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>-->

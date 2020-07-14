@@ -2,6 +2,8 @@
 import os
 import time
 import dateutil.parser
+import re
+
 from dateutil.parser import parse
 from pathlib import Path
 from random import seed
@@ -13,7 +15,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, ContactPerson, Contact, Contacts, Account, Accounts, AccountType
+from xero_python.accounting import AccountingApi, ContactPerson, Contact, Contacts, Account, Accounts, AccountType, Invoices, Invoice, LineItem
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -73,7 +75,6 @@ api_client = ApiClient(
     pool_threads=1,
 )
 
-
 # configure token persistence and exchange point between flask-oauthlib and xero-python
 @xero.tokengetter
 @api_client.oauth2_token_getter
@@ -102,6 +103,19 @@ def xero_token_required(function):
 def attachment_image():
     return Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
 
+def get_code_snippet(endpoint,action):
+    s = open("app.py").read()
+    startstr = "["+ endpoint +":"+ action +"]"
+    endstr = "#[/"+ endpoint +":"+ action +"]"
+    start = s.find(startstr) + len(startstr)
+    end = s.find(endstr)
+    substring = "  accounting_api = AccountingApi(api_client) \n"
+    substring = substring + s[start:end]
+    substring = s[start:end]
+    return substring
+
+def get_random_num():
+    return str(randint(0, 10000))
 
 @app.route("/")
 def index():
@@ -132,9 +146,10 @@ def tenants():
         available_tenants.append(tenant)
 
     return render_template(
-        "code.html",
+        "output.html",
         title="Xero Tenants",
         code=json.dumps(available_tenants, sort_keys=True, indent=4),
+        len=0
     )
 
 
@@ -143,6 +158,8 @@ def tenants():
 def create_contact_person():
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
+    msgs = {}
+    msgs['value'] = []
 
     contact_person = ContactPerson(
         first_name="John",
@@ -166,85 +183,118 @@ def create_contact_person():
         sub_title = "Error: " + exception.reason
         code = jsonify(exception.error_data)
     else:
-        sub_title = "Contact {} created.".format(
+        msg = "Contact {} created.".format(
             getvalue(created_contacts, "contacts.0.name", "")
         )
-        code = serialize_model(created_contacts)
+        msgs['value'].append(msg)
+        #code = serialize_model(created_contacts)
 
     return render_template(
-        "code.html", title="Create Contacts", code=code, sub_title=sub_title
+        "output.html",  title="Contacts : Create", code=code, msg=msgs['value'], len = len(msgs['value'])
     )
 
 @app.route("/accounting_account_read_all")
 @xero_token_required
 def accounting_account_read_all():
+    code = get_code_snippet("ACCOUNTS","READ_ALL")
+
+    #[ACCOUNTS:READ_ALL]
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
-    code = ""
-    msgs = {}
-    msgs['value'] = []
-    randNum = str(randint(0, 10000))
-    
-    # READ ALL ACCOUNTS
+
     try:
         read_accounts = accounting_api.get_accounts(
             xero_tenant_id
-        )  # type: Accounts
+        )
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
     else:
-        msg = "Accounts Total {} read.".format(
+        output = "Accounts read {} total".format(
             len(read_accounts.accounts)
         )
-        msgs['value'].append(msg)
+        json = serialize_model(read_accounts)
+    #[/ACCOUNTS:READ_ALL]
     
     return render_template(
-        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+        "output.html", title="Accounts", code=code, json=json, output=output, len = 0
     )
     
 @app.route("/accounting_account_read_one")
 @xero_token_required
 def accounting_account_read_one():
+    code = get_code_snippet("ACCOUNTS","READ_ONE")
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
-    code = ""
-    msgs = {}
-    msgs['value'] = []
-    randNum = str(randint(0, 10000))
-    
-    # READ ALL ACCOUNTS
+
     try:
         read_accounts = accounting_api.get_accounts(
             xero_tenant_id
-        )  # type: Accounts
+        ) 
         account_id = getvalue(read_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
     
-    # READ SINGLE ACCOUNT
+    #[ACCOUNTS:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
     try:
         read_one_account = accounting_api.get_account(
             xero_tenant_id, account_id
-        )  # type: Accounts
+        )
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
     else:
-        msg = "Account {} read.".format(
+        output = "Account read with name {} ".format(
             getvalue(read_accounts, "accounts.0.name", "")
         )
-        #code = serialize_model(read_accounts)
-        msgs['value'].append(msg)
-    
+        json = serialize_model(read_one_account)
+    #[/ACCOUNTS:READ_ONE]
+
     return render_template(
-        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+        "output.html", title="Accounts", code=code, json=json, output=output, len = 0
     )
 
 @app.route("/accounting_account_create")
 @xero_token_required
 def accounting_account_create():
+    code = get_code_snippet("ACCOUNTS","CREATE")
+    #[ACCOUNTS:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    account = Account(
+        name="FooBar" + get_random_num(),
+        code=get_random_num(),
+        description="My Foobar",
+        type=AccountType.EXPENSE,
+    )
+      
+    try:
+        created_accounts = accounting_api.create_account(
+            xero_tenant_id, account=account
+        )
+        account_id = getvalue(created_accounts, "accounts.0.account_id", "");
+    except AccountingBadRequestException as exception:
+        msg = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Account created with name {} .".format(
+            getvalue(created_accounts, "accounts.0.name", "")
+        )
+        json = serialize_model(created_accounts)
+    #[/ACCOUNTS:CREATE]
+ 
+    return render_template(
+        "output.html", title="Accounts", code=code, output=output, json=json, len = 0
+    )
+    
+@app.route("/accounting_account_update")
+@xero_token_required
+def accounting_account_update():
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
     code = ""
@@ -263,35 +313,63 @@ def accounting_account_create():
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account=account
-        )  # type: Accounts
+        )   # type: Accounts
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
         msg = "Error: " + exception.reason
         code = jsonify(exception.error_data)
-    else:
-        msg = "Account {} created.".format(
-            getvalue(created_accounts, "accounts.0.updated_date_utc", "")
-        )
-        msgs['value'].append(msg)
 
-    # UPDATE ACCOUNT
-    accountUp = Account(
+    #[ACCOUNTS:UPDATE]
+    account = Account(
         description="Update me",
     )
-    accountsUp = Accounts(accounts=[accountUp])
+    
     try:
         created_accounts = accounting_api.update_account(
-            xero_tenant_id, account_id, accountsUp
-        )  # type: Accounts
+            xero_tenant_id, account_id, account
+        )
     except AccountingBadRequestException as exception:
         msg = "Error: " + exception.reason
         code = jsonify(exception.error_data)
     else:
-        msg = "Account description '{}' updated.".format(
+        msg = "Account updated description to '{}' updated.".format(
             getvalue(created_accounts, "accounts.0.description", "")
         )
+    #[/ACCOUNTS:UPDATE]
+        code = get_code_snippet("ACCOUNTS","UPDATE")
         msgs['value'].append(msg)
     
+    return render_template(
+        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+    )
+
+@app.route("/accounting_account_create_attachment")
+@xero_token_required
+def accounting_account_create_attachment():
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    code = ""
+    msgs = {}
+    msgs['value'] = []
+    randNum = str(randint(0, 10000))
+    
+    # CREATE ACCOUNT
+    account = Account(
+        name="FooBar" + randNum,
+        code=randNum,
+        description="My Foobar",
+        type=AccountType.EXPENSE,
+    )
+    accounts = Accounts(accounts=[account])
+    try:
+        created_accounts = accounting_api.create_account(
+            xero_tenant_id, account=account
+        )   # type: Accounts
+        account_id = getvalue(created_accounts, "accounts.0.account_id", "");
+    except AccountingBadRequestException as exception:
+        msg = "Error: " + exception.reason
+        code = jsonify(exception.error_data)
+
     # CREATE ACCOUNT ATTACHMENT
     
     # READ ALL ACCOUNTS
@@ -321,10 +399,42 @@ def accounting_account_create():
             code = jsonify(exception.error_data)
         else:
             msg = "Attachment url '{}' created.".format(
-                getvalue(account_attachment_created, "account_attachment.0.url", "")
+                getvalue(account_attachment_created, "attachments.0.url", "")
             )
             msgs['value'].append(msg)
+            #code = serialize_model(account_attachment_created)
     
+    return render_template(
+        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+    )
+
+@app.route("/accounting_account_archive")
+@xero_token_required
+def accounting_account_archive():
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    code = ""
+    msgs = {}
+    msgs['value'] = []
+    randNum = str(randint(0, 10000))
+    
+    # CREATE ACCOUNT
+    account = Account(
+        name="FooBar" + randNum,
+        code=randNum,
+        description="My Foobar",
+        type=AccountType.EXPENSE,
+    )
+    accounts = Accounts(accounts=[account])
+    try:
+        created_accounts = accounting_api.create_account(
+            xero_tenant_id, account=account
+        )   # type: Accounts
+        account_id = getvalue(created_accounts, "accounts.0.account_id", "");
+    except AccountingBadRequestException as exception:
+        msg = "Error: " + exception.reason
+        code = jsonify(exception.error_data)
+
     # ARCHIVE ACCOUNT
     accountUp = Account(
         status="ARCHIVED",
@@ -333,7 +443,7 @@ def accounting_account_create():
     try:
         created_accounts = accounting_api.update_account(
             xero_tenant_id, account_id, accountsUp
-        )  # type: Accounts
+        )  
     except AccountingBadRequestException as exception:
         msg = "Error: " + exception.reason
         code = jsonify(exception.error_data)
@@ -342,41 +452,43 @@ def accounting_account_create():
             getvalue(created_accounts, "accounts.0.status", "")
         )
         msgs['value'].append(msg)
-    
-    # READ ALL ACCOUNTS
-    try:
-        read_accounts = accounting_api.get_accounts(
-            xero_tenant_id
-        )  # type: Accounts
-    except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
-    else:
-        msg = "Accounts Total {} read.".format(
-            len(read_accounts.accounts)
-        )
-        msgs['value'].append(msg)
-    
-    # READ SINGLE ACCOUNT
-    try:
-        read_one_account = accounting_api.get_account(
-            xero_tenant_id, account_id
-        )  # type: Accounts
-    except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
-    else:
-        msg = "Account {} read.".format(
-            getvalue(read_accounts, "accounts.0.name", "")
-        )
-        #code = serialize_model(read_accounts)
-        msgs['value'].append(msg)
         
+    return render_template(
+        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+    )
+
+@app.route("/accounting_account_delete")
+@xero_token_required
+def accounting_account_delete():
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    code = ""
+    msgs = {}
+    msgs['value'] = []
+    randNum = str(randint(0, 10000))
+    
+    # CREATE ACCOUNT
+    account = Account(
+        name="FooBar" + randNum,
+        code=randNum,
+        description="My Foobar",
+        type=AccountType.EXPENSE,
+    )
+    accounts = Accounts(accounts=[account])
+    try:
+        created_accounts = accounting_api.create_account(
+            xero_tenant_id, account=account
+        )   # type: Accounts
+        account_id = getvalue(created_accounts, "accounts.0.account_id", "");
+    except AccountingBadRequestException as exception:
+        msg = "Error: " + exception.reason
+        code = jsonify(exception.error_data)
+
     # DELETE ACCOUNT
     try:
         created_accounts = accounting_api.delete_account(
             xero_tenant_id, account_id
-        )  # type: Accounts
+        ) #204 empty response
     except AccountingBadRequestException as exception:
         msg = "Error: " + exception.reason
         code = jsonify(exception.error_data)
@@ -388,12 +500,102 @@ def accounting_account_create():
         "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
     )
 
+
+
+@app.route("/invoices_read_all")
+@xero_token_required
+def invoices_read_all():
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    #[INVOICES:READ_ALL]
+    invoices = accounting_api.get_invoices(
+        xero_tenant_id, invoices
+    )
+    code = serialize_model(invoices)
+    sub_title = "Total invoices found: {}".format(len(invoices.invoices))
+
+    return render_template(
+        "code.html", title="Invoices", code=code, sub_title=sub_title
+    )
+    
+@app.route("/invoices_create")
+@xero_token_required
+def invoices_create():
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    code = ""
+    msgs = {}
+    msgs['value'] = []
+    randNum = str(randint(0, 10000))
+    code = get_code_snippet("INVOICES","CREATE")
+    
+    # READ CONTACT
+    try:
+        read_contacts = accounting_api.get_contacts(
+            xero_tenant_id
+        ) 
+        contact_id = getvalue(read_contacts, "contacts.0.contact_id", "");
+    except AccountingBadRequestException as exception:
+        msg = "Error: " + exception.reason
+        code = jsonify(exception.error_data)
+    
+    # READ ACCOUNT
+    where = "Type==\"SALES\"&&Status==\"ACTIVE\"";
+    try:
+        read_accounts = accounting_api.get_accounts(
+            xero_tenant_id, where=where
+        ) 
+        account_id = getvalue(read_accounts, "accounts.0.account_id", "");
+    except AccountingBadRequestException as exception:
+        msg = "Error: " + exception.reason
+        code = jsonify(exception.error_data)
+    
+    #[INVOICES:CREATE]
+    contact = Contact(
+        contact_id=contact_id
+    )
+    
+    line_item = LineItem(
+        account_code=account_id,
+        description= "Consulting",
+        quantity=1.0,
+        unit_amount=10.0,
+    )
+    
+    invoice = Invoice(
+        line_items=[line_item],
+        contact=contact,
+        due_date= dateutil.parser.parse("2020-09-03T00:00:00Z"),
+        date= dateutil.parser.parse("2020-07-03T00:00:00Z"),
+        type="ACCREC"
+    )
+    
+    invoices = Invoices(invoices=[invoice])
+    
+    try:
+        created_invoices = accounting_api.create_invoices(
+            xero_tenant_id, invoices=invoices
+        ) 
+    except AccountingBadRequestException as exception:
+        msg = "Error: " + exception.reason
+        code = jsonify(exception.error_data)
+    else:  
+        output = "New invoices status is '{}'.".format(
+            getvalue(created_invoices, "invoices.0.status", "")
+        )
+        json = serialize_model(created_invoices)
+    #[/INVOICES:CREATE]
+        
+    return render_template(
+        "output.html", title="Invoices", code=code, output=output, json=json, msg=msgs['value'], len = len(msgs['value'])
+    )
+
 @app.route("/assets_read_all")
 @xero_token_required
 def assets_read_all():
     xero_tenant_id = get_xero_tenant_id()
     asset_api = AssetApi(api_client)
-    accounting_api = AccountingApi(api_client)
     code = ""
     msgs = {}
     msgs['value'] = []
@@ -409,13 +611,13 @@ def assets_read_all():
         msg = "Error: " + exception.reason
         code = jsonify(exception.error_data)
     else:
-        msg = "READ all Assets, first one purchase date {}.".format(
+        msg = "Assets read first one purchase date {}.".format(
             getvalue(read_assets, "items.0.purchase_date", "")
         )
         msgs['value'].append(msg)
     
     return render_template(
-        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+        "output.html", title="Assets : Read (all)", code=code, msg=msgs['value'], len = len(msgs['value'])
     )
     
 @app.route("/assets_read_one")
@@ -423,7 +625,6 @@ def assets_read_all():
 def assets_read_one():
     xero_tenant_id = get_xero_tenant_id()
     asset_api = AssetApi(api_client)
-    accounting_api = AccountingApi(api_client)
     code = ""
     msgs = {}
     msgs['value'] = []
@@ -444,18 +645,17 @@ def assets_read_one():
         read_asset_by_id = asset_api.get_asset_by_id(
             xero_tenant_id, asset_id
         )  # type: Asset
-        #account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
         msg = "Error: " + exception.reason
         code = jsonify(exception.error_data)
     else:
-        msg = "READ one Asset with name {}.".format(
+        msg = "Asset read with name {}.".format(
             getvalue(read_asset_by_id, "asset_name", "")
         )
         msgs['value'].append(msg)
     
     return render_template(
-        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+        "output.html", title="Assets : Read (one)", code=code, msg=msgs['value'], len = len(msgs['value'])
     )
 
 @app.route("/assets_create")
@@ -463,7 +663,6 @@ def assets_read_one():
 def assets_create():
     xero_tenant_id = get_xero_tenant_id()
     asset_api = AssetApi(api_client)
-    accounting_api = AccountingApi(api_client)
     code = ""
     msgs = {}
     msgs['value'] = []
@@ -482,18 +681,17 @@ def assets_create():
         created_asset = asset_api.create_asset(
             xero_tenant_id, asset=asset
         )  # type: Assets
-        #account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
         msg = "Error: " + exception.reason
         code = jsonify(exception.error_data)
     else:
-        msg = "CREATE Asset {}.".format(
+        msg = "Asset created with name {}.".format(
             getvalue(created_asset, "asset_name", "")
         )
         msgs['value'].append(msg)
      
     return render_template(
-        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+        "output.html", title="Asset : Create", code=code, msg=msgs['value'], len = len(msgs['value'])
     )
     
 @app.route("/asset_types_read_all")
@@ -515,13 +713,13 @@ def asset_types_read_all():
         msg = "Error: " + exception.reason
         code = jsonify(exception.error_data)
     else:
-        msg = "READ all Assets Types, first one name {}.".format(
+        msg = "Assets Types read and first one name {}.".format(
             getvalue(read_asset_types, "0.asset_type_name", "")
         )
         msgs['value'].append(msg)
         
     return render_template(
-        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+        "output.html", title="Asset Type : Read (all)", code=code, msg=msgs['value'], len = len(msgs['value'])
     )
     
 @app.route("/asset_types_create")
@@ -579,13 +777,13 @@ def asset_types_create():
         msg = "Error: " + exception.reason
         code = jsonify(exception.error_data)
     else:
-        msg = "CREATE Asset Type {}.".format(
+        msg = "Asset Type created with name {}.".format(
             getvalue(created_asset_type, "asset_type_name", "")
         )
         msgs['value'].append(msg)
         
     return render_template(
-        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+        "output.html", title="Asset Type : Create", code=code, msg=msgs['value'], len = len(msgs['value'])
     )
     
 @app.route("/asset_settings_read")
@@ -613,7 +811,7 @@ def asset_settings_read():
         msgs['value'].append(msg)
         
     return render_template(
-        "output.html", title="Accounts", code=code, msg=msgs['value'], len = len(msgs['value'])
+        "output.html", title="Asset Settings : Read", code=code, msg=msgs['value'], len = len(msgs['value'])
     )
     
 @app.route("/projects")
@@ -1581,23 +1779,6 @@ def create_multiple_contacts():
         code=code,
         result_list=result_list,
         sub_title=sub_title,
-    )
-
-
-@app.route("/invoices")
-@xero_token_required
-def get_invoices():
-    xero_tenant_id = get_xero_tenant_id()
-    accounting_api = AccountingApi(api_client)
-
-    invoices = accounting_api.get_invoices(
-        xero_tenant_id, statuses=["DRAFT", "SUBMITTED"]
-    )
-    code = serialize_model(invoices)
-    sub_title = "Total invoices found: {}".format(len(invoices.invoices))
-
-    return render_template(
-        "code.html", title="Invoices", code=code, sub_title=sub_title
     )
 
 

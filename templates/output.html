@@ -4,21 +4,27 @@
 
     <h4 class="card-header">{{ title }}</h4>
     <div class="card-body">
+    {% if output %}<h5 class="card-title">{{ output }}</h5>{% endif %}
     {% if sub_title %}<h4 class="card-title">{{ sub_title }}</h4>{% endif %}
     <p class="card-text">
-        <ul>
         {%for i in range(0, len)%}
-            <li>{{msg[i]}}</li> 
+            {{msg[i]}}<br>
         {%endfor%} 
-        </ul>
         {% if result_list %}
-        <ul>
             {% for message in result_list %}
-            <li>{{ message }}</li>
+                {{ message }}<br>
             {% endfor %}
-        </ul>
         {% endif %}
         <pre class="prettyprint"><code class="language-javascript">{{ code }}</code></pre>
     </p>
+    </div>
+
+    {% if json %}
+    <h4 class="card-header">JSON response</h4>
+    <div class="card-body">
+    <p class="card-text">
+        <pre class="prettyprint"><code class="language-javascript">{{ json }}</code></pre>
+    </p>
+     {% endif %}
     </div>
 {% endblock %}

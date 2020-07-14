@@ -214,7 +214,7 @@ function SidebarCollapse () {
             <a class="dropdown-item" href="#">Etc ...</a>
         </div>
       </li><!-- Smaller devices menu END -->
-      <li class="nav-item"><a href="#loginpage" class="nav-link"><span class="fa fa-sign-out" aria-hidden="true"></span>Logout</a></li>
+      <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link"><span class="fa fa-sign-out" aria-hidden="true"></span>Logout</a></li>
     
   </ul></div>
   </div>
@@ -263,6 +263,26 @@ function SidebarCollapse () {
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create</span>
                   </a>
+                  <a href="{{ url_for('accounting_account_create_attachment') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create (attachment)</span>
+                  </a>
+                  <a href="{{ url_for('accounting_account_update') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Update</span>
+                  </a>
+                  <a href="{{ url_for('accounting_account_archive') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Archive</span>
+                  </a>
+                  <a href="{{ url_for('accounting_account_delete') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Delete</span>
+                  </a>
                 </div> 
                 <!-- CONTACTS -->
                 <a href="#submenu1_2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
@@ -292,10 +312,15 @@ function SidebarCollapse () {
                   </div>
                 </a>
                 <div id="submenu1_3" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('get_invoices') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a href="{{ url_for('invoices_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                  <a href="{{ url_for('invoices_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create</span>
                   </a>
                 </div>
             </div>

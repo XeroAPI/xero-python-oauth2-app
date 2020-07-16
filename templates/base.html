@@ -40,7 +40,59 @@ function SidebarCollapse () {
     // Collapse/Expand icon
     $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
 }
+
 </script>
+<script type="text/javascript">
+   $(document).ready(function() {
+      {% if set %}$('#{{ set }}').collapse({
+        toggle: true
+      });{% endif %}
+      {% if endpoint %}$('#{{ endpoint }}').collapse({
+        toggle: true
+      });{% endif %}  
+      {% if action %}
+      $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("menu-selected");
+      $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("bg-dark"); 
+      {% endif %}
+
+      $("#accounting_menu").on("click",function() {
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark"); 
+        $('#payroll_au .collapse').collapse('hide'); 
+        $('#assets .collapse').collapse('hide'); 
+        $('#projects .collapse').collapse('hide'); 
+      });
+
+      $("#assets_menu").on("click",function() {
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark"); 
+        $('#payroll_au .collapse').collapse('hide'); 
+        $('#accounting .collapse').collapse('hide'); 
+        $('#projects .collapse').collapse('hide'); 
+      });
+      
+      $("#projects_menu").on("click",function() {
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark"); 
+        $('#accounting .collapse').collapse('hide'); 
+        $('#assets .collapse').collapse('hide'); 
+        $('#payroll_au .collapse').collapse('hide'); 
+      });
+
+      $("#payroll_au_menu").on("click",function() {
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark"); 
+        $('#accounting .collapse').collapse('hide'); 
+        $('#assets .collapse').collapse('hide'); 
+        $('#projects .collapse').collapse('hide'); 
+      });
+   });
+
+  
+   
+</script>
+
+
 <style>
 #body-row {
     margin-left:0;
@@ -67,6 +119,12 @@ function SidebarCollapse () {
     height: 50px;
     color: white;
     background-color: #292b2c;
+}
+
+.menu-selected {
+    height: 50px;
+    color: white;
+    background-color: #535556!important;
 }
 
 /* Submenu item*/
@@ -192,9 +250,9 @@ function SidebarCollapse () {
           <a id="profile" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle nav-link">
             <i class="fa fa-user-circle-o"></i></a>
           <ul aria-labelledby="notifications" class="dropdown-menu dropdown-profile" id="userprof">
-            <li><a href="#"><i class="fa fa-user p-1 pb-2"></i> User Profile</a>
-            </li>
-            <li><a href="#"><i class="fa fa-cog p-1"></i> Settings</a></li>
+            <li><a href="#"><i class="fa fa-user p-1 pb-2"></i> User Profile</a></li>
+            <li class="dropdown-divider"></li>
+            <li><a  href="{{ url_for('disconnect') }}"><i class="fa fa-cog p-1"></i> Disconnect</a></li>
             <li class="dropdown-divider"></li>
             <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out p-1 "></i> Logout</a>
             </li>
@@ -231,166 +289,163 @@ function SidebarCollapse () {
                 <small>ENDPOINTS</small>
             </li>
             <!-- /END Separator -->
-            <!-- Menu with submenu -->
-            <a href="#submenu1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+
+            <!--ACCOUNTING BUTTON -->
+            <a id="accounting_menu" href="#accounting" data-toggle="collapse"  aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                 <div class="d-flex w-100 justify-content-start align-items-center">
                     <span class="fa fa-dashboard fa-fw mr-3"></span> 
                     <span class="menu-collapsed">Accounting</span>
                 </div>
             </a>
-            <!-- ACCOUNTING -->
-            <div id="submenu1" class="collapse sidebar-submenu">
-                <a href="#submenu1_1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- ACCOUNTING SUBMENU-->
+            <div id="accounting" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+                <a href="#account" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <!-- ACCOUNTS -->
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Accounts</span>
                   </div>
                 </a>
-                <div id="submenu1_1" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('accounting_account_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="account" class="collapse sidebar-submenu" data-parent="#accounting">
+                  <a id="accounting_account_read_all" href="{{ url_for('accounting_account_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (all)</span>
                   </a>
-                  <a href="{{ url_for('accounting_account_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="accounting_account_read_one" href="{{ url_for('accounting_account_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (one)</span>
                   </a>
-                  <a href="{{ url_for('accounting_account_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="accounting_account_create" href="{{ url_for('accounting_account_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create</span>
                   </a>
-                  <a href="{{ url_for('accounting_account_create_attachment') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="accounting_account_create_attachment" href="{{ url_for('accounting_account_create_attachment') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create (attachment)</span>
                   </a>
-                  <a href="{{ url_for('accounting_account_update') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="accounting_account_update" href="{{ url_for('accounting_account_update') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Update</span>
                   </a>
-                  <a href="{{ url_for('accounting_account_archive') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="accounting_account_archive" href="{{ url_for('accounting_account_archive') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Archive</span>
                   </a>
-                  <a href="{{ url_for('accounting_account_delete') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="accounting_account_delete" href="{{ url_for('accounting_account_delete') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Delete</span>
                   </a>
                 </div> 
                 <!-- CONTACTS -->
-                <a href="#submenu1_2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#contact" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Contacts</span>
                   </div>
                 </a>
-                <div id="submenu1_2" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('create_contact_person') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="contact" class="collapse sidebar-submenu" data-parent="#accounting">
+                  <a id="accounting_contact_create" href="{{ url_for('accounting_contact_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create (one)</span>
                   </a>
-                  <a href="{{ url_for('create_multiple_contacts') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="accounting_contact_create_multiple" href="{{ url_for('accounting_contact_create_multiple') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create (multiple)</span>
                   </a>
                 </div>
 
-                <!-- INVOICES -->
-                <a href="#submenu1_3" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <!-- INVOICE -->
+                <a href="#invoice" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Invoices</span>
                   </div>
                 </a>
-                <div id="submenu1_3" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('invoices_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="invoice" class="collapse sidebar-submenu" data-parent="#accounting">
+                  <a id="accounting_invoice_read_all" href="{{ url_for('accounting_invoice_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (all)</span>
                   </a>
-                  <a href="{{ url_for('invoices_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="accounting_invoice_create" href="{{ url_for('accounting_invoice_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create</span>
                   </a>
                 </div>
             </div>
-
-
-
-
-            <!-- ASSETS Menu with submenu -->
-            <a href="#submenu2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- ASSETS BUTTON -->
+            <a id="assets_menu" href="#assets" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                 <div class="d-flex w-100 justify-content-start align-items-center">
                     <span class="fa fa-dashboard fa-fw mr-3"></span> 
                     <span class="menu-collapsed">Assets</span>
                 </div>
             </a>
-            <!-- ASSETS -->
-            <div id="submenu2" class="collapse sidebar-submenu">
-                <a href="#submenu2_1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- ASSETS SUBMENU-->
+            <div id="assets" class="collapse sidebar-submenu" data-parent="#sidebar-container" >
+                <a href="#asset" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <!-- ASSETS -->
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Assets</span>
                   </div>
                 </a>
-                <div id="submenu2_1" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('assets_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="asset" class="collapse sidebar-submenu" data-parent="#assets">
+                  <a id="assets_asset_read_all" href="{{ url_for('assets_asset_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (all)</span>
                   </a>
-                  <a href="{{ url_for('assets_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="assets_asset_read_one" href="{{ url_for('assets_asset_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (one)</span>
                   </a>
-                  <a href="{{ url_for('assets_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="assets_asset_create" href="{{ url_for('assets_asset_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create</span>
                   </a>
               </div>
 
-              <a href="#submenu2_2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                <!-- ASSETS -->
+              <a href="#assettype" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <!-- ASSET TYPE -->
                 <div class="d-flex w-100 justify-content-start align-items-center">
                     <span class="fa fa-user fa-fw mr-3"></span>
                     <span class="menu-collapsed">Asset Types</span>
                 </div>
                 </a>
-                <div id="submenu2_2" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('asset_types_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="assettype" class="collapse sidebar-submenu" data-parent="#assets">
+                  <a id="assets_assettype_read_all" href="{{ url_for('assets_assettype_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (all)</span>
                   </a>
-                  <a href="{{ url_for('asset_types_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="assets_assettype_create" href="{{ url_for('assets_assettype_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create</span>
                   </a>
                 </div>
 
-                <a href="#submenu2_3" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                <!-- ASSETS -->
+                <a href="#settings" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <!-- ASSET SETTINGS-->
                 <div class="d-flex w-100 justify-content-start align-items-center">
                     <span class="fa fa-user fa-fw mr-3"></span>
                     <span class="menu-collapsed">Asset Settings</span>
                 </div>
                 </a>
-                <div id="submenu2_3" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('asset_settings_read') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="settings" class="collapse sidebar-submenu" data-parent="#assets">
+                  <a id="assets_settings_read" href="{{ url_for('assets_settings_read') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>
@@ -398,61 +453,60 @@ function SidebarCollapse () {
                 </div>
             </div>
 
-            
-           
-            <a href="#submenu3" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- PROJECTS BUTTON -->
+            <a id="projects_menu" href="#projects" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                 <div class="d-flex w-100 justify-content-start align-items-center">
                     <span class="fa fa-user fa-fw mr-3"></span>
                     <span class="menu-collapsed">Projects</span>
                 </div>
             </a>
-            <!-- PROJECTS content -->
-            <div id="submenu3" class="collapse sidebar-submenu">
-                
-                <a href="#submenu3_1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+
+            <!-- PROJECTS SUBMENU -->
+            <div id="projects" data-parent="#sidebar-container" class="collapse sidebar-submenu">    
+                <a href="#project" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <!-- PROJECTS -->
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Projects</span>
                   </div>
                 </a>
-                <div id="submenu3_1" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('projects_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="project" class="collapse sidebar-submenu" data-parent="#projects">
+                  <a id="projects_project_read_all" href="{{ url_for('projects_project_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (all)</span>
                   </a>
-                  <a href="{{ url_for('projects_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="projects_project_read_one" href="{{ url_for('projects_project_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (one)</span>
                   </a>
-                  <a href="{{ url_for('projects_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="projects_project_create" href="{{ url_for('projects_project_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create</span>
                   </a>
-                  <a href="{{ url_for('projects_update') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="projects_project_update" href="{{ url_for('projects_project_update') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Update</span>
                   </a>
-                  <a href="{{ url_for('projects_patch') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="projects_project_patch" href="{{ url_for('projects_project_patch') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Patch</span>
                   </a>
                 </div>
                 
-                <a href="#submenu3_2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#projectuser" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <!-- PROJECT USERS -->
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Project Users</span>
                   </div>
                 </a>
-                <div id="submenu3_2" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('projectusers_read') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="projectuser" class="collapse sidebar-submenu" data-parent="#projectuser">
+                  <a id="projects_projectuser_read_all" href="{{ url_for('projects_projectuser_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (all)</span>
@@ -460,19 +514,19 @@ function SidebarCollapse () {
                 </div>
 
                 <!-- TASKS -->
-                <a href="#submenu3_3" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#task" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Tasks</span>
                   </div>
                 </a>
-                <div id="submenu3_3" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('tasks_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="task" class="collapse sidebar-submenu" data-parent="#task">
+                  <a id="projects_task_read_all" href="{{ url_for('projects_task_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (all)</span>
                   </a>
-                  <a href="{{ url_for('tasks_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="projects_task_read_one" href="{{ url_for('projects_task_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (one)</span>
@@ -480,24 +534,24 @@ function SidebarCollapse () {
                 </div>
 
                 <!-- TIME -->
-                <a href="#submenu3_4" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#time" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Time</span>
                   </div>
                 </a>
-                <div id="submenu3_4" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('time_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="time" class="collapse sidebar-submenu" data-parent="#time">
+                  <a id="projects_time_read_all" href="{{ url_for('projects_time_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (all)</span>
                   </a>
-                  <a href="{{ url_for('time_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="projects_time_read_one" href="{{ url_for('projects_time_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read (one)</span>
                   </a>
-                   <a href="{{ url_for('time_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                   <a id="projects_time_create" href="{{ url_for('projects_time_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create</span>
@@ -505,146 +559,145 @@ function SidebarCollapse () {
                 </div>
             </div> 
 
-            <a href="#submenu4" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- PAYROLL AU BUTTON -->
+            <a id="payroll_au_menu" href="#payroll_au" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                 <div class="d-flex w-100 justify-content-start align-items-center">
                     <span class="fa fa-user fa-fw mr-3"></span>
                     <span class="menu-collapsed">Payroll AU</span>
                 </div>
             </a>
-            <!-- PAYROLL AU content -->
-            <div id="submenu4" class="collapse sidebar-submenu">
-                <a href="#submenu4_1" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- PAYROLL AU SUBMENU -->
+            <div id="payroll_au" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+                <a href="#employee" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Employee</span>
                   </div>
                 </a>
-                <div id="submenu4_1" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_employees') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="employee" class="collapse sidebar-submenu" data-parent="#payroll_au">
+                  <a id="payroll_au_employee_read_all" href="{{ url_for('payroll_au_employee_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>
                   </a>
-                </div> 
-                <div id="submenu4_1" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_employees_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <a id="payroll_au_employee_create" href="{{ url_for('payroll_au_employee_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Create</span>
                   </a>
                 </div> 
-                <a href="#submenu4_2" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#leave_application" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Leave Applications</span>
                   </div>
                 </a>
-                <div id="submenu4_2" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_leave_application') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="leave_application" class="collapse sidebar-submenu" data-parent="#payroll_au">
+                  <a id="payroll_au_leave_application_read_all" href="{{ url_for('payroll_au_leave_application_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>
                   </a>
                 </div> 
-                <a href="#submenu4_3" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#pay_item" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Pay Items</span>
                   </div>
                 </a>
-                <div id="submenu4_3" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_pay_items') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="pay_item" class="collapse sidebar-submenu" data-parent="#payroll_au">
+                  <a id="payroll_au_pay_item_read_all" href="{{ url_for('payroll_au_pay_item_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>
                   </a>
                 </div> 
-                <a href="#submenu4_4" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#payroll_calendar" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Payroll Calendar</span>
                   </div>
                 </a>
-                <div id="submenu4_4" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_payroll_calendars') }}"  class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="payroll_calendar" class="collapse sidebar-submenu" data-parent="#payroll_au">
+                  <a id="payroll_au_payroll_calendar_read_all" href="{{ url_for('payroll_au_payroll_calendar_read_all') }}"  class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>
                   </a>
                 </div> 
-                <a href="#submenu4_5" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#pay_run" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Pay Runs</span>
                   </div>
                 </a>
-                <div id="submenu4_5" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_pay_runs') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="pay_run" class="collapse sidebar-submenu" data-parent="#payroll_au">
+                  <a id="payroll_au_pay_run_read_all" href="{{ url_for('payroll_au_pay_run_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>
                   </a>
                 </div> 
-                <a href="#submenu4_6" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#pay_slip" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Pay Slips</span>
                   </div>
                 </a>
-                <div id="submenu4_6" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_pay_slips') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="pay_slip" class="collapse sidebar-submenu" data-parent="#payroll_au">
+                  <a id="payroll_au_pay_slip_read_all" href="{{ url_for('payroll_au_pay_slip_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>
                   </a>
                 </div> 
-                <a href="#submenu4_7" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#settings" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Settings</span>
                   </div>
                 </a>
-                <div id="submenu4_7" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_settings') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="settings" class="collapse sidebar-submenu" data-parent="#payroll_au">
+                  <a id="payroll_au_settings_read_all" href="{{ url_for('payroll_au_settings_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>
                   </a>
                 </div> 
-                <a href="#submenu4_8" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#superfund" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">SuperFunds</span>
                   </div>
                 </a>
-                <div id="submenu4_8" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_superfunds') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="superfund" class="collapse sidebar-submenu" data-parent="#payroll_au">
+                  <a id="payroll_au_superfund_read_all" href="{{ url_for('payroll_au_superfund_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>
                   </a>
                 </div> 
-                <a href="#submenu4_9" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#superfund_product" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">SuperFund Products</span>
                   </div>
                 </a>
-                <div id="submenu4_9" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_superfund_products') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="superfund_product" class="collapse sidebar-submenu" data-parent="#payroll_au">
+                  <a id="payroll_au_superfund_product_read_all" href="{{ url_for('payroll_au_superfund_product_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>
                   </a>
                 </div> 
-                <a href="#submenu4_10" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <a href="#timesheet" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Timesheets</span>
                   </div>
                 </a>
-                <div id="submenu4_10" class="collapse sidebar-submenu">
-                  <a href="{{ url_for('payroll_au_timesheets') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <div id="timesheet" class="collapse sidebar-submenu" data-parent="#payroll_au">
+                  <a id="payroll_au_timesheet_read_all" href="{{ url_for('payroll_au_timesheet_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Read</span>

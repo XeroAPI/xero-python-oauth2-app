@@ -7,9 +7,7 @@
     {% if output %}<h5 class="card-title">{{ output }}</h5>{% endif %}
     {% if sub_title %}<h4 class="card-title">{{ sub_title }}</h4>{% endif %}
     <p class="card-text">
-        {%for i in range(0, len)%}
-            {{msg[i]}}<br>
-        {%endfor%} 
+        
         {% if result_list %}
             {% for message in result_list %}
                 {{ message }}<br>

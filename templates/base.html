@@ -170,7 +170,7 @@ function SidebarCollapse () {
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
- <a class="nav-link" style="color:#FFFFFF" href="#">xero-python</a>
+ <a class="nav-link" style="color:#FFFFFF" href="/">xero-python</a>
   <!--
   <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -250,8 +250,8 @@ function SidebarCollapse () {
           <a id="profile" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle nav-link">
             <i class="fa fa-user-circle-o"></i></a>
           <ul aria-labelledby="notifications" class="dropdown-menu dropdown-profile" id="userprof">
-            <li><a href="#"><i class="fa fa-user p-1 pb-2"></i> User Profile</a></li>
-            <li class="dropdown-divider"></li>
+            <!--li><a href="#"><i class="fa fa-user p-1 pb-2"></i> User Profile</a></li>
+            <li class="dropdown-divider"></li-->
             <li><a  href="{{ url_for('disconnect') }}"><i class="fa fa-cog p-1"></i> Disconnect</a></li>
             <li class="dropdown-divider"></li>
             <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out p-1 "></i> Logout</a>
@@ -711,11 +711,11 @@ function SidebarCollapse () {
     <!-- MAIN -->
     <div class="col">
        &nbsp;
-        <!--
         <div class="alert alert-success" role="alert">
-            <strong>Well done!</strong> You successfully read this important alert message.
+          You'll be able to connect to a Xero Organisation and <strong>make real API calls</strong> - we recommend you connect to the Demo company.
+          <br>
+          <a href="https://developer.xero.com/documentation/getting-started/development-accounts" target="_blank">Learn about using the Demo Company for development</a>
         </div>
-        -->
         <div class="card">
           {% block content %}
         </div>

@@ -81,13 +81,11 @@ api_client = ApiClient(
 def obtain_xero_oauth2_token():
     return session.get("token")
 
-
 @xero.tokensaver
 @api_client.oauth2_token_saver
 def store_xero_oauth2_token(token):
     session["token"] = token
     session.modified = True
-
 
 def xero_token_required(function):
     @wraps(function)
@@ -119,7 +117,7 @@ def get_random_num():
 def index():
     xero_access = dict(obtain_xero_oauth2_token() or {})
     return render_template(
-        "code.html",
+        "output.html",
         title="Home | oauth token",
         code=json.dumps(xero_access, sort_keys=True, indent=4),
     )
@@ -1717,7 +1715,7 @@ def refresh_token():
     xero_token = obtain_xero_oauth2_token()
     new_token = api_client.refresh_oauth2_token()
     return render_template(
-        "code.html",
+        "output.html",
         title="Xero OAuth2 token",
         code=jsonify({"Old Token": xero_token, "New token": new_token}),
         sub_title="token refreshed",

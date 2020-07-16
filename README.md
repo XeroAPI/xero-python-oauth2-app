@@ -2,8 +2,8 @@
 
 This is a companion app with the code to perform OAuth 2.0 authentication and demonstrate how to interact with Xero API endpoints
 
-You'll be able to connect to a Xero Organisation and make real API calls - we recommend you connect to the Demo company.
-Please use your Demo Company organisation for your testing. 
+**You'll be able to connect to a Xero Organisation and make real API calls - we recommend you connect to the Demo company.
+Please use your Demo Company organisation for your testing.**
 [Here](https://central.xero.com/s/article/Use-the-demo-company) is how to turn it on.
 
 ## Getting Started

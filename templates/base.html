@@ -61,6 +61,7 @@ function SidebarCollapse () {
         $('#payroll_au .collapse').collapse('hide'); 
         $('#assets .collapse').collapse('hide'); 
         $('#projects .collapse').collapse('hide'); 
+        $('#payroll_uk .collapse').collapse('hide'); 
       });
 
       $("#assets_menu").on("click",function() {
@@ -69,6 +70,7 @@ function SidebarCollapse () {
         $('#payroll_au .collapse').collapse('hide'); 
         $('#accounting .collapse').collapse('hide'); 
         $('#projects .collapse').collapse('hide'); 
+        $('#payroll_uk .collapse').collapse('hide'); 
       });
       
       $("#projects_menu").on("click",function() {
@@ -77,6 +79,7 @@ function SidebarCollapse () {
         $('#accounting .collapse').collapse('hide'); 
         $('#assets .collapse').collapse('hide'); 
         $('#payroll_au .collapse').collapse('hide'); 
+        $('#payroll_uk .collapse').collapse('hide'); 
       });
 
       $("#payroll_au_menu").on("click",function() {
@@ -85,6 +88,15 @@ function SidebarCollapse () {
         $('#accounting .collapse').collapse('hide'); 
         $('#assets .collapse').collapse('hide'); 
         $('#projects .collapse').collapse('hide'); 
+        $('#payroll_uk .collapse').collapse('hide'); 
+      });
+      $("#payroll_uk_menu").on("click",function() {
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark"); 
+        $('#accounting .collapse').collapse('hide'); 
+        $('#assets .collapse').collapse('hide'); 
+        $('#projects .collapse').collapse('hide'); 
+        $('#payroll_au .collapse').collapse('hide'); 
       });
    });
 
@@ -704,6 +716,408 @@ function SidebarCollapse () {
                   </a>
                 </div> 
             </div> 
+
+            <!-- PAYROLL UK BUTTON -->
+            <a id="payroll_uk_menu" href="#payroll_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-start align-items-center">
+                    <span class="fa fa-user fa-fw mr-3"></span>
+                    <span class="menu-collapsed">Payroll UK</span>
+                </div>
+            </a>
+            <!-- PAYROLL UK SUBMENU -->
+            <div id="payroll_uk" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+                <!-- EMPLOYEE UK -->
+                <a href="#employee_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Employee</span>
+                  </div>
+                </a>
+                <div id="employee_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_uk_read_all" href="{{ url_for('payroll_uk_employee_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYMENT UK -->
+                <a href="#employment_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Employment</span>
+                  </div>
+                </a>
+                <div id="employment_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employment_uk_create" href="{{ url_for('payroll_uk_employment_uk_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Create</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYEE TAX UK -->
+                <a href="#employee_tax_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Employee Tax</span>
+                  </div>
+                </a>
+                <div id="employee_tax_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_tax_uk_read_all" href="{{ url_for('payroll_uk_employee_tax_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYEE OPENING BALANCE UK -->
+                <a href="#employee_opening_balance_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Emp Opening Balance</span>
+                  </div>
+                </a>
+                <div id="employee_opening_balance_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_opening_balance_uk_read_all" href="{{ url_for('payroll_uk_employee_opening_balance_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYEE LEAVE UK -->
+                <a href="#employee_leaves_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Employees Leave</span>
+                  </div>
+                </a>
+                <div id="employee_leaves_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_leaves_uk_read_all" href="{{ url_for('payroll_uk_employee_leaves_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYEE LEAVE BALANCES UK -->
+                <a href="#employee_leave_balances_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Emp Leave Balances</span>
+                  </div>
+                </a>
+                <div id="employee_leave_balances_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_leave_balances_uk_read_all" href="{{ url_for('payroll_uk_employee_leave_balances_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYEE STATUTORY LEAVE BALANCES UK -->
+                <a href="#employee_statutory_leave_balance_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Emp Statutory Leave Bal</span>
+                  </div>
+                </a>
+                <div id="employee_statutory_leave_balance_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_statutory_leave_balance_uk_read_all" href="{{ url_for('payroll_uk_employee_statutory_leave_balance_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYEE STATUTORY LEAVE SUMMARY UK -->
+                <a href="#employee_statutory_leave_summary_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Emp Statutory Leave Su</span>
+                  </div>
+                </a>
+                <div id="employee_statutory_leave_summary_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_statutory_leave_summary_uk_read_all" href="{{ url_for('payroll_uk_employee_statutory_leave_summary_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYEE STATUTORY SICK LEAVE UK -->
+                <a href="#employee_statutory_sick_leave_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Emp Statutory Sick Le</span>
+                  </div>
+                </a>
+                <div id="employee_statutory_sick_leave_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_statutory_sick_leave_uk_read_all" href="{{ url_for('payroll_uk_employee_statutory_sick_leave_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYEE LEAVE PERIODS UK -->
+                <a href="#employee_leave_periods_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Emp Leave Periods</span>
+                  </div>
+                </a>
+                <div id="employee_leave_periods_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_leave_periods_uk_read_all" href="{{ url_for('payroll_uk_employee_leave_periods_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYEE LEAVE TYPES UK -->
+                <a href="#employee_leave_types_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Emp Leave Types</span>
+                  </div>
+                </a>
+                <div id="employee_leave_types_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_leave_types_uk_read_all" href="{{ url_for('payroll_uk_employee_leave_types_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYEE PAY TEMPLATE UK -->
+                <a href="#employee_pay_template_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Emp Pay Template</span>
+                  </div>
+                </a>
+                <div id="employee_pay_template_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employee_pay_template_uk_read_all" href="{{ url_for('payroll_uk_employee_pay_template_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EMPLOYER PENSIONS UK -->
+                <a href="#employer_pensions_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Employer Pensions</span>
+                  </div>
+                </a>
+                <div id="employer_pensions_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_employer_pensions_uk_read_all" href="{{ url_for('payroll_uk_employer_pensions_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- DEDUCTIONS UK -->
+                <a href="#deductions_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Deductions</span>
+                  </div>
+                </a>
+                <div id="deductions_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_deductions_uk_read_all" href="{{ url_for('payroll_uk_deductions_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EARNINGS ORDERS UK -->
+                <a href="#earnings_orders_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Earnings Orders</span>
+                  </div>
+                </a>
+                <div id="earnings_orders_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_earnings_orders_uk_read_all" href="{{ url_for('payroll_uk_earnings_orders_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- EARNINGS RATES UK -->
+                <a href="#earnings_rates_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Earnings Rates</span>
+                  </div>
+                </a>
+                <div id="earnings_rates_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_earnings_rates_uk_read_all" href="{{ url_for('payroll_uk_earnings_rates_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- LEAVE TYPES UK -->
+                <a href="#leave_types_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Leave Types</span>
+                  </div>
+                </a>
+                <div id="leave_types_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_leave_types_uk_read_all" href="{{ url_for('payroll_uk_leave_types_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- REIMBURSEMENTS UK -->
+                <a href="#reimbursements_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Reimbursements</span>
+                  </div>
+                </a>
+                <div id="reimbursements_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_reimbursements_uk_read_all" href="{{ url_for('payroll_uk_reimbursements_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- TIMESHEETS UK -->
+                <a href="#timesheets_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Timesheets</span>
+                  </div>
+                </a>
+                <div id="timesheets_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_timesheets_uk_read_all" href="{{ url_for('payroll_uk_timesheets_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- PAYMENT_METHODS UK -->
+                <a href="#payment_methods_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Payment Methods</span>
+                  </div>
+                </a>
+                <div id="payment_methods_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_payment_methods_uk_read_all" href="{{ url_for('payroll_uk_payment_methods_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- PAY RUN CALENDAR UK -->
+                <a href="#pay_run_calendars_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Payrun Calendars</span>
+                  </div>
+                </a>
+                <div id="pay_run_calendars_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_pay_run_calendars_uk_read_all" href="{{ url_for('payroll_uk_pay_run_calendars_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- SALARY AND WAGE UK -->
+                <a href="#salary_and_wage_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Salary and Wage</span>
+                  </div>
+                </a>
+                <div id="salary_and_wage_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_salary_and_wage_uk_read_all" href="{{ url_for('payroll_uk_salary_and_wage_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- PAY RUNS UK -->
+                <a href="#pay_runs_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Pay runs</span>
+                  </div>
+                </a>
+                <div id="pay_runs_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_pay_runs_uk_read_all" href="{{ url_for('payroll_uk_pay_runs_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- PAY SLIPS UK -->
+                <a href="#pay_slips_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Pay slips</span>
+                  </div>
+                </a>
+                <div id="pay_slips_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_pay_slips_uk_read_all" href="{{ url_for('payroll_uk_pay_slips_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- SETTINGS UK -->
+                <a href="#settings_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Settings</span>
+                  </div>
+                </a>
+                <div id="settings_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_settings_uk_read_all" href="{{ url_for('payroll_uk_settings_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+                <!-- TRACKING_CATEGORIES UK -->
+                <a href="#tracking_categories_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Tracking Categories</span>
+                  </div>
+                </a>
+                <div id="tracking_categories_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+                  <a id="payroll_uk_tracking_categories_uk_read_all" href="{{ url_for('payroll_uk_tracking_categories_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
+
+            </div>
         </ul>
     </div>
 

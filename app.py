@@ -19,10 +19,11 @@ from xero_python.accounting import AccountingApi, ContactPerson, Contact, Contac
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
+from xero_python.payrolluk import PayrollUkApi, Employees, Employee, Address, Employment
 from xero_python.api_client import ApiClient, serialize
 from xero_python.api_client.configuration import Configuration
 from xero_python.api_client.oauth2 import OAuth2Token
-from xero_python.exceptions import AccountingBadRequestException
+from xero_python.exceptions import AccountingBadRequestException, PayrollUkBadRequestException
 from xero_python.identity import IdentityApi
 from xero_python.utils import getvalue
 
@@ -495,7 +496,7 @@ def accounting_contact_create_multiple():
     #[/CONTACTS:CREATE_MULTIPLE]
 
     return render_template(
-        "output.html", title="Contacts", code=code, json=json, len=0, set="accounting", endpoint="contact", action="create_multiple"
+        "output.html", title="Contacts", result_list=result_list, code=code, json=json, len=0, set="accounting", endpoint="contact", action="create_multiple"
     )
 
 @app.route("/accounting_contact_create")
@@ -1657,6 +1658,839 @@ def payroll_au_timesheet_read_all():
         "output.html", title="Timesheets", code=code, output=output, json=json, len = 0, set="payroll_au", endpoint="timesheet", action="read_all"
     )
 
+@app.route("/payroll_uk_employee_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[EMPLOYEE_UK:READ_ALL]
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employees read all - found: {}".format(read_employees.pagination.item_count)
+        json = serialize_model(read_employees)
+    #[/EMPLOYEE_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employees", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_employment_uk_create")
+@xero_token_required
+def payroll_uk_employment_uk_create():
+    code = get_code_snippet("EMPLOYMENT_UK","CREATE")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+        
+    try:
+        read_pay_run_calendar = payrolluk_api.get_pay_run_calendars(
+            xero_tenant_id
+        )        
+        payroll_calendar_id = getvalue(read_pay_run_calendar, "pay_run_calendars.0.payroll_calendar_id", "");
+        print(payroll_calendar_id)
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EMPLOYMENT_UK:CREATE]
+    employment = Employment(
+        employee_number="12345",
+        ni_category="A",
+        start_date=dateutil.parser.parse("2020-08-01T00:00:00Z"),
+        payroll_calendar_id=payroll_calendar_id
+    )
+    
+    try:
+        read_employment = payrolluk_api.create_employment(
+            xero_tenant_id, employee_id=employee_id, employment=employment
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employment created successfully"
+        json = serialize_model(read_employment)
+    #[/EMPLOYMENT_UK:CREATE]
+
+    return render_template(
+        "output.html", title="Employment", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employment_uk", action="create"
+    )
+
+@app.route("/payroll_uk_employee_tax_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_tax_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_TAX_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[EMPLOYEE_TAX_UK:READ_ALL]
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employees read all - found: {}".format(read_employees.pagination.item_count)
+        json = serialize_model(read_employees)
+    #[/EMPLOYEE_TAX_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employee Tax", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_tax_uk", action="read_all"
+    )
+
+@app.route("/payroll_uk_employee_opening_balance_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_opening_balance_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_OPENING_BALANCE_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EMPLOYEE_OPENING_BALANCE_UK:READ_ALL]
+    try:
+        read_employee_opening_balance = payrolluk_api.get_employee_opening_balances(
+            xero_tenant_id, employee_id=employee_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee Opening Balance read all - prior employee number: {}".format(read_employee_opening_balance.opening_balances.prior_employee_number)
+        json = serialize_model(read_employee_opening_balance)
+    #[/EMPLOYEE_OPENING_BALANCE_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employee Opening Balance", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_opening_balance_uk", action="read_all"
+    )
+
+@app.route("/payroll_uk_employee_leaves_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_leaves_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_LEAVES_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EMPLOYEE_LEAVES_UK:READ_ALL]
+    try:
+        read_employee_leaves = payrolluk_api.get_employee_leaves(
+            xero_tenant_id, employee_id=employee_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee Leave read all - found: {}".format( len(read_employee_leaves.leave) )
+        json = serialize_model(read_employee_leaves)
+    #[/EMPLOYEE_LEAVES_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employee Leave", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_leaves_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_employee_leave_balances_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_leave_balances_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_LEAVE_BALANCES_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EMPLOYEE_LEAVE_BALANCES_UK:READ_ALL]
+    try:
+        read_employee_leave_balances = payrolluk_api.get_employee_leave_balances(
+            xero_tenant_id, employee_id=employee_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee Leave Balances read all - found: {}".format(read_employee_leave_balances.pagination.item_count)
+        json = serialize_model(read_employee_leave_balances)
+    #[/EMPLOYEE_LEAVE_BALANCES_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employee Leave", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_leave_balances_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_employee_statutory_leave_balance_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_statutory_leave_balance_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_STATUTORYLEAVE_BALANCES_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EMPLOYEE_STATUTORYLEAVE_BALANCES_UK:READ_ALL]
+    as_of_date = dateutil.parser.parse("2020-07-25T00:00:00Z"),
+    try:
+        read_employee_statutory_leave_balances = payrolluk_api.get_employee_statutory_leave_balances(
+            xero_tenant_id, employee_id=employee_id, leave_type="Sick", as_of_date=as_of_date
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee Statutory Leave Balances read balance remaining: {}".format(read_employee_statutory_leave_balances.leave_balance.balance_remaining)
+        json = serialize_model(read_employee_statutory_leave_balances)
+    #[/EMPLOYEE_STATUTORYLEAVE_BALANCES_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employee Leave", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_statutory_leave_balance_uk", action="read_all"
+    )
+    
+    
+@app.route("/payroll_uk_employee_statutory_leave_summary_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_statutory_leave_summary_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_STATUTORY_LEAVE_SUMMARY_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    
+    #[EMPLOYEE_STATUTORY_LEAVE_SUMMARY_UK:READ_ALL]
+    try:
+        read_statutory_leave_summary = payrolluk_api.get_statutory_leave_summary(
+            xero_tenant_id, employee_id=employee_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee Statutory Leave Summary read all - found: {}".format( len(read_statutory_leave_summary.statutory_leaves) )
+        json = serialize_model(read_statutory_leave_summary)
+    #[/EMPLOYEE_STATUTORY_LEAVE_SUMMARY_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employee Leave", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_statutory_leave_summary_uk", action="read_all"
+    )    
+    
+@app.route("/payroll_uk_employee_statutory_sick_leave_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_statutory_sick_leave_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_STATUTORY_SICK_LEAVE_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    try:
+        read_statutory_leave_summary = payrolluk_api.get_statutory_leave_summary(
+            xero_tenant_id, employee_id=employee_id
+        )       
+        statutory_sick_leave_id = getvalue(read_statutory_leave_summary, "statutory_leaves.0.statutory_leave_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EMPLOYEE_STATUTORY_SICK_LEAVE_UK:READ_ALL]
+    try:
+        read_employee_statutory_sick_leave = payrolluk_api.get_employee_statutory_sick_leave(
+            xero_tenant_id, statutory_sick_leave_id=statutory_sick_leave_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee Statutory Sick Leave date: {}".format(read_employee_statutory_sick_leave.statutory_sick_leave.start_date)
+        json = serialize_model(read_employee_statutory_sick_leave)
+    #[/EMPLOYEE_STATUTORY_SICK_LEAVE_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employee Statutory Sick Leave", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_statutory_sick_leave_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_employee_leave_periods_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_leave_periods_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_LEAVE_PERIODS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EMPLOYEE_LEAVE_PERIODS_UK:READ_ALL]
+    start_date= dateutil.parser.parse("2020-07-01T00:00:00Z")
+    end_date= dateutil.parser.parse("2020-08-01T00:00:00Z")
+    try:
+        read_employee_leave_periods = payrolluk_api.get_employee_leave_periods(
+            xero_tenant_id, employee_id=employee_id, start_date=start_date, end_date=end_date
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee Leave Periods read all - found: {}".format( len(read_employee_leave_periods.periods) )
+        json = serialize_model(read_employee_leave_periods)
+    #[/EMPLOYEE_LEAVE_PERIODS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employee Leave Periods", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_leave_periods_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_employee_leave_types_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_leave_types_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_LEAVE_TYPES_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EMPLOYEE_LEAVE_TYPES_UK:READ_ALL]
+    try:
+        read_employee_leave_types = payrolluk_api.get_employee_leave_types(
+            xero_tenant_id, employee_id=employee_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee Leave Types read all - found: {}".format( len(read_employee_leave_types.leave_types) )
+        json = serialize_model(read_employee_leave_types)
+    #[/EMPLOYEE_LEAVE_TYPES_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employee Leave Types", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_leave_types_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_employee_pay_template_uk_read_all")
+@xero_token_required
+def payroll_uk_employee_pay_template_uk_read_all():
+    code = get_code_snippet("EMPLOYEE_PAY_TEMPLATE_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EMPLOYEE_PAY_TEMPLATE_UK:READ_ALL]
+    try:
+        read_employee_pay_template = payrolluk_api.get_employee_pay_template(
+            xero_tenant_id, employee_id=employee_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee Pay Template with Earning templates read all - found: {}".format( len(read_employee_pay_template.pay_template.earning_templates) )
+        json = serialize_model(read_employee_pay_template)
+    #[/EMPLOYEE_PAY_TEMPLATE_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employee Pay Template", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employee_pay_template_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_employer_pensions_uk_read_all")
+@xero_token_required
+def payroll_uk_employer_pensions_uk_read_all():
+    code = get_code_snippet("EMPLOYER_PENSIONS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[EMPLOYER_PENSIONS_UK:READ_ALL]
+    try:
+        read_employer_pensions = payrolluk_api.get_benefits(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employer Pensions (aka Benefits) read all - found: {}".format( read_employer_pensions.pagination.item_count )
+        json = serialize_model(read_employer_pensions)
+    #[/EMPLOYER_PENSIONS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employer Pensions", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="employer_pensions_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_deductions_uk_read_all")
+@xero_token_required
+def payroll_uk_deductions_uk_read_all():
+    code = get_code_snippet("DEDUCTIONS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[DEDUCTIONS_UK:READ_ALL]
+    try:
+        read_deductions = payrolluk_api.get_deductions(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Deductions read all - found: {}".format( read_deductions.pagination.item_count )
+        json = serialize_model(read_deductions)
+    #[/DEDUCTIONS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Deductions", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="deductions_uk", action="read_all"
+    )
+
+@app.route("/payroll_uk_earnings_orders_uk_read_all")
+@xero_token_required
+def payroll_uk_earnings_orders_uk_read_all():
+    code = get_code_snippet("EARNINGS_ORDERS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[EARNINGS_ORDERS_UK:READ_ALL]
+    try:
+        read_earnings_orders = payrolluk_api.get_earnings_orders(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Earnings Orders read all - found: {}".format( read_earnings_orders.pagination.item_count )
+        json = serialize_model(read_earnings_orders)
+    #[/EARNINGS_ORDERS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Earnings Orders", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="earnings_orders_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_earnings_rates_uk_read_all")
+@xero_token_required
+def payroll_uk_earnings_rates_uk_read_all():
+    code = get_code_snippet("EARNINGS_RATES_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[EARNINGS_RATES_UK:READ_ALL]
+    try:
+        read_earnings_rates = payrolluk_api.get_earnings_rates(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Earnings Rates read all - found: {}".format( read_earnings_rates.pagination.item_count )
+        json = serialize_model(read_earnings_rates)
+    #[/EARNINGS_RATES_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Earnings Rates", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="earnings_rates_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_leave_types_uk_read_all")
+@xero_token_required
+def payroll_uk_leave_types_uk_read_all():
+    code = get_code_snippet("LEAVE_TYPES_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[LEAVE_TYPES_UK:READ_ALL]
+    try:
+        read_leave_types = payrolluk_api.get_leave_types(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Leave Types read all - found: {}".format( read_leave_types.pagination.item_count )
+        json = serialize_model(read_leave_types)
+    #[/LEAVE_TYPES_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Leave Types", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="leave_types_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_reimbursements_uk_read_all")
+@xero_token_required
+def payroll_uk_reimbursements_uk_read_all():
+    code = get_code_snippet("REIMBURSEMENTS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[REIMBURSEMENTS_UK:READ_ALL]
+    try:
+        read_reimbursements = payrolluk_api.get_reimbursements(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Reimbursements read all - found: {}".format( read_reimbursements.pagination.item_count )
+        json = serialize_model(read_reimbursements)
+    #[/REIMBURSEMENTS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Reimbursements", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="reimbursements_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_timesheets_uk_read_all")
+@xero_token_required
+def payroll_uk_timesheets_uk_read_all():
+    code = get_code_snippet("TIMESHEETS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[TIMESHEETS_UK:READ_ALL]
+    try:
+        read_timesheets = payrolluk_api.get_timesheets(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Timesheets read all - found: {}".format( read_timesheets.pagination.item_count )
+        json = serialize_model(read_timesheets)
+    #[/TIMESHEETS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Timesheets", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="timesheets_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_payment_methods_uk_read_all")
+@xero_token_required
+def payroll_uk_payment_methods_uk_read_all():
+    code = get_code_snippet("PAYMENT_METHODS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[PAYMENT_METHODS_UK:READ_ALL]
+    try:
+        read_payment_methods = payrolluk_api.get_employee_payment_method(
+            xero_tenant_id, employee_id=employee_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Payment Methods read all bank accounts - found: {}".format( len(read_payment_methods.payment_method.bank_accounts) )
+        json = serialize_model(read_payment_methods)
+    #[/PAYMENT_METHODS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Payment Methods", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="payment_methods_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_pay_run_calendars_uk_read_all")
+@xero_token_required
+def payroll_uk_pay_run_calendars_uk_read_all():
+    code = get_code_snippet("PAY_RUN_CALENDARS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[PAY_RUN_CALENDARS_UK:READ_ALL]
+    try:
+        read_pay_run_calendars = payrolluk_api.get_pay_run_calendars(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Pay Run Calendars read all bank accounts - found: {}".format( read_pay_run_calendars.pagination.item_count )
+        json = serialize_model(read_pay_run_calendars)
+    #[/PAY_RUN_CALENDARS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Pay Run Calendars", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="pay_run_calendars_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_salary_and_wage_uk_read_all")
+@xero_token_required
+def payroll_uk_salary_and_wage_uk_read_all():
+    code = get_code_snippet("SALARY_AND_WAGE_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrolluk_api.get_employees(
+            xero_tenant_id
+        )        
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[SALARY_AND_WAGE_UK:READ_ALL]
+    try:
+        read_salary_and_wage = payrolluk_api.get_employee_salary_and_wages(
+            xero_tenant_id, employee_id=employee_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Salary and Wage read all bank accounts - found: {}".format( read_salary_and_wage.pagination.item_count )
+        json = serialize_model(read_salary_and_wage)
+    #[/SALARY_AND_WAGE_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Salary and Wage", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="salary_and_wage_uk", action="read_all"
+    )
+
+@app.route("/payroll_uk_pay_runs_uk_read_all")
+@xero_token_required
+def payroll_uk_pay_runs_uk_read_all():
+    code = get_code_snippet("PAY_RUNS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[PAY_RUNS_UK:READ_ALL]
+    try:
+        read_pay_runs = payrolluk_api.get_pay_runs(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Pay runs read all bank accounts - found: {}".format( read_pay_runs.pagination.item_count )
+        json = serialize_model(read_pay_runs)
+    #[/PAY_RUNS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Pay runs", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="pay_runs_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_pay_slips_uk_read_all")
+@xero_token_required
+def payroll_uk_pay_slips_uk_read_all():
+    code = get_code_snippet("PAY_SLIPS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_pay_runs = payrolluk_api.get_pay_runs(
+            xero_tenant_id
+        )        
+        pay_run_id = getvalue(read_pay_runs, "pay_runs.0.pay_run_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[PAY_SLIPS_UK:READ_ALL]
+    try:
+        read_pay_slips = payrolluk_api.get_pay_slips(
+            xero_tenant_id, pay_run_id=pay_run_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Pay slips read all bank accounts - found: {}".format( read_pay_slips.pagination.item_count )
+        json = serialize_model(read_pay_slips)
+    #[/PAY_SLIPS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Pay slips", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="pay_slips_uk", action="read_all"
+    )
+    
+@app.route("/payroll_uk_settings_uk_read_all")
+@xero_token_required
+def payroll_uk_settings_uk_read_all():
+    code = get_code_snippet("SETTINGS_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[SETTINGS_UK:READ_ALL]
+    try:
+        read_settings = payrolluk_api.get_settings(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Settings read all bank accounts - found: {}".format( len(read_settings.settings.accounts) )
+        json = serialize_model(read_settings)
+    #[/SETTINGS_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Settings", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="settings_uk", action="read_all"
+    )
+
+@app.route("/payroll_uk_tracking_categories_uk_read_all")
+@xero_token_required
+def payroll_uk_tracking_categories_uk_read_all():
+    code = get_code_snippet("TRACKING_CATEGORIES_UK","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrolluk_api = PayrollUkApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[TRACKING_CATEGORIES_UK:READ_ALL]
+    try:
+        read_tracking_categories = payrolluk_api.get_tracking_categories(
+            xero_tenant_id
+        )
+    except PayrollUkBadRequestException as exception:
+        output = "Error: " + getvalue(exception.error_data, "problem.detail", "");
+        json = jsonify(exception.error_data)
+    else:
+        output = "Tracking categories read all"
+        json = serialize_model(read_tracking_categories)
+    #[/TRACKING_CATEGORIES_UK:READ_ALL]
+
+    return render_template(
+        "output.html", title="Tracking categories", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="tracking_categories_uk", action="read_all"
+    )
+
 @app.route("/login")
 def login():
     redirect_url = url_for("oauth_callback", _external=True)
@@ -1740,4 +2574,4 @@ def get_xero_tenant_id():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='localhost', port=5000)

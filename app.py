@@ -690,7 +690,7 @@ def accounting_tax_rates_read_all():
     #[/TAX_RATES:READ_ALL]
     
     return render_template(
-        "output.html", title="Accounts", code=code, json=json, output=output, len = 0, set="accounting", endpoint="account", action="read_all"
+        "output.html", title="Tax Rates", code=code, json=json, output=output, len = 0, set="accounting", endpoint="tax_rates", action="read_all"
     )
 
 @app.route("/assets_asset_read_all")

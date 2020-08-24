@@ -394,7 +394,24 @@ function SidebarCollapse () {
                       <span class="menu-collapsed">Create</span>
                   </a>
                 </div>
+            
+
+            <!-- TAX RATES -->
+            <a href="#tax_rates" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-user fa-fw mr-3"></span>
+                  <span class="menu-collapsed">Tax Rates</span>
+              </div>
+            </a>
+            <div id="tax_rates" class="collapse sidebar-submenu" data-parent="#accounting">
+              <a id="accounting_tax_rates_read_all" href="{{ url_for('accounting_tax_rates_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                  <span class="fa fa-user fa-fw mr-3"></span>
+                  <span class="fa fa-user fa-fw mr-3"></span>
+                  <span class="menu-collapsed">Read (all)</span>
+              </a>
             </div>
+          </div>          
+
             <!-- ASSETS BUTTON -->
             <a id="assets_menu" href="#assets" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                 <div class="d-flex w-100 justify-content-start align-items-center">

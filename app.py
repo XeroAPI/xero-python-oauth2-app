@@ -666,6 +666,33 @@ def accounting_invoice_create():
         "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="create"
     )
 
+@app.route("/accounting_tax_rates_read_all")
+@xero_token_required
+def accounting_tax_rates_read_all():
+    code = get_code_snippet("TAX_RATES","READ_ALL")
+
+    #[TAX_RATES:READ_ALL]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_tax_rates = accounting_api.get_tax_rates(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Tax rates read {} total".format(
+            len(read_tax_rates.tax_rates)
+        )
+        json = serialize_model(read_tax_rates)
+    #[/TAX_RATES:READ_ALL]
+    
+    return render_template(
+        "output.html", title="Tax Rates", code=code, json=json, output=output, len = 0, set="accounting", endpoint="tax_rates", action="read_all"
+    )
+
 @app.route("/assets_asset_read_all")
 @xero_token_required
 def assets_asset_read_all():

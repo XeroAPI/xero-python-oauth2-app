@@ -456,6 +456,34 @@ def accounting_account_delete():
     )
 
 
+#BANK TRANSACTION START
+@app.route("/accounting_bank_transaction_read_all")
+@xero_token_required
+def accounting_bank_transaction_read_all():
+    code = get_code_snippet("BANKTRANSACTION","READ_ALL")
+
+    #[BANKTRANSACTION:READ_ALL]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_bank_transactions = accounting_api.get_bank_transactions(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Bank Transactions read {} total".format(
+            len(read_bank_transactions.bank_transactions)
+        )
+        json = serialize_model(read_bank_transactions)
+    #[/BANKTRANSACTION:READ_ALL]
+    
+    return render_template(
+        "output.html", title="Bank Transaction", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_all"
+    )
+
 @app.route("/accounting_contact_create_multiple")
 @xero_token_required
 def accounting_contact_create_multiple():

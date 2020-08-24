@@ -311,8 +311,8 @@ function SidebarCollapse () {
             </a>
             <!-- ACCOUNTING SUBMENU-->
             <div id="accounting" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+                <!-- ACCOUNTS -->
                 <a href="#account" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <!-- ACCOUNTS -->
                   <div class="d-flex w-100 justify-content-start align-items-center">
                       <span class="fa fa-user fa-fw mr-3"></span>
                       <span class="menu-collapsed">Accounts</span>
@@ -355,6 +355,21 @@ function SidebarCollapse () {
                       <span class="menu-collapsed">Delete</span>
                   </a>
                 </div> 
+                <!-- BANK TRANSACTIONS -->
+                <a href="#bank_transaction" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                  <div class="d-flex w-100 justify-content-start align-items-center">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Bank Transaction</span>
+                  </div>
+                </a>
+                <div id="bank_transaction" class="collapse sidebar-submenu" data-parent="#accounting">
+                  <a id="accounting_bank_transaction_read_all" href="{{ url_for('accounting_bank_transaction_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="fa fa-user fa-fw mr-3"></span>
+                      <span class="menu-collapsed">Read (all)</span>
+                  </a>
+                </div>
+
                 <!-- CONTACTS -->
                 <a href="#contact" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                   <div class="d-flex w-100 justify-content-start align-items-center">

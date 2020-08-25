@@ -568,6 +568,33 @@ def accounting_contact_create():
         "output.html",  title="Contacts", code=code, output=output, json=json, len = 0,  set="accounting", endpoint="contact", action="create"
     )
 
+@app.route("/accounting_contact_read_all")
+@xero_token_required
+def accounting_contact_read_all():
+    code = get_code_snippet("CONTACT","READ_ALL")
+
+    #[CONTACT:READ_ALL]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_contact = accounting_api.get_contacts(
+            xero_tenant_id
+        )
+        
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Contact(s) read {} total".format(
+            len(read_contact.contacts)
+        )
+        json = serialize_model(read_contact)
+    #[/CONTACT:READ_ALL]
+    
+    return render_template(
+        "output.html", title="Contact", code=code, json=json, output=output, len = 0, set="accounting", endpoint="contact", action="read_all"
+    )
 
 @app.route("/accounting_invoice_read_all")
 @xero_token_required

@@ -1423,6 +1423,43 @@ def payroll_au_employee_read_all():
     return render_template(
         "output.html", title="Employees", code=code, output=output, json=json, len = 0, set="payroll_au", endpoint="employee", action="read_all"
     )
+
+@app.route("/payroll_au_employee_read_one")
+@xero_token_required
+def payroll_au_employee_read_one():
+    code = get_code_snippet("EMPLOYEES","READ_ONE")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrollau_api = PayrollAuApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_employees = payrollau_api.get_employees(
+            xero_tenant_id
+        )
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[EMPLOYEES:READ_ONE]
+    try:
+         read_employee = payrollau_api.get_employee(
+             xero_tenant_id, employee_id
+         )
+    except AccountingBadRequestException as exception:
+         output = "Error: " + exception.reason
+         json = jsonify(exception.error_data)
+    else:
+        output = "Employee read Classification: {}".format(
+            getvalue(read_employee, "employees.0.classification", "")
+        )
+        json = serialize_model(read_employee)     
+    #[/EMPLOYEES:READ_ONE]
+
+    return render_template(
+        "output.html", title="Employee", code=code, output=output, json=json, len = 0, set="payroll_au", endpoint="employee", action="read_one"
+    )
     
 @app.route("/payroll_au_employee_create")
 @xero_token_required

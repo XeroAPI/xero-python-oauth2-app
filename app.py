@@ -149,6 +149,18 @@ def tenants():
         len=0
     )
 
+# ACCOUNTS TODO
+# getAccounts x
+# createAccount x
+# getAccount x
+# updateAccount x
+# deleteAccount x
+# getAccountAttachments
+# getAccountAttachmentById
+# getAccountAttachmentByFileName
+# updateAccountAttachmentByFileName
+# createAccountAttachmentByFileName x
+
 @app.route("/accounting_account_read_all")
 @xero_token_required
 def accounting_account_read_all():
@@ -455,8 +467,20 @@ def accounting_account_delete():
         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="delete"
     )
 
+# BANK TRANSACTIONS TODO
+# getBankTransactions x
+# createBankTransactions x
+# updateOrCreateBankTransactions
+# getBankTransaction x
+# updateBankTransaction
+# getBankTransactionAttachments
+# getBankTransactionAttachmentById
+# getBankTransactionAttachmentByFileName
+# updateBankTransactionAttachmentByFileName
+# createBankTransactionAttachmentByFileName
+# getBankTransactionsHistory
+# createBankTransactionHistoryRecord
 
-#BANK TRANSACTION START
 @app.route("/accounting_bank_transaction_read_all")
 @xero_token_required
 def accounting_bank_transaction_read_all():
@@ -592,6 +616,49 @@ def accounting_bank_transaction_create():
         "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="create"
     )
 
+# BANK TRANSFERS TODO
+# getBankTransfers
+# createBankTransfer
+# getBankTransfer
+# getBankTransferAttachments
+# getBankTransferAttachmentById
+# getBankTransferAttachmentByFileName
+# updateBankTransferAttachmentByFileName
+# createBankTransferAttachmentByFileName
+# getBankTransferHistory
+# createBankTransferHistoryRecord
+
+# BATCH PAYMENTS TODO
+# getBatchPayments
+# createBatchPayment
+# getBatchPaymentHistory
+# createBatchPaymentHistoryRecord
+
+# BRANDING THEMES TODO
+# getBrandingThemes
+# getBrandingTheme
+# getBrandingThemePaymentServices
+# createBrandingThemePaymentServices
+
+# BUDGETS TODO
+# *** coming April 2021 ***
+
+# CONTACTS TODO
+# getContacts x
+# createContacts x
+# updateOrCreateContacts
+# getContactByContactNumber
+# getContact
+# updateContact
+# getContactAttachments
+# getContactAttachmentById
+# getContactAttachmentByFileName
+# updateContactAttachmentByFileName
+# createContactAttachmentByFileName
+# getContactCISSettings
+# getContactHistory
+# createContactHistory
+
 @app.route("/accounting_contact_create_multiple")
 @xero_token_required
 def accounting_contact_create_multiple():
@@ -704,6 +771,65 @@ def accounting_contact_read_all():
         "output.html", title="Contacts", code=code, json=json, output=output, len = 0, set="accounting", endpoint="contact", action="read_all"
     )
 
+# CONTACT GROUPS TODO
+# getContactGroups
+# createContactGroup
+# getContactGroup
+# updateContactGroup
+# createContactGroupContacts
+# deleteContactGroupContacts
+# deleteContactGroupContact
+
+# CREDIT NOTES TODO
+# getCreditNotes
+# createCreditNotes
+# updateOrCreateCreditNotes
+# getCreditNote
+# updateCreditNote
+# getCreditNoteAttachments
+# getCreditNoteAttachmentById
+# getCreditNoteAttachmentByFileName
+# updateCreditNoteAttachmentByFileName
+# createCreditNoteAttachmentByFileName
+# getCreditNoteAsPdf
+# createCreditNoteAllocation
+# getCreditNoteHistory
+# createCreditNoteHistory
+
+# CURRENCIES TODO
+# getCurrencies
+# createCurrency
+
+# EMPLOYEES TODO
+# getEmployees
+# createEmployees
+# updateOrCreateEmployees
+# getEmployee
+
+# EXPENSE CLAIMS (DEPRECATED) TODO
+# getExpenseClaims
+# createExpenseClaims
+# getExpenseClaim
+# updateExpenseClaim
+# getExpenseClaimHistory
+# createExpenseClaimHistory
+
+# INVOICES TODO
+# getInvoices x
+# createInvoices x
+# updateOrCreateInvoices
+# getInvoice
+# updateInvoice
+# getInvoiceAsPdf
+# getInvoiceAttachments
+# getInvoiceAttachmentById
+# getInvoiceAttachmentByFileName
+# updateInvoiceAttachmentByFileName
+# createInvoiceAttachmentByFileName
+# getOnlineInvoice
+# emailInvoice
+# getInvoiceHistory
+# createInvoiceHistory
 @app.route("/accounting_invoice_read_all")
 @xero_token_required
 def accounting_invoice_read_all():
@@ -801,6 +927,140 @@ def accounting_invoice_create():
         "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="create"
     )
 
+# INVOICE REMINDERS TODO
+# getInvoiceReminders
+
+# ITEMS TODO
+# getItems
+# createItems
+# updateOrCreateItems
+# getItem
+# updateItem
+# deleteItem
+# getItemHistory
+# createItemHistory
+
+# JOURNALS TODO
+# getJournals
+# getJournal
+
+# LINKED TRANSACTIONS TODO
+# getLinkedTransactions
+# createLinkedTransaction
+# getLinkedTransaction
+# updateLinkedTransaction
+# deleteLinkedTransaction
+
+# MANUAL JOURNALS TODO
+# getManualJournals
+# createManualJournals
+# updateOrCreateManualJournals
+# getManualJournal
+# updateManualJournal
+# getManualJournalAttachments
+# getManualJournalAttachmentById
+# getManualJournalAttachmentByFileName
+# updateManualJournalAttachmentByFileName
+# createManualJournalAttachmentByFileName
+
+# ORGANISATION TODO
+# getOrganisations
+# getOrganisationCISSettings
+
+# OVERPAYMENTS TODO 
+# getOverpayments
+# getOverpayment
+# createOverpaymentAllocations
+# getOverpaymentHistory
+# createOverpaymentHistory
+
+# PAYMENTS TODO
+# getPayments
+# createPayments
+# createPayment
+# getPayment
+# deletePayment
+# getPaymentHistory
+# createPaymentHistory
+
+# PAYMENT SERVICES TODO
+# getPaymentServices
+# createPaymentService
+
+# PREPAYMENTS TODO
+# getPrepayments
+# getPrepayment
+# createPrepaymentAllocations
+# getPrepaymentHistory
+# createPrepaymentHistory
+
+# PURCHASE ORDERS TODO
+# getPurchaseOrders
+# createPurchaseOrders
+# updateOrCreatePurchaseOrders
+# getPurchaseOrderAsPdf
+# getPurchaseOrder
+# updatePurchaseOrder
+# getPurchaseOrderByNumber
+# getPurchaseOrderHistory
+# createPurchaseOrderHistory
+
+# QUOTES TODO
+# getQuotes
+# createQuotes
+# updateOrCreateQuotes
+# getQuote
+# updateQuote
+# getQuoteHistory
+# createQuoteHistory
+# getQuoteAsPdf
+# getQuoteAttachments
+# getQuoteAttachmentById
+# getQuoteAttachmentByFileName
+# updateQuoteAttachmentByFileName
+# createQuoteAttachmentByFileName
+
+# RECEIPTS (DEPRECATED) TODO
+# getReceipts
+# createReceipt
+# getReceipt
+# updateReceipt
+# getReceiptAttachments
+# getReceiptAttachmentById
+# getReceiptAttachmentByFileName
+# updateReceiptAttachmentByFileName
+# createReceiptAttachmentByFileName
+# getReceiptHistory
+# createReceiptHistory
+
+# REPEATING INVOICES TODO
+# getRepeatingInvoices
+# getRepeatingInvoice
+# getRepeatingInvoiceAttachments
+# getRepeatingInvoiceAttachmentById
+# getRepeatingInvoiceAttachmentByFileName
+# updateRepeatingInvoiceAttachmentByFileName
+# createRepeatingInvoiceAttachmentByFileName
+# getRepeatingInvoiceHistory
+# createRepeatingInvoiceHistory
+
+# REPORTS TODO
+# getReportTenNinetyNine
+# getReportAgedPayablesByContact
+# getReportAgedReceivablesByContact
+# getReportBalanceSheet
+# getReportBankSummary
+# getReportBASorGSTList
+# getReportBASorGST
+# getReportBudgetSummary
+# getReportExecutiveSummary
+# getReportProfitAndLoss
+# getReportTrialBalance
+
+# TAX RATES TODO
+# getTaxRates x
+# createTaxRates
+# updateTaxRate
 @app.route("/accounting_tax_rate_read_all")
 @xero_token_required
 def accounting_tax_rate_read_all():
@@ -828,6 +1088,19 @@ def accounting_tax_rate_read_all():
         "output.html", title="Tax Rates", code=code, json=json, output=output, len = 0, set="accounting", endpoint="tax_rate", action="read_all"
     )
 
+# TRACKING CATEGORIES TODO
+# getTrackingCategories
+# createTrackingCategory
+# getTrackingCategory
+# updateTrackingCategory
+# deleteTrackingCategory
+# createTrackingOptions
+# updateTrackingOptions
+# deleteTrackingOptions
+
+# USERS TODO
+# getUsers x
+# getUser
 @app.route("/accounting_user_read_all")
 @xero_token_required
 def accounting_user_read_all():

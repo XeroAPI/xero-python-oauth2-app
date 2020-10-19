@@ -304,7 +304,7 @@ def accounting_account_create():
       
     try:
         created_accounts = accounting_api.create_account(
-            xero_tenant_id, account=account
+            xero_tenant_id, account
         )
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
@@ -338,7 +338,7 @@ def accounting_account_update():
     accounts = Accounts(accounts=[account])
     try:
         created_accounts = accounting_api.create_account(
-            xero_tenant_id, account=account
+            xero_tenant_id, account
         )   # type: Accounts
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
@@ -390,7 +390,7 @@ def accounting_account_create_attachment():
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account
         )   # type: Accounts
-        attachment_account_id = getvalue(created_accounts, "accounts.0.account_id", "");
+        account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
         msg = "Error: " + exception.reason
         code = jsonify(exception.error_data)
@@ -406,7 +406,7 @@ def accounting_account_create_attachment():
         with myimage.open("rb") as image:
             account_attachment_created = accounting_api.create_account_attachment_by_file_name(
                 xero_tenant_id,
-                attachment_account_id,
+                account_id,
                 file_name=myimage.name,
                 body=image.read(),
             )
@@ -441,7 +441,7 @@ def accounting_account_archive():
     accounts = Accounts(accounts=[account])
     try:
         created_accounts = accounting_api.create_account(
-            xero_tenant_id, account=account
+            xero_tenant_id, account
         )   # type: Accounts
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
@@ -491,7 +491,7 @@ def accounting_account_delete():
     accounts = Accounts(accounts=[account])
     try:
         created_accounts = accounting_api.create_account(
-            xero_tenant_id, account=account
+            xero_tenant_id, account
         )   # type: Accounts
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:

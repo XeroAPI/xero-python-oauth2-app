@@ -1,213 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>{% if title %}{{ title }}{% else %}Welcome to Xero Python oauth starter{% endif %}</title>
-    <!-- CSS only -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <title>{% if title %}{{ title }}{% else %}Welcome to Xero Python oauth starter{% endif %}</title>
+  <!-- CSS only -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
-    <!-- JS, Popper.js, and jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+  <!-- JS, Popper.js, and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
 
-<script>
-// Hide submenus
-$('#body-row .collapse').collapse('hide'); 
+  <script>
+    // Hide submenus
+    $('#body-row .collapse').collapse('hide');
 
-// Collapse/Expand icon
-$('#collapse-icon').addClass('fa-angle-double-left'); 
-
-// Collapse click
-$('[data-toggle=sidebar-colapse]').click(function() {
-    SidebarCollapse();
-});
-
-function SidebarCollapse () {
-    $('.menu-collapsed').toggleClass('d-none');
-    $('.sidebar-submenu').toggleClass('d-none');
-    $('.submenu-icon').toggleClass('d-none');
-    $('#sidebar-container').toggleClass('sidebar-expanded sidebar-collapsed');
-    
-    // Treating d-flex/d-none on separators with title
-    var SeparatorTitle = $('.sidebar-separator-title');
-    if ( SeparatorTitle.hasClass('d-flex') ) {
-        SeparatorTitle.removeClass('d-flex');
-    } else {
-        SeparatorTitle.addClass('d-flex');
-    }
-    
     // Collapse/Expand icon
-    $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
-}
+    $('#collapse-icon').addClass('fa-angle-double-left');
 
-</script>
-<script type="text/javascript">
-   $(document).ready(function() {
-      {% if set %}$('#{{ set }}').collapse({
+    // Collapse click
+    $('[data-toggle=sidebar-colapse]').click(function () {
+      SidebarCollapse();
+    });
+
+    function SidebarCollapse() {
+      $('.menu-collapsed').toggleClass('d-none');
+      $('.sidebar-submenu').toggleClass('d-none');
+      $('.submenu-icon').toggleClass('d-none');
+      $('#sidebar-container').toggleClass('sidebar-expanded sidebar-collapsed');
+
+      // Treating d-flex/d-none on separators with title
+      var SeparatorTitle = $('.sidebar-separator-title');
+      if (SeparatorTitle.hasClass('d-flex')) {
+        SeparatorTitle.removeClass('d-flex');
+      } else {
+        SeparatorTitle.addClass('d-flex');
+      }
+
+      // Collapse/Expand icon
+      $('#collapse-icon').toggleClass('fa-angle-double-left fa-angle-double-right');
+    }
+
+  </script>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      {% if set %} $('#{{ set }}').collapse({
         toggle: true
-      });{% endif %}
-      {% if endpoint %}$('#{{ endpoint }}').collapse({
+      }); {% endif %}
+      {% if endpoint %} $('#{{ endpoint }}').collapse({
         toggle: true
-      });{% endif %}  
+      }); {% endif %}
       {% if action %}
       $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("menu-selected");
-      $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("bg-dark"); 
+      $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("bg-dark");
       {% endif %}
 
-      $("#accounting_menu").on("click",function() {
+      $("#accounting_menu").on("click", function () {
         $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
-        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark"); 
-        $('#payroll_au .collapse').collapse('hide'); 
-        $('#assets .collapse').collapse('hide'); 
-        $('#projects .collapse').collapse('hide'); 
-        $('#payroll_uk .collapse').collapse('hide'); 
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark");
+        $('#payroll_au .collapse').collapse('hide');
+        $('#assets .collapse').collapse('hide');
+        $('#projects .collapse').collapse('hide');
+        $('#payroll_uk .collapse').collapse('hide');
       });
 
-      $("#assets_menu").on("click",function() {
+      $("#assets_menu").on("click", function () {
         $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
-        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark"); 
-        $('#payroll_au .collapse').collapse('hide'); 
-        $('#accounting .collapse').collapse('hide'); 
-        $('#projects .collapse').collapse('hide'); 
-        $('#payroll_uk .collapse').collapse('hide'); 
-      });
-      
-      $("#projects_menu").on("click",function() {
-        $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
-        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark"); 
-        $('#accounting .collapse').collapse('hide'); 
-        $('#assets .collapse').collapse('hide'); 
-        $('#payroll_au .collapse').collapse('hide'); 
-        $('#payroll_uk .collapse').collapse('hide'); 
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark");
+        $('#payroll_au .collapse').collapse('hide');
+        $('#accounting .collapse').collapse('hide');
+        $('#projects .collapse').collapse('hide');
+        $('#payroll_uk .collapse').collapse('hide');
       });
 
-      $("#payroll_au_menu").on("click",function() {
+      $("#projects_menu").on("click", function () {
         $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
-        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark"); 
-        $('#accounting .collapse').collapse('hide'); 
-        $('#assets .collapse').collapse('hide'); 
-        $('#projects .collapse').collapse('hide'); 
-        $('#payroll_uk .collapse').collapse('hide'); 
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark");
+        $('#accounting .collapse').collapse('hide');
+        $('#assets .collapse').collapse('hide');
+        $('#payroll_au .collapse').collapse('hide');
+        $('#payroll_uk .collapse').collapse('hide');
       });
-      $("#payroll_uk_menu").on("click",function() {
+
+      $("#payroll_au_menu").on("click", function () {
         $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
-        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark"); 
-        $('#accounting .collapse').collapse('hide'); 
-        $('#assets .collapse').collapse('hide'); 
-        $('#projects .collapse').collapse('hide'); 
-        $('#payroll_au .collapse').collapse('hide'); 
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark");
+        $('#accounting .collapse').collapse('hide');
+        $('#assets .collapse').collapse('hide');
+        $('#projects .collapse').collapse('hide');
+        $('#payroll_uk .collapse').collapse('hide');
       });
-   });
+      $("#payroll_uk_menu").on("click", function () {
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark");
+        $('#accounting .collapse').collapse('hide');
+        $('#assets .collapse').collapse('hide');
+        $('#projects .collapse').collapse('hide');
+        $('#payroll_au .collapse').collapse('hide');
+      });
+    });
 
-  
-   
-</script>
 
 
-<style>
-#body-row {
-    margin-left:0;
-    margin-right:0;
-}
-#sidebar-container {
-    min-height: 100vh;   
-    background-color: #333;
-    padding: 0;
-}
-.row{
-    margin-top:56px;
-}
-/* Sidebar sizes when expanded and expanded */
-.sidebar-expanded {
-    width: 230px;
-}
-.sidebar-collapsed {
-    width: 60px;
-}
+  </script>
 
-/* Menu item*/
-#sidebar-container .list-group a {
-    height: 50px;
-    color: white;
-    background-color: #292b2c;
-}
 
-.menu-selected {
-    height: 50px;
-    color: white;
-    background-color: #535556!important;
-}
+  <style>
+    #body-row {
+      margin-left: 0;
+      margin-right: 0;
+    }
 
-/* Submenu item*/
-#sidebar-container .list-group .sidebar-submenu a {
-    height: 45px;
-    padding-left: 30px;
-}
-.sidebar-submenu {
-    font-size: 0.9rem;
-}
+    #sidebar-container {
+      min-height: 100vh;
+      background-color: #333;
+      padding: 0;
+    }
 
-/* Separators */
-.sidebar-separator-title {
-    background-color: #333;
-    height: 35px;
-}
-.sidebar-separator {
-    background-color: #333;
-    height: 25px;
-}
-.logo-separator {
-    background-color: #333;    
-    height: 60px;
-}
+    .row {
+      margin-top: 56px;
+    }
 
-/* Closed submenu icon */
-#sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
-  content: " \f0d7";
-  font-family: FontAwesome;
-  display: inline;
-  text-align: right;
-  padding-left: 10px;
-}
-/* Opened submenu icon */
-#sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
-  content: " \f0da";
-  font-family: FontAwesome;
-  display: inline;
-  text-align: right;
-  padding-left: 10px;
-}
-</style>
+    /* Sidebar sizes when expanded and expanded */
+    .sidebar-expanded {
+      width: 230px;
+    }
+
+    .sidebar-collapsed {
+      width: 60px;
+    }
+
+    /* Menu item*/
+    #sidebar-container .list-group a {
+      height: 50px;
+      color: white;
+      background-color: #292b2c;
+    }
+
+    .menu-selected {
+      height: 50px;
+      color: white;
+      background-color: #535556 !important;
+    }
+
+    /* Submenu item*/
+    #sidebar-container .list-group .sidebar-submenu a {
+      height: 45px;
+      padding-left: 30px;
+    }
+
+    .sidebar-submenu {
+      font-size: 0.9rem;
+    }
+
+    /* Separators */
+    .sidebar-separator-title {
+      background-color: #333;
+      height: 35px;
+    }
+
+    .sidebar-separator {
+      background-color: #333;
+      height: 25px;
+    }
+
+    .logo-separator {
+      background-color: #333;
+      height: 60px;
+    }
+
+    /* Closed submenu icon */
+    #sidebar-container .list-group .list-group-item[aria-expanded="false"] .submenu-icon::after {
+      content: " \f0d7";
+      font-family: FontAwesome;
+      display: inline;
+      text-align: right;
+      padding-left: 10px;
+    }
+
+    /* Opened submenu icon */
+    #sidebar-container .list-group .list-group-item[aria-expanded="true"] .submenu-icon::after {
+      content: " \f0da";
+      font-family: FontAwesome;
+      display: inline;
+      text-align: right;
+      padding-left: 10px;
+    }
+  </style>
 </head>
+
 <body>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
- <a class="nav-link" style="color:#FFFFFF" href="/">xero-python</a>
-  <!--
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="nav-link" style="color:#FFFFFF" href="/">xero-python</a>
+    <!--
   <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   -->
-  <div class="container">
-  <!--
+    <div class="container">
+      <!--
     <a class="navbar-brand" href="#">
     <span class="menu-collapsed">xero-python</span>
   </a>
   -->
-  <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('tenants') }}">Tenants</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('refresh_token') }}">Refresh Token </a>
-      </li>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('tenants') }}">Tenants</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('refresh_token') }}">Refresh Token </a>
+          </li>
 
-        <!-- notification -->
-        <!--
+          <!-- notification -->
+          <!--
         <li class="nav-item dropdown"> <a id="notifications" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link"><i class="fa fa-bell-o"></i><span class="badge bg-red">12</span></a>
           <ul aria-labelledby="notifications" class="dropdown-menu">
             <li><a rel="nofollow" href="#" class="dropdown-item">
@@ -234,8 +251,8 @@ function SidebarCollapse () {
           </ul>
         </li>
         -->
-        <!-- Messages -->
-        <!--
+          <!-- Messages -->
+          <!--
         <li class="nav-item dropdown"> <a id="messages" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link"><i class="fa fa-envelope-o"></i><span class="badge bg-orange">10</span></a>
           <ul aria-labelledby="notifications" class="dropdown-menu">
             <li><a rel="nofollow" href="#" class="dropdown-item d-flex">
@@ -257,929 +274,1104 @@ function SidebarCollapse () {
           </ul>
         </li>
         -->
-        <!-- profile -->
-        <li class="dropdown">
-          <a id="profile" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle nav-link">
-            <i class="fa fa-user-circle-o"></i></a>
-          <ul aria-labelledby="notifications" class="dropdown-menu dropdown-profile" id="userprof">
-            <!--li><a href="#"><i class="fa fa-user p-1 pb-2"></i> User Profile</a></li>
+          <!-- profile -->
+          <li class="dropdown">
+            <a id="profile" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false" class="dropdown-toggle nav-link">
+              <i class="fa fa-user-circle-o"></i></a>
+            <ul aria-labelledby="notifications" class="dropdown-menu dropdown-profile" id="userprof">
+              <!--li><a href="#"><i class="fa fa-user p-1 pb-2"></i> User Profile</a></li>
             <li class="dropdown-divider"></li-->
-            <li><a  href="{{ url_for('disconnect') }}"><i class="fa fa-cog p-1"></i> Disconnect</a></li>
-            <li class="dropdown-divider"></li>
-            <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out p-1 "></i> Logout</a>
-            </li>
-             
-      </ul>
+              <li><a href="{{ url_for('disconnect') }}"><i class="fa fa-cog p-1"></i> Disconnect</a></li>
+              <li class="dropdown-divider"></li>
+              <li><a href="{{ url_for('logout') }}"><i class="fa fa-sign-out p-1 "></i> Logout</a>
+              </li>
 
-      <!-- This menu is hidden in bigger devices with d-sm-none. 
+            </ul>
+
+            <!-- This menu is hidden in bigger devices with d-sm-none. 
            The sidebar isn't proper for smaller screens imo, so this dropdown menu can keep all the useful sidebar itens exclusively for smaller screens  -->
-      </li><li class="nav-item dropdown d-sm-block d-md-none">
-        <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Menu
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="#">Dashboard</a>
-            <a class="dropdown-item" href="#">Profile</a>
-            <a class="dropdown-item" href="#">Tasks</a>
-            <a class="dropdown-item" href="#">Etc ...</a>
-        </div>
-      </li><!-- Smaller devices menu END -->
-      <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link"><span class="fa fa-sign-out" aria-hidden="true"></span>Logout</a></li>
-    
-  </ul></div>
-  </div>
-</nav><!-- NavBar END -->
-
-<!-- Bootstrap row -->
-<div class="row" id="body-row">
-  <!-- Sidebar -->
-    <div id="sidebar-container" class="sidebar-expanded d-none d-md-block"><!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
-        <!-- Bootstrap List Group -->
-        <ul class="list-group">
-            <!-- Separator with title -->
-            <li class="list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
-                <small>ENDPOINTS</small>
-            </li>
-            <!-- /END Separator -->
-
-            <!--ACCOUNTING BUTTON -->
-            <a id="accounting_menu" href="#accounting" data-toggle="collapse"  aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-start align-items-center">
-                    <span class="fa fa-dashboard fa-fw mr-3"></span> 
-                    <span class="menu-collapsed">Accounting</span>
-                </div>
+          </li>
+          <li class="nav-item dropdown d-sm-block d-md-none">
+            <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Menu
             </a>
-            <!-- ACCOUNTING SUBMENU-->
-            <div id="accounting" class="collapse sidebar-submenu" data-parent="#sidebar-container">
-                <!-- ACCOUNTS -->
-                <a href="#account" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Accounts</span>
-                  </div>
-                </a>
-                <div id="account" class="collapse sidebar-submenu" data-parent="#accounting">
-                  <a id="accounting_account_read_all" href="{{ url_for('accounting_account_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                  <a id="accounting_account_read_one" href="{{ url_for('accounting_account_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (one)</span>
-                  </a>
-                  <a id="accounting_account_create" href="{{ url_for('accounting_account_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create</span>
-                  </a>
-                  <a id="accounting_account_create_attachment" href="{{ url_for('accounting_account_create_attachment') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create (attachment)</span>
-                  </a>
-                  <a id="accounting_account_update" href="{{ url_for('accounting_account_update') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Update</span>
-                  </a>
-                  <a id="accounting_account_archive" href="{{ url_for('accounting_account_archive') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Archive</span>
-                  </a>
-                  <a id="accounting_account_delete" href="{{ url_for('accounting_account_delete') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Delete</span>
-                  </a>
-                </div> 
-                <!-- BANK TRANSACTIONS -->
-                <a href="#bank_transaction" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Bank Transaction</span>
-                  </div>
-                </a>
-                <div id="bank_transaction" class="collapse sidebar-submenu" data-parent="#accounting">
-                  <a id="accounting_bank_transaction_read_all" href="{{ url_for('accounting_bank_transaction_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- CONTACTS -->
-                <a href="#contact" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Contacts</span>
-                  </div>
-                </a>
-                <div id="contact" class="collapse sidebar-submenu" data-parent="#accounting">
-                  <a id="accounting_contact_read_all" href="{{ url_for('accounting_contact_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                    <span class="fa fa-user fa-fw mr-3"></span>
-                    <span class="fa fa-user fa-fw mr-3"></span>
-                    <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                  <a id="accounting_contact_create" href="{{ url_for('accounting_contact_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create (one)</span>
-                  </a>
-                  <a id="accounting_contact_create_multiple" href="{{ url_for('accounting_contact_create_multiple') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create (multiple)</span>
-                  </a>
-                </div>
-
-                <!-- INVOICE -->
-                <a href="#invoice" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Invoices</span>
-                  </div>
-                </a>
-                <div id="invoice" class="collapse sidebar-submenu" data-parent="#accounting">
-                  <a id="accounting_invoice_read_all" href="{{ url_for('accounting_invoice_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                  <a id="accounting_invoice_create" href="{{ url_for('accounting_invoice_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create</span>
-                  </a>
-                </div>
-            
-
-            <!-- TAX RATES -->
-            <a href="#tax_rates" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-              <div class="d-flex w-100 justify-content-start align-items-center">
-                  <span class="fa fa-user fa-fw mr-3"></span>
-                  <span class="menu-collapsed">Tax Rates</span>
-              </div>
-            </a>
-            <div id="tax_rates" class="collapse sidebar-submenu" data-parent="#accounting">
-              <a id="accounting_tax_rates_read_all" href="{{ url_for('accounting_tax_rates_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                  <span class="fa fa-user fa-fw mr-3"></span>
-                  <span class="fa fa-user fa-fw mr-3"></span>
-                  <span class="menu-collapsed">Read (all)</span>
-              </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <a class="dropdown-item" href="#">Dashboard</a>
+              <a class="dropdown-item" href="#">Profile</a>
+              <a class="dropdown-item" href="#">Tasks</a>
+              <a class="dropdown-item" href="#">Etc ...</a>
             </div>
-          </div>          
+          </li><!-- Smaller devices menu END -->
+          <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link"><span class="fa fa-sign-out"
+                aria-hidden="true"></span>Logout</a></li>
 
-            <!-- ASSETS BUTTON -->
-            <a id="assets_menu" href="#assets" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-start align-items-center">
-                    <span class="fa fa-dashboard fa-fw mr-3"></span> 
-                    <span class="menu-collapsed">Assets</span>
-                </div>
-            </a>
-            <!-- ASSETS SUBMENU-->
-            <div id="assets" class="collapse sidebar-submenu" data-parent="#sidebar-container" >
-                <a href="#asset" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <!-- ASSETS -->
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Assets</span>
-                  </div>
-                </a>
-                <div id="asset" class="collapse sidebar-submenu" data-parent="#assets">
-                  <a id="assets_asset_read_all" href="{{ url_for('assets_asset_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                  <a id="assets_asset_read_one" href="{{ url_for('assets_asset_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (one)</span>
-                  </a>
-                  <a id="assets_asset_create" href="{{ url_for('assets_asset_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create</span>
-                  </a>
-              </div>
-
-              <a href="#assettype" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                <!-- ASSET TYPE -->
-                <div class="d-flex w-100 justify-content-start align-items-center">
-                    <span class="fa fa-user fa-fw mr-3"></span>
-                    <span class="menu-collapsed">Asset Types</span>
-                </div>
-                </a>
-                <div id="assettype" class="collapse sidebar-submenu" data-parent="#assets">
-                  <a id="assets_assettype_read_all" href="{{ url_for('assets_assettype_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                  <a id="assets_assettype_create" href="{{ url_for('assets_assettype_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create</span>
-                  </a>
-                </div>
-
-                <a href="#settings" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                <!-- ASSET SETTINGS-->
-                <div class="d-flex w-100 justify-content-start align-items-center">
-                    <span class="fa fa-user fa-fw mr-3"></span>
-                    <span class="menu-collapsed">Asset Settings</span>
-                </div>
-                </a>
-                <div id="settings" class="collapse sidebar-submenu" data-parent="#assets">
-                  <a id="assets_settings_read" href="{{ url_for('assets_settings_read') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div>
-            </div>
-
-            <!-- PROJECTS BUTTON -->
-            <a id="projects_menu" href="#projects" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-start align-items-center">
-                    <span class="fa fa-user fa-fw mr-3"></span>
-                    <span class="menu-collapsed">Projects</span>
-                </div>
-            </a>
-
-            <!-- PROJECTS SUBMENU -->
-            <div id="projects" data-parent="#sidebar-container" class="collapse sidebar-submenu">    
-                <a href="#project" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <!-- PROJECTS -->
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Projects</span>
-                  </div>
-                </a>
-                <div id="project" class="collapse sidebar-submenu" data-parent="#projects">
-                  <a id="projects_project_read_all" href="{{ url_for('projects_project_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                  <a id="projects_project_read_one" href="{{ url_for('projects_project_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (one)</span>
-                  </a>
-                  <a id="projects_project_create" href="{{ url_for('projects_project_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create</span>
-                  </a>
-                  <a id="projects_project_update" href="{{ url_for('projects_project_update') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Update</span>
-                  </a>
-                  <a id="projects_project_patch" href="{{ url_for('projects_project_patch') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Patch</span>
-                  </a>
-                </div>
-                
-                <a href="#projectuser" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <!-- PROJECT USERS -->
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Project Users</span>
-                  </div>
-                </a>
-                <div id="projectuser" class="collapse sidebar-submenu" data-parent="#projectuser">
-                  <a id="projects_projectuser_read_all" href="{{ url_for('projects_projectuser_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- TASKS -->
-                <a href="#task" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Tasks</span>
-                  </div>
-                </a>
-                <div id="task" class="collapse sidebar-submenu" data-parent="#task">
-                  <a id="projects_task_read_all" href="{{ url_for('projects_task_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                  <a id="projects_task_read_one" href="{{ url_for('projects_task_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (one)</span>
-                  </a>
-                </div>
-
-                <!-- TIME -->
-                <a href="#time" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Time</span>
-                  </div>
-                </a>
-                <div id="time" class="collapse sidebar-submenu" data-parent="#time">
-                  <a id="projects_time_read_all" href="{{ url_for('projects_time_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                  <a id="projects_time_read_one" href="{{ url_for('projects_time_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (one)</span>
-                  </a>
-                   <a id="projects_time_create" href="{{ url_for('projects_time_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create</span>
-                  </a>
-                </div>
-            </div> 
-
-            <!-- PAYROLL AU BUTTON -->
-            <a id="payroll_au_menu" href="#payroll_au" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-start align-items-center">
-                    <span class="fa fa-user fa-fw mr-3"></span>
-                    <span class="menu-collapsed">Payroll AU</span>
-                </div>
-            </a>
-            <!-- PAYROLL AU SUBMENU -->
-            <div id="payroll_au" class="collapse sidebar-submenu" data-parent="#sidebar-container">
-                <a href="#employee" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Employee</span>
-                  </div>
-                </a>
-                <div id="employee" class="collapse sidebar-submenu" data-parent="#payroll_au">
-                  <a id="payroll_au_employee_read_all" href="{{ url_for('payroll_au_employee_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                  <a id="payroll_au_employee_read_one" href="{{ url_for('payroll_au_employee_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                    <span class="fa fa-user fa-fw mr-3"></span>
-                    <span class="fa fa-user fa-fw mr-3"></span>
-                    <span class="menu-collapsed">Read (one)</span>
-                  </a>
-                  <a id="payroll_au_employee_create" href="{{ url_for('payroll_au_employee_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create</span>
-                  </a>
-                </div> 
-                <a href="#leave_application" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Leave Applications</span>
-                  </div>
-                </a>
-                <div id="leave_application" class="collapse sidebar-submenu" data-parent="#payroll_au">
-                  <a id="payroll_au_leave_application_read_all" href="{{ url_for('payroll_au_leave_application_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div> 
-                <a href="#pay_item" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Pay Items</span>
-                  </div>
-                </a>
-                <div id="pay_item" class="collapse sidebar-submenu" data-parent="#payroll_au">
-                  <a id="payroll_au_pay_item_read_all" href="{{ url_for('payroll_au_pay_item_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div> 
-                <a href="#payroll_calendar" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Payroll Calendar</span>
-                  </div>
-                </a>
-                <div id="payroll_calendar" class="collapse sidebar-submenu" data-parent="#payroll_au">
-                  <a id="payroll_au_payroll_calendar_read_all" href="{{ url_for('payroll_au_payroll_calendar_read_all') }}"  class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div> 
-                <a href="#pay_run" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Pay Runs</span>
-                  </div>
-                </a>
-                <div id="pay_run" class="collapse sidebar-submenu" data-parent="#payroll_au">
-                  <a id="payroll_au_pay_run_read_all" href="{{ url_for('payroll_au_pay_run_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div> 
-                <a href="#pay_slip" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Pay Slips</span>
-                  </div>
-                </a>
-                <div id="pay_slip" class="collapse sidebar-submenu" data-parent="#payroll_au">
-                  <a id="payroll_au_pay_slip_read_all" href="{{ url_for('payroll_au_pay_slip_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div> 
-                <a href="#settings" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Settings</span>
-                  </div>
-                </a>
-                <div id="settings" class="collapse sidebar-submenu" data-parent="#payroll_au">
-                  <a id="payroll_au_settings_read_all" href="{{ url_for('payroll_au_settings_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div> 
-                <a href="#superfund" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">SuperFunds</span>
-                  </div>
-                </a>
-                <div id="superfund" class="collapse sidebar-submenu" data-parent="#payroll_au">
-                  <a id="payroll_au_superfund_read_all" href="{{ url_for('payroll_au_superfund_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div> 
-                <a href="#superfund_product" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">SuperFund Products</span>
-                  </div>
-                </a>
-                <div id="superfund_product" class="collapse sidebar-submenu" data-parent="#payroll_au">
-                  <a id="payroll_au_superfund_product_read_all" href="{{ url_for('payroll_au_superfund_product_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div> 
-                <a href="#timesheet" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Timesheets</span>
-                  </div>
-                </a>
-                <div id="timesheet" class="collapse sidebar-submenu" data-parent="#payroll_au">
-                  <a id="payroll_au_timesheet_read_all" href="{{ url_for('payroll_au_timesheet_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div> 
-            </div> 
-
-            <!-- PAYROLL UK BUTTON -->
-            <a id="payroll_uk_menu" href="#payroll_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                <div class="d-flex w-100 justify-content-start align-items-center">
-                    <span class="fa fa-user fa-fw mr-3"></span>
-                    <span class="menu-collapsed">Payroll UK</span>
-                </div>
-            </a>
-            <!-- PAYROLL UK SUBMENU -->
-            <div id="payroll_uk" class="collapse sidebar-submenu" data-parent="#sidebar-container">
-                <!-- EMPLOYEE UK -->
-                <a href="#employee_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Employee</span>
-                  </div>
-                </a>
-                <div id="employee_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_uk_read_all" href="{{ url_for('payroll_uk_employee_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYMENT UK -->
-                <a href="#employment_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Employment</span>
-                  </div>
-                </a>
-                <div id="employment_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employment_uk_create" href="{{ url_for('payroll_uk_employment_uk_create') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Create</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYEE TAX UK -->
-                <a href="#employee_tax_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Employee Tax</span>
-                  </div>
-                </a>
-                <div id="employee_tax_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_tax_uk_read_all" href="{{ url_for('payroll_uk_employee_tax_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYEE OPENING BALANCE UK -->
-                <a href="#employee_opening_balance_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Emp Opening Balance</span>
-                  </div>
-                </a>
-                <div id="employee_opening_balance_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_opening_balance_uk_read_all" href="{{ url_for('payroll_uk_employee_opening_balance_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYEE LEAVE UK -->
-                <a href="#employee_leaves_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Employees Leave</span>
-                  </div>
-                </a>
-                <div id="employee_leaves_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_leaves_uk_read_all" href="{{ url_for('payroll_uk_employee_leaves_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYEE LEAVE BALANCES UK -->
-                <a href="#employee_leave_balances_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Emp Leave Balances</span>
-                  </div>
-                </a>
-                <div id="employee_leave_balances_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_leave_balances_uk_read_all" href="{{ url_for('payroll_uk_employee_leave_balances_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYEE STATUTORY LEAVE BALANCES UK -->
-                <a href="#employee_statutory_leave_balance_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Emp Statutory Leave Bal</span>
-                  </div>
-                </a>
-                <div id="employee_statutory_leave_balance_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_statutory_leave_balance_uk_read_all" href="{{ url_for('payroll_uk_employee_statutory_leave_balance_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYEE STATUTORY LEAVE SUMMARY UK -->
-                <a href="#employee_statutory_leave_summary_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Emp Statutory Leave Su</span>
-                  </div>
-                </a>
-                <div id="employee_statutory_leave_summary_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_statutory_leave_summary_uk_read_all" href="{{ url_for('payroll_uk_employee_statutory_leave_summary_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYEE STATUTORY SICK LEAVE UK -->
-                <a href="#employee_statutory_sick_leave_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Emp Statutory Sick Le</span>
-                  </div>
-                </a>
-                <div id="employee_statutory_sick_leave_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_statutory_sick_leave_uk_read_all" href="{{ url_for('payroll_uk_employee_statutory_sick_leave_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYEE LEAVE PERIODS UK -->
-                <a href="#employee_leave_periods_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Emp Leave Periods</span>
-                  </div>
-                </a>
-                <div id="employee_leave_periods_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_leave_periods_uk_read_all" href="{{ url_for('payroll_uk_employee_leave_periods_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYEE LEAVE TYPES UK -->
-                <a href="#employee_leave_types_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Emp Leave Types</span>
-                  </div>
-                </a>
-                <div id="employee_leave_types_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_leave_types_uk_read_all" href="{{ url_for('payroll_uk_employee_leave_types_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYEE PAY TEMPLATE UK -->
-                <a href="#employee_pay_template_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Emp Pay Template</span>
-                  </div>
-                </a>
-                <div id="employee_pay_template_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employee_pay_template_uk_read_all" href="{{ url_for('payroll_uk_employee_pay_template_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EMPLOYER PENSIONS UK -->
-                <a href="#employer_pensions_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Employer Pensions</span>
-                  </div>
-                </a>
-                <div id="employer_pensions_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_employer_pensions_uk_read_all" href="{{ url_for('payroll_uk_employer_pensions_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- DEDUCTIONS UK -->
-                <a href="#deductions_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Deductions</span>
-                  </div>
-                </a>
-                <div id="deductions_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_deductions_uk_read_all" href="{{ url_for('payroll_uk_deductions_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EARNINGS ORDERS UK -->
-                <a href="#earnings_orders_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Earnings Orders</span>
-                  </div>
-                </a>
-                <div id="earnings_orders_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_earnings_orders_uk_read_all" href="{{ url_for('payroll_uk_earnings_orders_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- EARNINGS RATES UK -->
-                <a href="#earnings_rates_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Earnings Rates</span>
-                  </div>
-                </a>
-                <div id="earnings_rates_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_earnings_rates_uk_read_all" href="{{ url_for('payroll_uk_earnings_rates_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- LEAVE TYPES UK -->
-                <a href="#leave_types_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Leave Types</span>
-                  </div>
-                </a>
-                <div id="leave_types_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_leave_types_uk_read_all" href="{{ url_for('payroll_uk_leave_types_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- REIMBURSEMENTS UK -->
-                <a href="#reimbursements_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Reimbursements</span>
-                  </div>
-                </a>
-                <div id="reimbursements_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_reimbursements_uk_read_all" href="{{ url_for('payroll_uk_reimbursements_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- TIMESHEETS UK -->
-                <a href="#timesheets_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Timesheets</span>
-                  </div>
-                </a>
-                <div id="timesheets_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_timesheets_uk_read_all" href="{{ url_for('payroll_uk_timesheets_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- PAYMENT_METHODS UK -->
-                <a href="#payment_methods_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Payment Methods</span>
-                  </div>
-                </a>
-                <div id="payment_methods_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_payment_methods_uk_read_all" href="{{ url_for('payroll_uk_payment_methods_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- PAY RUN CALENDAR UK -->
-                <a href="#pay_run_calendars_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Payrun Calendars</span>
-                  </div>
-                </a>
-                <div id="pay_run_calendars_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_pay_run_calendars_uk_read_all" href="{{ url_for('payroll_uk_pay_run_calendars_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- SALARY AND WAGE UK -->
-                <a href="#salary_and_wage_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Salary and Wage</span>
-                  </div>
-                </a>
-                <div id="salary_and_wage_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_salary_and_wage_uk_read_all" href="{{ url_for('payroll_uk_salary_and_wage_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- PAY RUNS UK -->
-                <a href="#pay_runs_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Pay runs</span>
-                  </div>
-                </a>
-                <div id="pay_runs_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_pay_runs_uk_read_all" href="{{ url_for('payroll_uk_pay_runs_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- PAY SLIPS UK -->
-                <a href="#pay_slips_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Pay slips</span>
-                  </div>
-                </a>
-                <div id="pay_slips_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_pay_slips_uk_read_all" href="{{ url_for('payroll_uk_pay_slips_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- SETTINGS UK -->
-                <a href="#settings_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Settings</span>
-                  </div>
-                </a>
-                <div id="settings_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_settings_uk_read_all" href="{{ url_for('payroll_uk_settings_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-                <!-- TRACKING_CATEGORIES UK -->
-                <a href="#tracking_categories_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
-                  <div class="d-flex w-100 justify-content-start align-items-center">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Tracking Categories</span>
-                  </div>
-                </a>
-                <div id="tracking_categories_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
-                  <a id="payroll_uk_tracking_categories_uk_read_all" href="{{ url_for('payroll_uk_tracking_categories_uk_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="fa fa-user fa-fw mr-3"></span>
-                      <span class="menu-collapsed">Read (all)</span>
-                  </a>
-                </div>
-
-
-            </div>
         </ul>
+      </div>
+    </div>
+  </nav><!-- NavBar END -->
+
+  <!-- Bootstrap row -->
+  <div class="row" id="body-row">
+    <!-- Sidebar -->
+    <div id="sidebar-container" class="sidebar-expanded d-none d-md-block">
+      <!-- d-* hiddens the Sidebar in smaller devices. Its itens can be kept on the Navbar 'Menu' -->
+      <!-- Bootstrap List Group -->
+      <ul class="list-group">
+        <!-- Separator with title -->
+        <li class="list-group-item sidebar-separator-title text-muted d-flex align-items-center menu-collapsed">
+          <small>ENDPOINTS</small>
+        </li>
+        <!-- /END Separator -->
+
+        <!--ACCOUNTING BUTTON -->
+        <a id="accounting_menu" href="#accounting" data-toggle="collapse" aria-expanded="false"
+          class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+            <span class="fa fa-dashboard fa-fw mr-3"></span>
+            <span class="menu-collapsed">Accounting</span>
+          </div>
+        </a>
+        <!-- ACCOUNTING SUBMENU-->
+        <div id="accounting" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+          <!-- ACCOUNTS -->
+          <a href="#account" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Accounts</span>
+            </div>
+          </a>
+          <div id="account" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_account_read_all" href="{{ url_for('accounting_account_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="accounting_account_read_one" href="{{ url_for('accounting_account_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+            <a id="accounting_account_create" href="{{ url_for('accounting_account_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
+            <a id="accounting_account_create_attachment" href="{{ url_for('accounting_account_create_attachment') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create (attachment)</span>
+            </a>
+            <a id="accounting_account_update" href="{{ url_for('accounting_account_update') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Update</span>
+            </a>
+            <a id="accounting_account_archive" href="{{ url_for('accounting_account_archive') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Archive</span>
+            </a>
+            <a id="accounting_account_delete" href="{{ url_for('accounting_account_delete') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Delete</span>
+            </a>
+          </div>
+          <!-- BANK TRANSACTIONS -->
+          <a href="#bank_transaction" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Bank Transactions</span>
+            </div>
+          </a>
+          <div id="bank_transaction" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_bank_transaction_read_all" href="{{ url_for('accounting_bank_transaction_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="accounting_bank_transaction_read_one" href="{{ url_for('accounting_bank_transaction_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+            <a id="accounting_bank_transaction_create" href="{{ url_for('accounting_bank_transaction_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
+          </div>
+
+          <!-- CONTACTS -->
+          <a href="#contact" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Contacts</span>
+            </div>
+          </a>
+          <div id="contact" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_contact_read_all" href="{{ url_for('accounting_contact_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="accounting_contact_create" href="{{ url_for('accounting_contact_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create (one)</span>
+            </a>
+            <a id="accounting_contact_create_multiple" href="{{ url_for('accounting_contact_create_multiple') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create (multiple)</span>
+            </a>
+          </div>
+
+          <!-- INVOICE -->
+          <a href="#invoice" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Invoices</span>
+            </div>
+          </a>
+          <div id="invoice" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_invoice_read_all" href="{{ url_for('accounting_invoice_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="accounting_invoice_create" href="{{ url_for('accounting_invoice_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
+          </div>
+
+
+          <!-- TAX RATES -->
+          <a href="#tax_rate" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Tax Rates</span>
+            </div>
+          </a>
+          <div id="tax_rate" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_tax_rate_read_all" href="{{ url_for('accounting_tax_rate_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- USERS -->
+          <a href="#user" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Users</span>
+            </div>
+          </a>
+          <div id="user" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_user_read_all" href="{{ url_for('accounting_user_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- ASSETS BUTTON -->
+        <a id="assets_menu" href="#assets" data-toggle="collapse" aria-expanded="false"
+          class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+            <span class="fa fa-dashboard fa-fw mr-3"></span>
+            <span class="menu-collapsed">Assets</span>
+          </div>
+        </a>
+        <!-- ASSETS SUBMENU-->
+        <div id="assets" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+          <a href="#asset" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- ASSETS -->
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Assets</span>
+            </div>
+          </a>
+          <div id="asset" class="collapse sidebar-submenu" data-parent="#assets">
+            <a id="assets_asset_read_all" href="{{ url_for('assets_asset_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="assets_asset_read_one" href="{{ url_for('assets_asset_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+            <a id="assets_asset_create" href="{{ url_for('assets_asset_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
+          </div>
+
+          <a href="#assettype" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- ASSET TYPE -->
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Asset Types</span>
+            </div>
+          </a>
+          <div id="assettype" class="collapse sidebar-submenu" data-parent="#assets">
+            <a id="assets_assettype_read_all" href="{{ url_for('assets_assettype_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="assets_assettype_create" href="{{ url_for('assets_assettype_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
+          </div>
+
+          <a href="#settings" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- ASSET SETTINGS-->
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Asset Settings</span>
+            </div>
+          </a>
+          <div id="settings" class="collapse sidebar-submenu" data-parent="#assets">
+            <a id="assets_settings_read" href="{{ url_for('assets_settings_read') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PROJECTS BUTTON -->
+        <a id="projects_menu" href="#projects" data-toggle="collapse" aria-expanded="false"
+          class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+            <span class="fa fa-user fa-fw mr-3"></span>
+            <span class="menu-collapsed">Projects</span>
+          </div>
+        </a>
+
+        <!-- PROJECTS SUBMENU -->
+        <div id="projects" data-parent="#sidebar-container" class="collapse sidebar-submenu">
+          <a href="#project" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- PROJECTS -->
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Projects</span>
+            </div>
+          </a>
+          <div id="project" class="collapse sidebar-submenu" data-parent="#projects">
+            <a id="projects_project_read_all" href="{{ url_for('projects_project_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="projects_project_read_one" href="{{ url_for('projects_project_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+            <a id="projects_project_create" href="{{ url_for('projects_project_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
+            <a id="projects_project_update" href="{{ url_for('projects_project_update') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Update</span>
+            </a>
+            <a id="projects_project_patch" href="{{ url_for('projects_project_patch') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Patch</span>
+            </a>
+          </div>
+
+          <a href="#projectuser" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <!-- PROJECT USERS -->
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Project Users</span>
+            </div>
+          </a>
+          <div id="projectuser" class="collapse sidebar-submenu" data-parent="#projectuser">
+            <a id="projects_projectuser_read_all" href="{{ url_for('projects_projectuser_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- TASKS -->
+          <a href="#task" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Tasks</span>
+            </div>
+          </a>
+          <div id="task" class="collapse sidebar-submenu" data-parent="#task">
+            <a id="projects_task_read_all" href="{{ url_for('projects_task_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="projects_task_read_one" href="{{ url_for('projects_task_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+          </div>
+
+          <!-- TIME -->
+          <a href="#time" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Time</span>
+            </div>
+          </a>
+          <div id="time" class="collapse sidebar-submenu" data-parent="#time">
+            <a id="projects_time_read_all" href="{{ url_for('projects_time_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="projects_time_read_one" href="{{ url_for('projects_time_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+            <a id="projects_time_create" href="{{ url_for('projects_time_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PAYROLL AU BUTTON -->
+        <a id="payroll_au_menu" href="#payroll_au" data-toggle="collapse" aria-expanded="false"
+          class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+            <span class="fa fa-user fa-fw mr-3"></span>
+            <span class="menu-collapsed">Payroll AU</span>
+          </div>
+        </a>
+        <!-- PAYROLL AU SUBMENU -->
+        <div id="payroll_au" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+          <a href="#employee" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Employee</span>
+            </div>
+          </a>
+          <div id="employee" class="collapse sidebar-submenu" data-parent="#payroll_au">
+            <a id="payroll_au_employee_read_all" href="{{ url_for('payroll_au_employee_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="payroll_au_employee_read_one" href="{{ url_for('payroll_au_employee_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+            <a id="payroll_au_employee_create" href="{{ url_for('payroll_au_employee_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
+          </div>
+          <a href="#leave_application" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Leave Applications</span>
+            </div>
+          </a>
+          <div id="leave_application" class="collapse sidebar-submenu" data-parent="#payroll_au">
+            <a id="payroll_au_leave_application_read_all" href="{{ url_for('payroll_au_leave_application_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+          <a href="#pay_item" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Pay Items</span>
+            </div>
+          </a>
+          <div id="pay_item" class="collapse sidebar-submenu" data-parent="#payroll_au">
+            <a id="payroll_au_pay_item_read_all" href="{{ url_for('payroll_au_pay_item_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+          <a href="#payroll_calendar" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Payroll Calendar</span>
+            </div>
+          </a>
+          <div id="payroll_calendar" class="collapse sidebar-submenu" data-parent="#payroll_au">
+            <a id="payroll_au_payroll_calendar_read_all" href="{{ url_for('payroll_au_payroll_calendar_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+          <a href="#pay_run" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Pay Runs</span>
+            </div>
+          </a>
+          <div id="pay_run" class="collapse sidebar-submenu" data-parent="#payroll_au">
+            <a id="payroll_au_pay_run_read_all" href="{{ url_for('payroll_au_pay_run_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+          <a href="#pay_slip" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Pay Slips</span>
+            </div>
+          </a>
+          <div id="pay_slip" class="collapse sidebar-submenu" data-parent="#payroll_au">
+            <a id="payroll_au_pay_slip_read_all" href="{{ url_for('payroll_au_pay_slip_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+          <a href="#settings" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Settings</span>
+            </div>
+          </a>
+          <div id="settings" class="collapse sidebar-submenu" data-parent="#payroll_au">
+            <a id="payroll_au_settings_read_all" href="{{ url_for('payroll_au_settings_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+          <a href="#superfund" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">SuperFunds</span>
+            </div>
+          </a>
+          <div id="superfund" class="collapse sidebar-submenu" data-parent="#payroll_au">
+            <a id="payroll_au_superfund_read_all" href="{{ url_for('payroll_au_superfund_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+          <a href="#superfund_product" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">SuperFund Products</span>
+            </div>
+          </a>
+          <div id="superfund_product" class="collapse sidebar-submenu" data-parent="#payroll_au">
+            <a id="payroll_au_superfund_product_read_all" href="{{ url_for('payroll_au_superfund_product_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+          <a href="#timesheet" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Timesheets</span>
+            </div>
+          </a>
+          <div id="timesheet" class="collapse sidebar-submenu" data-parent="#payroll_au">
+            <a id="payroll_au_timesheet_read_all" href="{{ url_for('payroll_au_timesheet_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- PAYROLL UK BUTTON -->
+        <a id="payroll_uk_menu" href="#payroll_uk" data-toggle="collapse" aria-expanded="false"
+          class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+            <span class="fa fa-user fa-fw mr-3"></span>
+            <span class="menu-collapsed">Payroll UK</span>
+          </div>
+        </a>
+        <!-- PAYROLL UK SUBMENU -->
+        <div id="payroll_uk" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+          <!-- EMPLOYEE UK -->
+          <a href="#employee_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Employee</span>
+            </div>
+          </a>
+          <div id="employee_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_uk_read_all" href="{{ url_for('payroll_uk_employee_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYMENT UK -->
+          <a href="#employment_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Employment</span>
+            </div>
+          </a>
+          <div id="employment_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employment_uk_create" href="{{ url_for('payroll_uk_employment_uk_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEE TAX UK -->
+          <a href="#employee_tax_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Employee Tax</span>
+            </div>
+          </a>
+          <div id="employee_tax_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_tax_uk_read_all" href="{{ url_for('payroll_uk_employee_tax_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEE OPENING BALANCE UK -->
+          <a href="#employee_opening_balance_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Emp Opening Balance</span>
+            </div>
+          </a>
+          <div id="employee_opening_balance_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_opening_balance_uk_read_all"
+              href="{{ url_for('payroll_uk_employee_opening_balance_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEE LEAVE UK -->
+          <a href="#employee_leaves_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Employees Leave</span>
+            </div>
+          </a>
+          <div id="employee_leaves_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_leaves_uk_read_all"
+              href="{{ url_for('payroll_uk_employee_leaves_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEE LEAVE BALANCES UK -->
+          <a href="#employee_leave_balances_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Emp Leave Balances</span>
+            </div>
+          </a>
+          <div id="employee_leave_balances_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_leave_balances_uk_read_all"
+              href="{{ url_for('payroll_uk_employee_leave_balances_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEE STATUTORY LEAVE BALANCES UK -->
+          <a href="#employee_statutory_leave_balance_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Emp Statutory Leave Bal</span>
+            </div>
+          </a>
+          <div id="employee_statutory_leave_balance_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_statutory_leave_balance_uk_read_all"
+              href="{{ url_for('payroll_uk_employee_statutory_leave_balance_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEE STATUTORY LEAVE SUMMARY UK -->
+          <a href="#employee_statutory_leave_summary_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Emp Statutory Leave Su</span>
+            </div>
+          </a>
+          <div id="employee_statutory_leave_summary_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_statutory_leave_summary_uk_read_all"
+              href="{{ url_for('payroll_uk_employee_statutory_leave_summary_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEE STATUTORY SICK LEAVE UK -->
+          <a href="#employee_statutory_sick_leave_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Emp Statutory Sick Le</span>
+            </div>
+          </a>
+          <div id="employee_statutory_sick_leave_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_statutory_sick_leave_uk_read_all"
+              href="{{ url_for('payroll_uk_employee_statutory_sick_leave_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEE LEAVE PERIODS UK -->
+          <a href="#employee_leave_periods_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Emp Leave Periods</span>
+            </div>
+          </a>
+          <div id="employee_leave_periods_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_leave_periods_uk_read_all"
+              href="{{ url_for('payroll_uk_employee_leave_periods_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEE LEAVE TYPES UK -->
+          <a href="#employee_leave_types_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Emp Leave Types</span>
+            </div>
+          </a>
+          <div id="employee_leave_types_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_leave_types_uk_read_all"
+              href="{{ url_for('payroll_uk_employee_leave_types_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEE PAY TEMPLATE UK -->
+          <a href="#employee_pay_template_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Emp Pay Template</span>
+            </div>
+          </a>
+          <div id="employee_pay_template_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employee_pay_template_uk_read_all"
+              href="{{ url_for('payroll_uk_employee_pay_template_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYER PENSIONS UK -->
+          <a href="#employer_pensions_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Employer Pensions</span>
+            </div>
+          </a>
+          <div id="employer_pensions_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_employer_pensions_uk_read_all"
+              href="{{ url_for('payroll_uk_employer_pensions_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- DEDUCTIONS UK -->
+          <a href="#deductions_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Deductions</span>
+            </div>
+          </a>
+          <div id="deductions_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_deductions_uk_read_all" href="{{ url_for('payroll_uk_deductions_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EARNINGS ORDERS UK -->
+          <a href="#earnings_orders_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Earnings Orders</span>
+            </div>
+          </a>
+          <div id="earnings_orders_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_earnings_orders_uk_read_all"
+              href="{{ url_for('payroll_uk_earnings_orders_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EARNINGS RATES UK -->
+          <a href="#earnings_rates_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Earnings Rates</span>
+            </div>
+          </a>
+          <div id="earnings_rates_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_earnings_rates_uk_read_all" href="{{ url_for('payroll_uk_earnings_rates_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- LEAVE TYPES UK -->
+          <a href="#leave_types_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Leave Types</span>
+            </div>
+          </a>
+          <div id="leave_types_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_leave_types_uk_read_all" href="{{ url_for('payroll_uk_leave_types_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- REIMBURSEMENTS UK -->
+          <a href="#reimbursements_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Reimbursements</span>
+            </div>
+          </a>
+          <div id="reimbursements_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_reimbursements_uk_read_all" href="{{ url_for('payroll_uk_reimbursements_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- TIMESHEETS UK -->
+          <a href="#timesheets_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Timesheets</span>
+            </div>
+          </a>
+          <div id="timesheets_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_timesheets_uk_read_all" href="{{ url_for('payroll_uk_timesheets_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- PAYMENT_METHODS UK -->
+          <a href="#payment_methods_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Payment Methods</span>
+            </div>
+          </a>
+          <div id="payment_methods_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_payment_methods_uk_read_all"
+              href="{{ url_for('payroll_uk_payment_methods_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- PAY RUN CALENDAR UK -->
+          <a href="#pay_run_calendars_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Payrun Calendars</span>
+            </div>
+          </a>
+          <div id="pay_run_calendars_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_pay_run_calendars_uk_read_all"
+              href="{{ url_for('payroll_uk_pay_run_calendars_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- SALARY AND WAGE UK -->
+          <a href="#salary_and_wage_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Salary and Wage</span>
+            </div>
+          </a>
+          <div id="salary_and_wage_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_salary_and_wage_uk_read_all"
+              href="{{ url_for('payroll_uk_salary_and_wage_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- PAY RUNS UK -->
+          <a href="#pay_runs_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Pay runs</span>
+            </div>
+          </a>
+          <div id="pay_runs_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_pay_runs_uk_read_all" href="{{ url_for('payroll_uk_pay_runs_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- PAY SLIPS UK -->
+          <a href="#pay_slips_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Pay slips</span>
+            </div>
+          </a>
+          <div id="pay_slips_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_pay_slips_uk_read_all" href="{{ url_for('payroll_uk_pay_slips_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- SETTINGS UK -->
+          <a href="#settings_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Settings</span>
+            </div>
+          </a>
+          <div id="settings_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_settings_uk_read_all" href="{{ url_for('payroll_uk_settings_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- TRACKING_CATEGORIES UK -->
+          <a href="#tracking_categories_uk" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Tracking Categories</span>
+            </div>
+          </a>
+          <div id="tracking_categories_uk" class="collapse sidebar-submenu" data-parent="#payroll_uk">
+            <a id="payroll_uk_tracking_categories_uk_read_all"
+              href="{{ url_for('payroll_uk_tracking_categories_uk_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+
+        </div>
+      </ul>
     </div>
 
 
     <!-- MAIN -->
     <div class="col">
-       &nbsp;
-        <div class="alert alert-success" role="alert">
-          You'll be able to connect to a Xero Organisation and <strong>make real API calls</strong> - we recommend you connect to the Demo company.
-          <br>
-          <a href="https://developer.xero.com/documentation/getting-started/development-accounts" target="_blank">Learn about using the Demo Company for development</a>
-        </div>
-        <div class="card">
-          {% block content %}
-        </div>
-    </div><!-- Main Col END -->    
-</div><!-- body-row END -->
+      &nbsp;
+      <div class="alert alert-success" role="alert">
+        You'll be able to connect to a Xero Organisation and <strong>make real API calls</strong> - we recommend you
+        connect to the Demo company.
+        <br>
+        <a href="https://developer.xero.com/documentation/getting-started/development-accounts" target="_blank">Learn
+          about using the Demo Company for development</a>
+      </div>
+      <div class="card">
+        {% block content %}
+      </div>
+    </div><!-- Main Col END -->
+  </div><!-- body-row END -->
 
 
-{% endblock %}
-<!--<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>-->
+  {% endblock %}
+  <!--<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>-->
 </body>
+
 </html>

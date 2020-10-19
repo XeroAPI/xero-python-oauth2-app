@@ -240,11 +240,10 @@ def accounting_account_get_attachments():
         description="My Foobar",
         type=AccountType.EXPENSE,
     )
-    accounts = Accounts(accounts=[account])
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account
-        )   # type: Accounts
+        )
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
         msg = "Error: " + exception.reason
@@ -335,7 +334,7 @@ def accounting_account_update():
         description="My Foobar",
         type=AccountType.EXPENSE,
     )
-    accounts = Accounts(accounts=[account])
+
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account
@@ -352,10 +351,12 @@ def accounting_account_update():
     account = Account(
         description="Update me",
     )
+
+    accounts = Accounts(accounts=[account])
     
     try:
         updated_accounts = accounting_api.update_account(
-            xero_tenant_id, account_id, account
+            xero_tenant_id, account_id, accounts
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
@@ -385,7 +386,7 @@ def accounting_account_create_attachment():
         description="My Foobar",
         type=AccountType.EXPENSE,
     )
-    accounts = Accounts(accounts=[account])
+    
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account
@@ -438,7 +439,7 @@ def accounting_account_archive():
         description="My Foobar",
         type=AccountType.EXPENSE,
     )
-    accounts = Accounts(accounts=[account])
+    
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account
@@ -455,10 +456,12 @@ def accounting_account_archive():
     accountUp = Account(
         status="ARCHIVED",
     )
+
+    accounts = Accounts(accounts=[accountUp])
     
     try:
         archived_accounts = accounting_api.update_account(
-            xero_tenant_id, account_id, accountUp
+            xero_tenant_id, account_id, accounts
         )  
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
@@ -488,7 +491,6 @@ def accounting_account_delete():
         description="My Foobar",
         type=AccountType.EXPENSE,
     )
-    accounts = Accounts(accounts=[account])
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account

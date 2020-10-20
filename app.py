@@ -240,14 +240,15 @@ def accounting_account_get_attachments():
         description="My Foobar",
         type=AccountType.EXPENSE,
     )
+
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account
         )
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
     else:
         try: 
             include_online = True
@@ -273,8 +274,8 @@ def accounting_account_get_attachments():
             xero_tenant_id, account_id
         )
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
     else:
         output = "Account attachments read {} total".format(
             len(read_account_attachments.attachments)
@@ -307,7 +308,7 @@ def accounting_account_create():
         )
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
+        output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
         output = "Account created with name {} .".format(
@@ -338,11 +339,11 @@ def accounting_account_update():
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account
-        )   # type: Accounts
+        )
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
     #[ACCOUNTS:UPDATE]
     xero_tenant_id = get_xero_tenant_id()
@@ -357,7 +358,7 @@ def accounting_account_update():
     try:
         updated_accounts = accounting_api.update_account(
             xero_tenant_id, account_id, accounts
-        )
+        ) # type: Accounts
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
@@ -390,11 +391,11 @@ def accounting_account_create_attachment():
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account
-        )   # type: Accounts
+        )
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
     # CREATE ACCOUNT ATTACHMENT
     #[ACCOUNTS:CREATE_ATTACHMENT]
@@ -443,11 +444,11 @@ def accounting_account_archive():
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account
-        )   # type: Accounts
+        )
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
     #[ACCOUNTS:ARCHIVE]
     xero_tenant_id = get_xero_tenant_id()
@@ -462,7 +463,7 @@ def accounting_account_archive():
     try:
         archived_accounts = accounting_api.update_account(
             xero_tenant_id, account_id, accounts
-        )  
+        ) # type: Accounts
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
@@ -491,14 +492,15 @@ def accounting_account_delete():
         description="My Foobar",
         type=AccountType.EXPENSE,
     )
+
     try:
         created_accounts = accounting_api.create_account(
             xero_tenant_id, account
-        )   # type: Accounts
+        )
         account_id = getvalue(created_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
     #[ACCOUNTS:DELETE]
     xero_tenant_id = get_xero_tenant_id()
@@ -664,7 +666,7 @@ def accounting_bank_transaction_create():
             xero_tenant_id, bank_transactions=bank_transactions
         )
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
+        output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
         output = "Bank transaction created with id {} .".format(
@@ -778,6 +780,7 @@ def accounting_contact_create():
         email_address="john.smith@24locks.com",
         include_in_emails=True,
     )
+
     contact = Contact(
         name="FooBar" + get_random_num(),
         first_name="Foo",
@@ -785,7 +788,9 @@ def accounting_contact_create():
         email_address="ben.bowden@24locks.com",
         contact_persons=[contact_person],
     )
+
     contacts = Contacts(contacts=[contact])
+
     try:
         created_contact = accounting_api.create_contacts(
             xero_tenant_id, contacts=contacts
@@ -817,7 +822,6 @@ def accounting_contact_read_all():
         read_contacts = accounting_api.get_contacts(
             xero_tenant_id
         )
-        
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
@@ -931,8 +935,8 @@ def accounting_invoice_create():
         ) 
         contact_id = getvalue(read_contacts, "contacts.0.contact_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
     
     # READ ACCOUNT
     where = "Type==\"SALES\"&&Status==\"ACTIVE\"";
@@ -942,8 +946,8 @@ def accounting_invoice_create():
         ) 
         account_id = getvalue(read_accounts, "accounts.0.account_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
     
     #[INVOICES:CREATE]
     xero_tenant_id = get_xero_tenant_id()
@@ -1231,8 +1235,8 @@ def assets_asset_read_one():
         ) 
         asset_id = getvalue(read_assets, "items.0.asset_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
     
     #[ASSETS:READ_ONE]
     xero_tenant_id = get_xero_tenant_id()
@@ -1444,8 +1448,8 @@ def projects_project_read_one():
         )  # type: Projects
         project_id = getvalue(read_projects, "items.0.project_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
         
     #[PROJECTS:READ_ONE]
     xero_tenant_id = get_xero_tenant_id()
@@ -1486,8 +1490,8 @@ def projects_project_create():
         )  # type: Contacts
         contact_id = getvalue(read_contacts, "contacts.0.contact_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
     
     #[PROJECTS:CREATE]
     xero_tenant_id = get_xero_tenant_id()
@@ -1531,8 +1535,8 @@ def projects_project_update():
         )  # type: Projects
         project_id = getvalue(read_projects, "items.0.project_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
         
     #[PROJECTS:UPDATE]
     xero_tenant_id = get_xero_tenant_id()
@@ -1572,8 +1576,8 @@ def projects_project_patch():
         )  # type: Projects
         project_id = getvalue(read_projects, "items.0.project_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
         
     #[PROJECTS:PATCH]
     xero_tenant_id = get_xero_tenant_id()
@@ -1641,8 +1645,8 @@ def projects_task_read_all():
         )  # type: Projects
         project_id = getvalue(read_projects, "items.0.project_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
     #[TASK:READ_ALL]
     xero_tenant_id = get_xero_tenant_id()
@@ -1766,8 +1770,8 @@ def projects_time_read_one():
         )  # type: Projects
         project_id = getvalue(read_projects, "items.0.project_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
     try:
         read_time_entries = project_api.get_time_entries(
             xero_tenant_id, project_id=project_id
@@ -1814,8 +1818,8 @@ def projects_time_create():
         )  # type: Projects
         project_id = getvalue(read_projects, "items.0.project_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
     # READ PROJECT USERS
     try:
@@ -1824,8 +1828,8 @@ def projects_time_create():
         )  # type: ProjectUsers
         project_user_id = getvalue(read_project_users, "items.0.user_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
     # READ TASKS
     try:
@@ -1834,8 +1838,8 @@ def projects_time_create():
         )  # type: Tasks
         task_id = getvalue(read_tasks, "items.0.task_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
     #[TIME:CREATE]
     xero_tenant_id = get_xero_tenant_id()
@@ -2105,8 +2109,8 @@ def payroll_au_pay_slip_read_all():
         )
         pay_run_id = getvalue(read_pay_runs, "pay_runs.0.pay_run_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
         
     # READ PAY RUN DETAILS to get payslip_id
     try:
@@ -2115,8 +2119,8 @@ def payroll_au_pay_slip_read_all():
         )
         payslip_id = getvalue(read_pay_run, "pay_runs.0.payslips.0.payslip_id", "");
     except AccountingBadRequestException as exception:
-        msg = "Error: " + exception.reason
-        code = jsonify(exception.error_data)
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
     # READ PAYSLIP DETAILS    
     try:

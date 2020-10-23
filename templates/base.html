@@ -393,6 +393,7 @@
               <span class="menu-collapsed">Delete</span>
             </a>
           </div>
+
           <!-- BANK TRANSACTIONS -->
           <a href="#bank_transaction" data-toggle="collapse" aria-expanded="false"
             class="list-group-item list-group-item-action flex-column align-items-start">
@@ -419,6 +420,57 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Create</span>
+            </a>
+          </div>
+
+          <!-- BANK TRANSFERS -->
+          <a href="#bank_transfer" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Bank Transfers</span>
+            </div>
+          </a>
+          <div id="bank_transfer" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_bank_transfer_read_all" href="{{ url_for('accounting_bank_transfer_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- BATCH PAYMENTS -->
+          <a href="#batch_payment" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Batch Payments</span>
+            </div>
+          </a>
+          <div id="batch_payment" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_batch_payment_read_all" href="{{ url_for('accounting_batch_payment_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- BRANDING THEMES -->
+          <a href="#branding_theme" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Branding Themes</span>
+            </div>
+          </a>
+          <div id="branding_theme" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_branding_theme_read_all" href="{{ url_for('accounting_branding_theme_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
 
@@ -451,7 +503,92 @@
             </a>
           </div>
 
-          <!-- INVOICE -->
+          <!-- CONTACT GROUPS -->
+          <a href="#contact_group" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Contact Groups</span>
+            </div>
+          </a>
+          <div id="contact_group" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_contact_group_read_all" href="{{ url_for('accounting_contact_group_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- CREDIT NOTES -->
+          <a href="#credit_note" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Credit Notes</span>
+            </div>
+          </a>
+          <div id="credit_note" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_credit_note_read_all" href="{{ url_for('accounting_credit_note_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- CURRENCIES -->
+          <a href="#currency" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Currencies</span>
+            </div>
+          </a>
+          <div id="currency" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_currency_read_all" href="{{ url_for('accounting_currency_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EMPLOYEES -->
+          <a href="#employee" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Employees</span>
+            </div>
+          </a>
+          <div id="employee" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_employee_read_all" href="{{ url_for('accounting_employee_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- EXPENSE CLAIMS -->
+          <a href="#expense_claim" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Expense Claims</span>
+            </div>
+          </a>
+          <div id="expense_claim" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_expense_claim_read_all" href="{{ url_for('accounting_expense_claim_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- INVOICES -->
           <a href="#invoice" data-toggle="collapse" aria-expanded="false"
             class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -474,6 +611,39 @@
             </a>
           </div>
 
+          <!-- INVOICE REMINDERS -->
+          <a href="#invoice_reminder" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Invoice Reminders</span>
+            </div>
+          </a>
+          <div id="invoice_reminder" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_invoice_reminder_read_all" href="{{ url_for('accounting_invoice_reminder_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+
+          <!-- ITEMS -->
+          <a href="#item" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Items</span>
+            </div>
+          </a>
+          <div id="item" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_item_read_all" href="{{ url_for('accounting_item_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
 
           <!-- TAX RATES -->
           <a href="#tax_rate" data-toggle="collapse" aria-expanded="false"

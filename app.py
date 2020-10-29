@@ -682,7 +682,7 @@ def accounting_bank_transaction_create():
 # BANK TRANSFERS TODO
 # getBankTransfers x
 # createBankTransfer
-# getBankTransfer
+# getBankTransfer x
 # getBankTransferAttachments
 # getBankTransferAttachmentById
 # getBankTransferAttachmentByFileName
@@ -716,6 +716,44 @@ def accounting_bank_transfer_read_all():
     
     return render_template(
         "output.html", title="Bank Transfers", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transfer", action="read_all"
+    )
+
+@app.route("/accounting_bank_transfer_read_one")
+@xero_token_required
+def accounting_bank_transfer_read_one():
+    code = get_code_snippet("BANKTRANSFERS","READ_ONE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_bank_transfers = accounting_api.get_bank_transfers(
+            xero_tenant_id
+        ) 
+        bank_transfer_id = getvalue(read_bank_transfers, "bank_transfers.0.bank_transfer_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[BANKTRANSFERS:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_one_bank_transfer = accounting_api.get_bank_transfer(
+            xero_tenant_id, bank_transfer_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Bank transfer read with id {} ".format(
+            getvalue(read_bank_transfers, "bank_transfers.0.bank_transfer_id", "")
+        )
+        json = serialize_model(read_one_bank_transfer)
+    #[/BANKTRANSFERS:READ_ONE]
+
+    return render_template(
+        "output.html", title="Bank Transfers", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transfer", action="read_one"
     )
 
 # BATCH PAYMENTS TODO
@@ -753,7 +791,7 @@ def accounting_batch_payment_read_all():
 
 # BRANDING THEMES TODO
 # getBrandingThemes x
-# getBrandingTheme
+# getBrandingTheme x
 # getBrandingThemePaymentServices
 # createBrandingThemePaymentServices
 
@@ -784,6 +822,44 @@ def accounting_branding_theme_read_all():
         "output.html", title="Branding Themes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="branding_theme", action="read_all"
     )
 
+@app.route("/accounting_branding_theme_read_one")
+@xero_token_required
+def accounting_branding_theme_read_one():
+    code = get_code_snippet("BRANDINGTHEMES","READ_ONE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_branding_themes = accounting_api.get_branding_themes(
+            xero_tenant_id
+        ) 
+        branding_theme_id = getvalue(read_branding_themes, "branding_themes.0.branding_theme_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[BRANDINGTHEMES:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_one_branding_theme = accounting_api.get_branding_theme(
+            xero_tenant_id, branding_theme_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Branding theme read with id {} ".format(
+            getvalue(read_branding_themes, "branding_themes.0.branding_theme_id", "")
+        )
+        json = serialize_model(read_one_branding_theme)
+    #[/BRANDINGTHEMES:READ_ONE]
+
+    return render_template(
+        "output.html", title="Branding Themes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="branding_theme", action="read_one"
+    )
+
 # BUDGETS TODO
 # *** coming April 2021 ***
 
@@ -792,7 +868,7 @@ def accounting_branding_theme_read_all():
 # createContacts x
 # updateOrCreateContacts
 # getContactByContactNumber
-# getContact
+# getContact x
 # updateContact
 # getContactAttachments
 # getContactAttachmentById
@@ -917,10 +993,48 @@ def accounting_contact_read_all():
         "output.html", title="Contacts", code=code, json=json, output=output, len = 0, set="accounting", endpoint="contact", action="read_all"
     )
 
+@app.route("/accounting_contact_read_one")
+@xero_token_required
+def accounting_contact_read_one():
+    code = get_code_snippet("CONTACTS","READ_ONE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_contacts = accounting_api.get_contacts(
+            xero_tenant_id
+        ) 
+        contact_id = getvalue(read_contacts, "contacts.0.contact_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[CONTACTS:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_one_contact = accounting_api.get_contact(
+            xero_tenant_id, contact_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Contact read with id {} ".format(
+            getvalue(read_contacts, "contacts.0.contact_id", "")
+        )
+        json = serialize_model(read_one_contact)
+    #[/CONTACTS:READ_ONE]
+
+    return render_template(
+        "output.html", title="Contacts", code=code, json=json, output=output, len = 0, set="accounting", endpoint="contact", action="read_one"
+    )
+
 # CONTACT GROUPS TODO
 # getContactGroups x
 # createContactGroup
-# getContactGroup
+# getContactGroup x
 # updateContactGroup
 # createContactGroupContacts
 # deleteContactGroupContacts
@@ -953,11 +1067,49 @@ def accounting_contact_group_read_all():
         "output.html", title="Contact Groups", code=code, json=json, output=output, len = 0, set="accounting", endpoint="contact_group", action="read_all"
     )
 
+@app.route("/accounting_contact_group_read_one")
+@xero_token_required
+def accounting_contact_group_read_one():
+    code = get_code_snippet("CONTACTGROUPS","READ_ONE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_contact_groups = accounting_api.get_contact_groups(
+            xero_tenant_id
+        ) 
+        contact_group_id = getvalue(read_contact_groups, "contact_groups.0.contact_group_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[CONTACTGROUPS:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_one_contact_group = accounting_api.get_contact_group(
+            xero_tenant_id, contact_group_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Contact group read with id {} ".format(
+            getvalue(read_contact_groups, "contact_groups.0.contact_group_id", "")
+        )
+        json = serialize_model(read_one_contact_group)
+    #[/CONTACTGROUPS:READ_ONE]
+
+    return render_template(
+        "output.html", title="Contact Groups", code=code, json=json, output=output, len = 0, set="accounting", endpoint="contact_group", action="read_one"
+    )
+
 # CREDIT NOTES TODO
 # getCreditNotes x
 # createCreditNotes
 # updateOrCreateCreditNotes
-# getCreditNote
+# getCreditNote x
 # updateCreditNote
 # getCreditNoteAttachments
 # getCreditNoteAttachmentById
@@ -996,6 +1148,44 @@ def accounting_credit_note_read_all():
         "output.html", title="Credit Notes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="credit_note", action="read_all"
     )
 
+@app.route("/accounting_credit_note_read_one")
+@xero_token_required
+def accounting_credit_note_read_one():
+    code = get_code_snippet("CREDITNOTES","READ_ONE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_credit_notes = accounting_api.get_credit_notes(
+            xero_tenant_id
+        ) 
+        credit_note_id = getvalue(read_credit_notes, "credit_notes.0.credit_note_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[CREDITNOTES:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_one_credit_note = accounting_api.get_credit_note(
+            xero_tenant_id, credit_note_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Credit note read with id {} ".format(
+            getvalue(read_credit_notes, "credit_notes.0.credit_note_id", "")
+        )
+        json = serialize_model(read_one_credit_note)
+    #[/CREDITNOTES:READ_ONE]
+
+    return render_template(
+        "output.html", title="Credit Notes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="credit_note", action="read_one"
+    )
+
 # CURRENCIES TODO
 # getCurrencies x
 # createCurrency
@@ -1031,7 +1221,7 @@ def accounting_currency_read_all():
 # getEmployees x
 # createEmployees
 # updateOrCreateEmployees
-# getEmployee
+# getEmployee x
 
 @app.route("/accounting_employee_read_all")
 @xero_token_required
@@ -1060,10 +1250,48 @@ def accounting_employee_read_all():
         "output.html", title="Employees", code=code, json=json, output=output, len = 0, set="accounting", endpoint="employee", action="read_all"
     )
 
+@app.route("/accounting_employee_read_one")
+@xero_token_required
+def accounting_employee_read_one():
+    code = get_code_snippet("EMPLOYEES","READ_ONE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_employees = accounting_api.get_employees(
+            xero_tenant_id
+        ) 
+        employee_id = getvalue(read_employees, "employees.0.employee_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EMPLOYEES:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_one_employee = accounting_api.get_employee(
+            xero_tenant_id, employee_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee read with id {} ".format(
+            getvalue(read_employees, "employees.0.employee_id", "")
+        )
+        json = serialize_model(read_one_employee)
+    #[/EMPLOYEES:READ_ONE]
+
+    return render_template(
+        "output.html", title="Employees", code=code, json=json, output=output, len = 0, set="accounting", endpoint="employee", action="read_one"
+    )
+
 # EXPENSE CLAIMS (DEPRECATED) TODO
 # getExpenseClaims x
 # createExpenseClaims
-# getExpenseClaim
+# getExpenseClaim x
 # updateExpenseClaim
 # getExpenseClaimHistory
 # createExpenseClaimHistory
@@ -1095,11 +1323,49 @@ def accounting_expense_claim_read_all():
         "output.html", title="Expense Claims", code=code, json=json, output=output, len = 0, set="accounting", endpoint="expense_claim", action="read_all"
     )
 
+@app.route("/accounting_expense_claim_read_one")
+@xero_token_required
+def accounting_expense_claim_read_one():
+    code = get_code_snippet("EXPENSECLAIMS","READ_ONE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_expense_claims = accounting_api.get_expense_claims(
+            xero_tenant_id
+        ) 
+        expense_claim_id = getvalue(read_expense_claims, "expense_claims.0.expense_claim_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[EXPENSECLAIMS:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_one_expense_claim = accounting_api.get_expense_claim(
+            xero_tenant_id, expense_claim_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Expense claim read with id {} ".format(
+            getvalue(read_expense_claims, "expense_claims.0.expense_claim_id", "")
+        )
+        json = serialize_model(read_one_expense_claim)
+    #[/EXPENSECLAIMS:READ_ONE]
+
+    return render_template(
+        "output.html", title="Expense Claims", code=code, json=json, output=output, len = 0, set="accounting", endpoint="expense_claim", action="read_one"
+    )
+
 # INVOICES TODO
 # getInvoices x
 # createInvoices x
 # updateOrCreateInvoices
-# getInvoice
+# getInvoice x
 # updateInvoice
 # getInvoiceAsPdf
 # getInvoiceAttachments
@@ -1135,6 +1401,44 @@ def accounting_invoice_read_all():
 
     return render_template(
         "output.html", title="Invoices",code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="read_all"
+    )
+
+@app.route("/accounting_invoice_read_one")
+@xero_token_required
+def accounting_invoice_read_one():
+    code = get_code_snippet("INVOICES","READ_ONE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_invoices = accounting_api.get_invoices(
+            xero_tenant_id
+        ) 
+        invoice_id = getvalue(read_invoices, "invoices.0.invoice_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[INVOICES:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_one_invoice = accounting_api.get_invoice(
+            xero_tenant_id, invoice_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Invoice read with id {} ".format(
+            getvalue(read_invoices, "invoices.0.invoice_id", "")
+        )
+        json = serialize_model(read_one_invoice)
+    #[/INVOICES:READ_ONE]
+
+    return render_template(
+        "output.html", title="Invoices", code=code, json=json, output=output, len = 0, set="accounting", endpoint="invoice", action="read_one"
     )
     
 @app.route("/accounting_invoice_create")
@@ -1239,10 +1543,10 @@ def accounting_invoice_reminder_read_all():
     )
 
 # ITEMS TODO
-# getItems
+# getItems x
 # createItems
 # updateOrCreateItems
-# getItem
+# getItem x
 # updateItem
 # deleteItem
 # getItemHistory
@@ -1273,6 +1577,44 @@ def accounting_item_read_all():
     
     return render_template(
         "output.html", title="Items", code=code, json=json, output=output, len = 0, set="accounting", endpoint="item", action="read_all"
+    )
+
+@app.route("/accounting_item_read_one")
+@xero_token_required
+def accounting_item_read_one():
+    code = get_code_snippet("ITEMS","READ_ONE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_items = accounting_api.get_items(
+            xero_tenant_id
+        ) 
+        item_id = getvalue(read_items, "items.0.item_id", "");
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[ITEMS:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_one_item = accounting_api.get_item(
+            xero_tenant_id, item_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Item read with id {} ".format(
+            getvalue(read_items, "items.0.item_id", "")
+        )
+        json = serialize_model(read_one_item)
+    #[/ITEMS:READ_ONE]
+
+    return render_template(
+        "output.html", title="Items", code=code, json=json, output=output, len = 0, set="accounting", endpoint="item", action="read_one"
     )
 
 # JOURNALS TODO

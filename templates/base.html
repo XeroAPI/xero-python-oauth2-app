@@ -759,6 +759,39 @@ function SidebarCollapse () {
                 </div> 
             </div> 
 
+            <!-- PAYROLL NZ BUTTON -->
+            <a id="payroll_nz_menu" href="#payroll_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+              <div class="d-flex w-100 justify-content-start align-items-center">
+                  <span class="fa fa-user fa-fw mr-3"></span>
+                  <span class="menu-collapsed">Payroll NZ</span>
+              </div>
+            </a>
+
+            <!-- PAYROLL NZ SUBMENU -->
+            <div id="payroll_nz" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+              <!-- EMPLOYEE NZ -->
+              <a href="#employee_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-start align-items-center">
+                    <span class="fa fa-user fa-fw mr-3"></span>
+                    <span class="menu-collapsed">Employee</span>
+                </div>
+              </a>
+              <div id="employee_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
+                <a id="payroll_nz_employee_nz_read_all" href="{{ url_for('payroll_nz_employee_nz_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                    <span class="fa fa-user fa-fw mr-3"></span>
+                    <span class="fa fa-user fa-fw mr-3"></span>
+                    <span class="menu-collapsed">Read (all)</span>
+                </a>
+                <a id="payroll_nz_employee_nz_read_one" href="{{ url_for('payroll_nz_employee_nz_read_one') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                    <span class="fa fa-user fa-fw mr-3"></span>
+                    <span class="fa fa-user fa-fw mr-3"></span>
+                    <span class="menu-collapsed">Read (one)</span>
+                </a>
+              </div>
+
+            </div>
+
+
             <!-- PAYROLL UK BUTTON -->
             <a id="payroll_uk_menu" href="#payroll_uk" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
                 <div class="d-flex w-100 justify-content-start align-items-center">

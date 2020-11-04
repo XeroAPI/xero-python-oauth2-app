@@ -20,6 +20,7 @@ from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryPar
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
 from xero_python.payrolluk import PayrollUkApi, Employees, Employee, Address, Employment
+from xero_python.payrollnz import PayrollNzApi, Employees, Employee, Address, Employment
 from xero_python.api_client import ApiClient, serialize
 from xero_python.api_client.configuration import Configuration
 from xero_python.api_client.oauth2 import OAuth2Token
@@ -1776,6 +1777,70 @@ def payroll_au_timesheet_read_all():
     return render_template(
         "output.html", title="Timesheets", code=code, output=output, json=json, len = 0, set="payroll_au", endpoint="timesheet", action="read_all"
     )
+
+
+@app.route("/payroll_nz_employee_nz_read_all")
+@xero_token_required
+def payroll_nz_employee_nz_read_all():
+    code = get_code_snippet("EMPLOYEE_NZ","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrollnz_api = PayrollNzApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    #[EMPLOYEE_NZ:READ_ALL]
+    try:
+        read_employees = payrollnz_api.get_employees(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employees read all - found: {}".format(read_employees.pagination.item_count)
+        json = serialize_model(read_employees)
+    #[/EMPLOYEE_NZ:READ_ALL]
+
+    return render_template(
+        "output.html", title="Employees", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="employee_nz", action="read_all"
+    )
+    
+
+@app.route("/payroll_nz_employee_nz_read_one")
+@xero_token_required
+def payroll_nz_employee_nz_read_one():
+    code = get_code_snippet("EMPLOYEE_NZ","READ_ONE")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrollnz_api = PayrollNzApi(api_client)
+    accounting_api = AccountingApi(api_client)
+
+    read_employees = payrollnz_api.get_employees(
+        xero_tenant_id
+    )
+    employee_id = getvalue(read_employees, "employees.0.employee_id", "");
+
+    #[EMPLOYEE_NZ:READ_ONE]
+    try:
+        read_employee = payrollnz_api.get_employee(
+            xero_tenant_id, employee_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employees read one - first name: {}".format(
+            getvalue(read_employee, "employee.first_name", "")
+        )
+        json = serialize_model(read_employee)
+    #[/EMPLOYEE_NZ:READ_ONE]
+
+    return render_template(
+        "output.html", title="Employees", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="employee_nz", action="read_one"
+    )
+    v
+
+
 
 @app.route("/payroll_uk_employee_uk_read_all")
 @xero_token_required

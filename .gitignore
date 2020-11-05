@@ -134,3 +134,6 @@ cache/*
 
 # API keys
 config.py
+
+# IDE specific
+.vscode

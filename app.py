@@ -20,7 +20,7 @@ from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryPar
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
 from xero_python.payrolluk import PayrollUkApi, Employees, Employee, Address, Employment
-from xero_python.payrollnz import PayrollNzApi, Employees, Employee, Address, Employment
+from xero_python.payrollnz import PayrollNzApi, Employees, Employee, Address, Employment, EmployeeLeaveSetup
 from xero_python.api_client import ApiClient, serialize
 from xero_python.api_client.configuration import Configuration
 from xero_python.api_client.oauth2 import OAuth2Token
@@ -2995,6 +2995,63 @@ def payroll_nz_employee_tax_nz_read():
         "output.html", title="Employee Tax", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="employee_tax_nz", action="read"
     )
 
+@app.route("/payroll_nz_employee_leave_setup_nz_read")
+@xero_token_required
+def payroll_nz_employee_leave_setup_nz_read():
+    code = get_code_snippet("EMPLOYEE_LEAVE_SETUP_NZ","CREATE")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrollnz_api = PayrollNzApi(api_client)
+
+    address = Address(
+        address_line1 = "101 Green St",
+        city = "Milton Keynes",
+        post_code = "4351",
+        country_name = "United Kingdom"
+    )
+
+    employee = Employee(
+        first_name = "Jack",
+        last_name = "Jones",
+        date_of_birth = dateutil.parser.parse("2000-03-01T00:00:00Z"),
+        email = "jack@jones" + get_random_num() + ".com",
+        address = address,
+        gender = "M",
+        phone_number = "415-555-1212",
+        start_date = dateutil.parser.parse("2020-10-01T00:00:00Z")
+    )
+
+    created_employee = payrollnz_api.create_employee(
+        xero_tenant_id, employee
+    )
+    employee_id = getvalue(created_employee, "employee.employee_id", "");
+
+    #[EMPLOYEE_LEAVE_SETUP_NZ:CREATE]
+    employee_leave_setup = EmployeeLeaveSetup(
+        annual_leave_opening_balance = 100.0,
+        sick_leave_opening_balance = 10.0,
+        sick_leave_hours_to_accrue_annually = 20.0,
+        holiday_pay_opening_balance = 10.0
+    )
+
+    try:
+        read_employee_leave = payrollnz_api.create_employee_leave_setup(
+            xero_tenant_id, employee_id, employee_leave_setup
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "SuperFund Product read all and first ABN {}".format(
+            getvalue(read_employee_leave, "leave.0.description", "")
+        )
+        json = serialize_model(read_employee_leave)
+    #[/EMPLOYEE_LEAVE_SETUP_NZ:CREATE]
+
+    return render_template(
+        "output.html", title="Employee Leave", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="employee_leave_nz", action="read"
+    )
+
 @app.route("/payroll_nz_employee_leave_nz_read")
 @xero_token_required
 def payroll_nz_employee_leave_nz_read():
@@ -3081,10 +3138,10 @@ def payroll_nz_employee_payment_method_nz_read():
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
-        # output = "Employee Payment Methods - first account name: {}".format(
-        #     getvalue(read_employee_payment_method, "payment_method.bank_accounts.0.account_name", "")
-        # )
-        output="boo"
+        output = "Employee Payment Methods - first account name: {}".format(
+            getvalue(read_employee_payment_method, "payment_method.bank_accounts.0.account_name", "")
+        )
+
         json = serialize_model(read_employee_payment_method)
     #[/EMPLOYEE_PAYMENT_METHOD_NZ:READ]
 
@@ -3142,7 +3199,7 @@ def payroll_nz_employee_salary_and_wages_nz_read_all():
         json = jsonify(exception.error_data)
     else:
         output = "Employee Salary & Wages - total: {}".format(
-            getvalue(read_all_employee_salary_and_wages, "leave_balances.0.name", "")
+            getvalue(read_all_employee_salary_and_wages, "pagination.item_count", "")
         )
         json = serialize_model(read_all_employee_salary_and_wages)
     #[/EMPLOYEE_SALARY_AND_WAGES_NZ:READ_ALL]
@@ -3416,6 +3473,173 @@ def payroll_nz_statutory_deductions_nz_read_all():
 
     return render_template(
         "output.html", title="Statutory Deductions", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="statutory_deductions_nz", action="read_all"
+    )
+
+@app.route("/payroll_nz_superannuation_nz_read_all")
+@xero_token_required
+def payroll_nz_superannuation_nz_read_all():
+    code = get_code_snippet("SUPERANNUATION_NZ","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrollnz_api = PayrollNzApi(api_client)
+
+    #[SUPERANNUATION_NZ:READ_ALL]
+    try:
+        read_all_superannuations = payrollnz_api.get_superannuations(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Superannuation - total: {}".format(
+            getvalue(read_all_superannuations, "pagination.item_count", "")
+        )
+        json = serialize_model(read_all_superannuations)
+    #[/SUPERANNUATION_NZ:READ_ALL]
+
+    return render_template(
+        "output.html", title="Superannuation", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="superannuations_nz", action="read_all"
+    )
+
+@app.route("/payroll_nz_pay_runs_nz_read_all")
+@xero_token_required
+def payroll_nz_pay_runs_nz_read_all():
+    code = get_code_snippet("PAY_RUNS_NZ","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrollnz_api = PayrollNzApi(api_client)
+
+    #[PAY_RUNS_NZ:READ_ALL]
+    try:
+        read_all_pay_runs = payrollnz_api.get_pay_runs(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Payruns - total: {}".format(
+            getvalue(read_all_pay_runs, "pagination.item_count", "")
+        )
+        json = serialize_model(read_all_pay_runs)
+    #[/PAY_RUNS_NZ:READ_ALL]
+
+    return render_template(
+        "output.html", title="Payruns", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="pay_runs_nz", action="read_all"
+    )
+
+@app.route("/payroll_nz_pay_slips_nz_read_all")
+@xero_token_required
+def payroll_nz_pay_slips_nz_read_all():
+    code = get_code_snippet("PAY_SLIPS_NZ","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrollnz_api = PayrollNzApi(api_client)
+
+    read_all_pay_runs = payrollnz_api.get_pay_runs(
+        xero_tenant_id
+    )
+    pay_run_id = getvalue(read_all_pay_runs, "pay_runs.0.pay_run_id", "");
+
+    #[PAY_SLIPS_NZ:READ_ALL]
+    try:
+        read_all_pay_slips = payrollnz_api.get_pay_slips(
+            xero_tenant_id, pay_run_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Payslips - total: {}".format(
+            getvalue(read_all_pay_slips, "pagination.item_count", "")
+        )
+        json = serialize_model(read_all_pay_slips)
+    #[/PAY_SLIPS_NZ:READ_ALL]
+
+    return render_template(
+        "output.html", title="Payslips", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="pay_slips_nz", action="read_all"
+    )
+
+@app.route("/payroll_nz_timesheets_nz_read_all")
+@xero_token_required
+def payroll_nz_timesheets_nz_read_all():
+    code = get_code_snippet("TIMESHEETS_NZ","READ_ALL")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrollnz_api = PayrollNzApi(api_client)
+
+    #[TIMESHEETS_NZ:READ_ALL]
+    try:
+        read_all_timesheets = payrollnz_api.get_timesheets(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Timesheets - total: {}".format(
+            getvalue(read_all_timesheets, "pagination.item_count", "")
+        )
+        json = serialize_model(read_all_timesheets)
+    #[/TIMESHEETS_NZ:READ_ALL]
+
+    return render_template(
+        "output.html", title="Timesheets", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="timesheets_nz", action="read_all"
+    )
+
+@app.route("/payroll_nz_settings_nz_read_all")
+@xero_token_required
+def payroll_nz_settings_nz_read_all():
+    code = get_code_snippet("SETTINGS_NZ","READ")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrollnz_api = PayrollNzApi(api_client)
+
+    #[SETTINGS_NZ:READ]
+    try:
+        read_settings = payrollnz_api.get_settings(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Settings - first name: {}".format(
+            getvalue(read_settings, "settings.accounts.0.name", "")
+        )
+        json = serialize_model(read_settings)
+    #[/SETTINGS_NZ:READ]
+
+    return render_template(
+        "output.html", title="Settings", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="settings_nz", action="read"
+    )
+
+@app.route("/payroll_nz_tracking_categories_nz_read_all")
+@xero_token_required
+def payroll_nz_tracking_categories_nz_read_all():
+    code = get_code_snippet("TRACKING_CATEGORIES_NZ","READ")
+    
+    xero_tenant_id = get_xero_tenant_id()
+    payrollnz_api = PayrollNzApi(api_client)
+
+    #[TRACKING_CATEGORIES_NZ:READ]
+    try:
+        read_tracking_categories = payrollnz_api.get_tracking_categories(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "tracking categories - employee group id: {}".format(
+            getvalue(read_tracking_categories, "tracking_categories.employee_groups_tracking_category_id", "")
+        )
+        json = serialize_model(read_tracking_categories)
+    #[/TRACKING_CATEGORIES_NZ:READ]
+
+    return render_template(
+        "output.html", title="Tracking Categories", code=code, output=output, json=json, len = 0, set="payroll_nz", endpoint="tracking_categories_nz", action="read"
     )
 
 # UK PAYROLL ------------------------------>

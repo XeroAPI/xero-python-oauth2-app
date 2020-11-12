@@ -1138,7 +1138,6 @@
                 <span class="menu-collapsed">Read (one)</span>
             </a>
           </div>
-
           <!-- EMPLOYMENT NZ -->
           <a href="#employment_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1153,7 +1152,6 @@
                 <span class="menu-collapsed">Create</span>
             </a>
           </div>
-
            <!-- EMPLOYEE TAX NZ -->
            <a href="#employee_tax_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1168,11 +1166,21 @@
                 <span class="menu-collapsed">Read</span>
             </a>
           </div>
-
-
-          <!-- TODO: EMPLOYEE LEAVE SETUP NZ -->
-
-
+          <!-- EMPLOYEE LEAVE SETUP NZ -->
+          <!-- TODO: throwing validation error -->
+          <a href="#employee_leave_setup_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Emp Leave Setup</span>
+            </div>
+          </a>
+          <div id="employee_leave_setup_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
+            <a id="payroll_nz_employee_leave_setup_nz_read" href="{{ url_for('payroll_nz_employee_leave_setup_nz_read') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Create</span>
+            </a>
+          </div>
           <!-- EMPLOYEE LEAVE NZ -->
           <a href="#employee_leave_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1187,7 +1195,6 @@
                 <span class="menu-collapsed">Read</span>
             </a>
           </div>
-
           <!-- EMPLOYEE LEAVE BALANCES NZ -->
           <a href="#employee_leave_balances_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1202,24 +1209,20 @@
                 <span class="menu-collapsed">Read</span>
             </a>
           </div>
-
-
           <!-- PAYMENT METHODS NZ -->
-          <!-- TODO: fix Payment Method NONE -->
-          <a href="#employee_payment_methods_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+          <a href="#employee_payment_method_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
                 <span class="fa fa-user fa-fw mr-3"></span>
                 <span class="menu-collapsed">Payment Methods</span>
             </div>
           </a>
-          <div id="employee_payment_methods_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
+          <div id="employee_payment_method_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
             <a id="payroll_nz_employee_payment_method_nz_read" href="{{ url_for('payroll_nz_employee_payment_method_nz_read') }}" class="list-group-item list-group-item-action bg-dark text-white">
                 <span class="fa fa-user fa-fw mr-3"></span>
                 <span class="fa fa-user fa-fw mr-3"></span>
                 <span class="menu-collapsed">Read</span>
             </a>
           </div>
-
           <!-- PAYRUN CALENDARS NZ -->
           <a href="#pay_run_calendars_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1234,9 +1237,7 @@
                 <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
-
           <!-- SALARY AND WAGES NZ -->
-          <!-- TODO: RATE PER UNIT none error-->
           <a href="#employee_salary_and_wages_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
                 <span class="fa fa-user fa-fw mr-3"></span>
@@ -1250,7 +1251,6 @@
                 <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
-
           <!-- EMPLOYEE OPENING BALANCES NZ -->
           <a href="#employee_opening_balances_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1265,7 +1265,6 @@
                 <span class="menu-collapsed">Read</span>
             </a>
           </div>
-
           <!-- EMPLOYEE LEAVE PERIODS NZ -->
           <a href="#employee_leave_periods_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1280,7 +1279,6 @@
                 <span class="menu-collapsed">Read</span>
             </a>
           </div>
-
           <!-- EMPLOYEE LEAVE TYPES NZ -->
           <a href="#employee_leave_types_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1295,7 +1293,6 @@
                 <span class="menu-collapsed">Read</span>
             </a>
           </div>
-
           <!-- EMPLOYEE PAY TEMPLATES NZ -->
           <a href="#employee_pay_templates_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1310,9 +1307,7 @@
                 <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
-
           <!-- EARNINGS RATES NZ -->
-          <!-- TODO: EARNINGS TYPE missing enum-->
           <a href="#earnings_rates_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
                 <span class="fa fa-user fa-fw mr-3"></span>
@@ -1326,7 +1321,6 @@
                 <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
-
           <!-- DEDUCTIONS NZ -->
           <a href="#deductions_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1341,7 +1335,6 @@
                 <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
-
           <!-- LEAVE TYPES NZ -->
           <a href="#leave_types_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1356,7 +1349,6 @@
                 <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
-
           <!-- REIMBURSEMENTS NZ -->
           <a href="#reimbursements_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1371,12 +1363,11 @@
                 <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
-
           <!-- STATUTORY DEDUCTIONS NZ -->
           <a href="#statutory_deductions_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
                 <span class="fa fa-user fa-fw mr-3"></span>
-                <span class="menu-collapsed">Statutory Deductions_</span>
+                <span class="menu-collapsed">Statutory Deductions</span>
             </div>
           </a>
           <div id="statutory_deductions_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
@@ -1386,10 +1377,91 @@
                 <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
-          
-
+           <!-- SUPERANNUATION NZ -->
+           <a href="#superannuation_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Superannuation</span>
+            </div>
+          </a>
+          <div id="superannuation_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
+            <a id="payroll_nz_superannuation_nz_read_all" href="{{ url_for('payroll_nz_superannuation_nz_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+          <!-- PAYRUNS NZ -->
+          <a href="#pay_runs_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Payruns</span>
+            </div>
+          </a>
+          <div id="pay_runs_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
+            <a id="payroll_nz_pay_runs_nz_read_all" href="{{ url_for('payroll_nz_pay_runs_nz_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+          <!-- PAYSLIPS NZ -->
+          <a href="#pay_slips_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Payslips</span>
+            </div>
+          </a>
+          <div id="pay_slips_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
+            <a id="payroll_nz_pay_slips_nz_read_all" href="{{ url_for('payroll_nz_pay_slips_nz_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+          <!-- TIMESHEETS NZ -->
+          <a href="#timesheets_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Timesheets</span>
+            </div>
+          </a>
+          <div id="timesheets_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
+            <a id="payroll_nz_timesheets_nz_read_all" href="{{ url_for('payroll_nz_timesheets_nz_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+          <!-- SETTINGS NZ -->
+          <a href="#settings_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Settings</span>
+            </div>
+          </a>
+          <div id="settings_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
+            <a id="payroll_nz_settings_nz_read_all" href="{{ url_for('payroll_nz_settings_nz_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
+          <!-- TRACKING CATEGORIES NZ -->
+          <a href="#tracking_categories_nz" data-toggle="collapse" aria-expanded="false" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Tracking Categories</span>
+            </div>
+          </a>
+          <div id="tracking_categories_nz" class="collapse sidebar-submenu" data-parent="#payroll_nz">
+            <a id="payroll_nz_tracking_categories_nz_read_all" href="{{ url_for('payroll_nz_tracking_categories_nz_read_all') }}" class="list-group-item list-group-item-action bg-dark text-white">
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="fa fa-user fa-fw mr-3"></span>
+                <span class="menu-collapsed">Read</span>
+            </a>
+          </div>
         </div>
-
 
         <!-- PAYROLL UK BUTTON -->
         <a id="payroll_uk_menu" href="#payroll_uk" data-toggle="collapse" aria-expanded="false"

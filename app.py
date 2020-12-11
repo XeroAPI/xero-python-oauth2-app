@@ -15,7 +15,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, ContactPerson, Contacts, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, TaxType
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, ContactPerson, Contacts, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, TaxType
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -62,7 +62,7 @@ xero = oauth.remote_app(
     "accounting.journals.read accounting.settings accounting.settings.read "
     "accounting.contacts accounting.contacts.read accounting.attachments "
     "accounting.attachments.read assets projects "
-    "payroll.employees payroll.payruns payroll.payslip payroll.timesheets payroll.settings",
+    "payroll.employees payroll.payruns payroll.payslip payroll.timesheets payroll.settings paymentservices",
 )  # type: OAuth2Application
 
 
@@ -1045,6 +1045,65 @@ def accounting_branding_theme_read_one():
 
     return render_template(
         "output.html", title="Branding Themes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="branding_theme", action="read_one"
+    )
+
+@app.route("/accounting_branding_theme_payment_service_create")
+@xero_token_required
+def accounting_branding_theme_payment_service_create():
+    code = get_code_snippet("BRANDINGTHEMES","CREATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    # we'll need a payment service
+    new_payment_service = PaymentService(
+        payment_service_name="PayUpNow " + get_random_num(),
+        payment_service_url="https://www.payupnow.com/?invoiceNo=[INVOICENUMBER]&currency=[CURRENCY]&amount=[AMOUNTDUE]&shortCode=[SHORTCODE]",
+        pay_now_text="Time To Pay"
+    )
+
+    payment_services = PaymentServices(payment_services=[new_payment_service])
+
+    try:
+        created_payment_services = accounting_api.create_payment_service(
+            xero_tenant_id, payment_services
+        ) 
+        payment_service_id = getvalue(created_payment_services, "payment_services.0.payment_service_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    # we'll also need a branding theme
+    try:
+        read_branding_themes = accounting_api.get_branding_themes(
+            xero_tenant_id
+        )
+        branding_theme_id = getvalue(read_branding_themes, "branding_themes.0.branding_theme_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[BRANDINGTHEMES:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    payment_service = PaymentService(payment_service_id=payment_service_id)
+
+    try:
+        created_branding_theme_payment_service = accounting_api.create_branding_theme_payment_services(
+            xero_tenant_id, branding_theme_id, payment_service
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Branding theme payment service created with id {} .".format(
+            getvalue(created_branding_theme_payment_service, "payment_services.0.payment_service_id", "")
+        )
+        json = serialize_model(created_branding_theme_payment_service)
+    #[/BRANDINGTHEMES:CREATE]
+ 
+    return render_template(
+        "output.html", title="Branding Themes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="branding_theme", action="create"
     )
 
 # BUDGETS TODO

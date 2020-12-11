@@ -1910,6 +1910,41 @@ def accounting_item_read_one():
 # getPaymentServices
 # createPaymentService
 
+@app.route("/accounting_payment_service_create")
+@xero_token_required
+def accounting_payment_service_create():
+    code = get_code_snippet("PAYMENTSERVICES","CREATE")
+
+    #[PAYMENTSERVICES:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    payment_service = PaymentService(
+        payment_service_name="PayUpNow " + get_random_num(),
+        payment_service_url="https://www.payupnow.com/?invoiceNo=[INVOICENUMBER]&currency=[CURRENCY]&amount=[AMOUNTDUE]&shortCode=[SHORTCODE]",
+        pay_now_text="Time To Pay"
+    )
+
+    payment_services = PaymentServices(payment_services=[payment_service])
+
+    try:
+        created_payment_services = accounting_api.create_payment_service(
+            xero_tenant_id, payment_services
+        ) 
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Payment service created with id {} .".format(
+            getvalue(created_payment_services, "payment_services.0.payment_service_id", "")
+        )
+        json = serialize_model(created_payment_services)
+    #[/PAYMENTSERVICES:CREATE]
+ 
+    return render_template(
+        "output.html", title="Payment Services", code=code, json=json, output=output, len = 0, set="accounting", endpoint="payment_service", action="create"
+    )
+
 # PREPAYMENTS TODO
 # getPrepayments
 # getPrepayment

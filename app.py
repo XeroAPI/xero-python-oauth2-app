@@ -15,7 +15,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, ContactPerson, Contacts, Invoice, Invoices, LineItem
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, ContactPerson, Contacts, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, TaxType
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -861,6 +861,119 @@ def accounting_batch_payment_read_all():
     
     return render_template(
         "output.html", title="Batch Payments", code=code, json=json, output=output, len = 0, set="accounting", endpoint="batch_payment", action="read_all"
+    )
+
+@app.route("/accounting_batch_payment_create")
+@xero_token_required
+def accounting_batch_payment_create():
+    code = get_code_snippet("BATCHPAYMENTS","CREATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    # we need a contact
+    try:
+        contacts = accounting_api.get_contacts(
+            xero_tenant_id
+        )
+        contact_id = getvalue(contacts, "contacts.0.contact_id", "")
+        contact = Contact(contact_id)
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    # we need an account of type BANK
+    where = "Type==\"BANK\""
+    try:
+        accounts = accounting_api.get_accounts(
+            xero_tenant_id, where
+        )
+        account_id = getvalue(accounts, "accounts.0.account_id", "")
+        account = Account(account_id)
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    # we need multiple invoices
+    line_item = LineItem(
+        description="Consulting services",
+        quantity=20,
+        unit_amount=100.00,
+        account_code="200"
+    )
+
+    invoice_1 = Invoice(
+        type="ACCREC",
+        contact=contact,
+        date=dateutil.parser.parse("2020-12-03T00:00:00"),
+        due_date=dateutil.parser.parse("2021-01-06T00:00:00"),
+        line_items=[line_item],
+        status="AUTHORISED"
+    )
+    invoice_2 = Invoice(
+        type="ACCREC",
+        contact=contact,
+        date=dateutil.parser.parse("2020-12-03T00:00:00"),
+        due_date=dateutil.parser.parse("2021-01-18T00:00:00"),
+        line_items=[line_item],
+        status="AUTHORISED"
+    )
+    invoices = Invoices(invoices=[invoice_1, invoice_2])
+
+    try:
+        created_invoices = accounting_api.create_invoices(
+            xero_tenant_id, invoices
+        )
+        invoice_1_id = getvalue(created_invoices, "invoices.0.invoice_id", "")
+        invoice_2_id = getvalue(created_invoices, "invoices.1.invoice_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[BATCHPAYMENTS:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    invoice_1 = Invoice(invoice_id=invoice_1_id)
+    invoice_2 = Invoice(invoice_id=invoice_2_id)
+
+    payment_1 = Payment(
+        reference="something 1",
+        invoice=invoice_1,
+        amount=3.50
+    )
+    payment_2 = Payment(
+        reference="something 2",
+        invoice=invoice_2,
+        amount=7.25
+    )
+
+    payments = Payments(payments=[payment_1, payment_2])
+
+    batch_payment = BatchPayment(
+        date=dateutil.parser.parse("2020-12-24"),
+        reference="Something",
+        account=account,
+        payments=payments
+    )
+
+    batch_payments = BatchPayments(batch_payments=[batch_payment])
+
+    try:
+        created_batch_payments = accounting_api.create_batch_payment(
+            xero_tenant_id, batch_payments
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Batch payment created with id {} .".format(
+            getvalue(created_batch_payments, "batch_payments.0.batch_payment_id", "")
+        )
+        json = serialize_model(created_batch_payments)
+    #[/BATCHPAYMENTS:CREATE]
+ 
+    return render_template(
+        "output.html", title="Batch Payments", code=code, json=json, output=output, len = 0, set="accounting", endpoint="batch_payment", action="create"
     )
 
 # BRANDING THEMES TODO

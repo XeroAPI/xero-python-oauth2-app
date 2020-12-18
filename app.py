@@ -15,7 +15,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, TaxType
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, TaxType
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -1386,7 +1386,7 @@ def accounting_contact_group_create():
 
 # CREDIT NOTES TODO
 # getCreditNotes x
-# createCreditNotes
+# createCreditNotes x
 # updateOrCreateCreditNotes
 # getCreditNote x
 # updateCreditNote
@@ -1559,7 +1559,7 @@ def accounting_credit_note_create():
 
 # CURRENCIES TODO
 # getCurrencies x
-# createCurrency
+# createCurrency x
 
 @app.route("/accounting_currency_read_all")
 @xero_token_required
@@ -1586,6 +1586,39 @@ def accounting_currency_read_all():
     
     return render_template(
         "output.html", title="Currencies", code=code, json=json, output=output, len = 0, set="accounting", endpoint="currency", action="read_all"
+    )
+
+@app.route("/accounting_currency_create")
+@xero_token_required
+def accounting_currency_create():
+    code = get_code_snippet("CURRENCIES","CREATE")
+
+    #[CURRENCIES:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    # CREATE only works once per currency code
+
+    currency = Currency(
+        code=CurrencyCode.ZAR
+    )
+
+    try:
+        created_currency = accounting_api.create_currency(
+            xero_tenant_id, currency
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Currency created with description {} .".format(
+            getvalue(created_currency, "currencies.0.description", "")
+        )
+        json = serialize_model(created_currency)
+    #[/CURRENCIES:CREATE]
+    
+    return render_template(
+        "output.html", title="Currencies", code=code, json=json, output=output, len = 0, set="accounting", endpoint="currency", action="create"
     )
 
 # EMPLOYEES TODO

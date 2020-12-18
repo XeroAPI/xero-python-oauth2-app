@@ -15,7 +15,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, ContactPerson, Contacts, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, TaxType
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, TaxType
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -682,7 +682,7 @@ def accounting_bank_transaction_create():
 
 # BANK TRANSFERS TODO
 # getBankTransfers x
-# createBankTransfer
+# createBankTransfer x
 # getBankTransfer x
 # getBankTransferAttachments
 # getBankTransferAttachmentById
@@ -832,7 +832,7 @@ def accounting_bank_transfer_create():
 
 # BATCH PAYMENTS TODO
 # getBatchPayments x
-# createBatchPayment
+# createBatchPayment x
 # getBatchPaymentHistory
 # createBatchPaymentHistoryRecord
 
@@ -980,7 +980,7 @@ def accounting_batch_payment_create():
 # getBrandingThemes x
 # getBrandingTheme x
 # getBrandingThemePaymentServices
-# createBrandingThemePaymentServices
+# createBrandingThemePaymentServices x
 
 @app.route("/accounting_branding_theme_read_all")
 @xero_token_required
@@ -1349,6 +1349,39 @@ def accounting_contact_group_read_one():
 
     return render_template(
         "output.html", title="Contact Groups", code=code, json=json, output=output, len = 0, set="accounting", endpoint="contact_group", action="read_one"
+    )
+
+@app.route("/accounting_contact_group_create")
+@xero_token_required
+def accounting_contact_group_create():
+    code = get_code_snippet("CONTACTGROUPS","CREATE")
+
+    #[CONTACTGROUPS:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    contact_group = ContactGroup(
+        name="Ima Contact Group " + get_random_num()
+    )
+
+    contact_groups = ContactGroups(contact_groups=[contact_group])
+
+    try:
+        created_contact_group = accounting_api.create_contact_group(
+            xero_tenant_id, contact_groups=contact_groups
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Contact group {} created.".format(
+            getvalue(created_contact_group, "contact_groups.0.name", "")
+        )
+        json = serialize_model(created_contact_group)    
+    #[/CONTACTGROUPS:CREATE]
+    
+    return render_template(
+        "output.html",  title="Contact Groups", code=code, output=output, json=json, len = 0,  set="accounting", endpoint="contact_group", action="create"
     )
 
 # CREDIT NOTES TODO

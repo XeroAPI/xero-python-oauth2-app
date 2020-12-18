@@ -15,7 +15,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, TaxType
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, TaxType
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -1279,7 +1279,7 @@ def accounting_contact_read_one():
 
 # CONTACT GROUPS TODO
 # getContactGroups x
-# createContactGroup
+# createContactGroup x
 # getContactGroup x
 # updateContactGroup
 # createContactGroupContacts
@@ -1463,6 +1463,98 @@ def accounting_credit_note_read_one():
 
     return render_template(
         "output.html", title="Credit Notes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="credit_note", action="read_one"
+    )
+
+@app.route("/accounting_credit_note_create")
+@xero_token_required
+def accounting_credit_note_create():
+    code = get_code_snippet("CREDITNOTES","CREATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    # we're going to need a contact
+    try:
+        read_contacts = accounting_api.get_contacts(
+            xero_tenant_id
+        )
+        contact_id = getvalue(read_contacts, "contacts.0.contact_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    # we're going to need an account
+    where = "Type==\"SALES\"&&Status==\"ACTIVE\""
+    try:
+        read_accounts = accounting_api.get_accounts(
+            xero_tenant_id, where=where
+        ) 
+        account_id = getvalue(read_accounts, "accounts.0.account_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    # we're going to need an invoice for that contact
+    contact = Contact(
+        contact_id=contact_id
+    )
+    
+    line_item = LineItem(
+        account_code=account_id,
+        description="Consulting",
+        quantity=1.0,
+        unit_amount=10.0,
+    )
+    
+    invoice = Invoice(
+        line_items=[line_item],
+        contact=contact,
+        due_date=dateutil.parser.parse("2020-09-03T00:00:00Z"),
+        date=dateutil.parser.parse("2020-07-03T00:00:00Z"),
+        type="ACCREC"
+    )
+    
+    invoices = Invoices(invoices=[invoice])
+    
+    try:
+        created_invoices = accounting_api.create_invoices(
+            xero_tenant_id, invoices=invoices
+        ) 
+        invoice_id = getvalue(created_invoices, "invoices.0.invoice_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[CREDITNOTES:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    credit_note = CreditNote(
+        type="ACCRECCREDIT",
+        status="DRAFT",
+        contact=contact,
+        date= dateutil.parser.parse("2020-07-03T00:00:00Z"),
+        line_amount_types=LineAmountTypes.EXCLUSIVE,
+        line_items=[line_item]
+    )
+
+    credit_notes = CreditNotes(credit_notes=[credit_note])
+
+    try:
+        created_credit_note = accounting_api.create_credit_notes(
+            xero_tenant_id, credit_notes=credit_notes
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Credit note created with id {} .".format(
+            getvalue(created_credit_note, "credit_notes.0.credit_note_id", "")
+        )
+        json = serialize_model(created_credit_note)    
+    #[/CREDITNOTES:CREATE]
+    
+    return render_template(
+        "output.html",  title="Credit Notes", code=code, output=output, json=json, len = 0,  set="accounting", endpoint="credit_note", action="create"
     )
 
 # CURRENCIES TODO

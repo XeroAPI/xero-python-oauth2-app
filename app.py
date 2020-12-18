@@ -15,7 +15,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, TaxType
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, TaxType
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -1623,7 +1623,7 @@ def accounting_currency_create():
 
 # EMPLOYEES TODO
 # getEmployees x
-# createEmployees
+# createEmployees x
 # updateOrCreateEmployees
 # getEmployee x
 
@@ -1690,6 +1690,40 @@ def accounting_employee_read_one():
 
     return render_template(
         "output.html", title="Employees", code=code, json=json, output=output, len = 0, set="accounting", endpoint="employee", action="read_one"
+    )
+
+@app.route("/accounting_employee_create")
+@xero_token_required
+def accounting_employee_create():
+    code = get_code_snippet("EMPLOYEES","CREATE")
+
+    #[EMPLOYEES:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    employee = Employee(
+        first_name="First " + get_random_num(),
+        last_name="Last " + get_random_num()
+    )
+
+    employees = Employees(employees=[employee])
+
+    try:
+        created_employee = accounting_api.create_employees(
+            xero_tenant_id, employees
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee created with id {} .".format(
+            getvalue(created_employee, "employees.0.employee_id", "")
+        )
+        json = serialize_model(created_employee)
+    #[/EMPLOYEES:CREATE]
+    
+    return render_template(
+        "output.html", title="Employees", code=code, json=json, output=output, len = 0, set="accounting", endpoint="employee", action="create"
     )
 
 # EXPENSE CLAIMS (DEPRECATED) TODO

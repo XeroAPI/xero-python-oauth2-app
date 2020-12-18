@@ -15,7 +15,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, Invoice, Invoices, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, TaxType
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Purchase, TaxType
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -1982,7 +1982,7 @@ def accounting_invoice_reminder_read_all():
 
 # ITEMS TODO
 # getItems x
-# createItems
+# createItems x
 # updateOrCreateItems
 # getItem x
 # updateItem
@@ -2053,6 +2053,54 @@ def accounting_item_read_one():
 
     return render_template(
         "output.html", title="Items", code=code, json=json, output=output, len = 0, set="accounting", endpoint="item", action="read_one"
+    )
+
+@app.route("/accounting_item_create")
+@xero_token_required
+def accounting_item_create():
+    code = get_code_snippet("ITEMS","CREATE")
+
+    #[ITEMS:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    purchase_details = Purchase(
+        unit_price=375.5000,
+        tax_type="NONE",
+        account_code="500"
+    )
+
+    sales_details = Purchase(
+        unit_price=520.9900,
+        tax_type="NONE",
+        account_code="400"
+    )
+
+    item = Item(
+        code="Foo"+get_random_num(),
+        name="Bar",
+        purchase_details=purchase_details,
+        sales_details=sales_details
+    )
+
+    items = Items(items=[item])
+
+    try:
+        created_item = accounting_api.create_items(
+            xero_tenant_id, items
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Item created with id {} .".format(
+            getvalue(created_item, "items.0.item_id", "")
+        )
+        json = serialize_model(created_item)
+    #[/ITEMS:CREATE]
+    
+    return render_template(
+        "output.html", title="Items", code=code, json=json, output=output, len = 0, set="accounting", endpoint="item", action="create"
     )
 
 # JOURNALS TODO

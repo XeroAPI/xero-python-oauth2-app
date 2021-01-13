@@ -62,7 +62,7 @@ xero = oauth.remote_app(
     "accounting.journals.read accounting.settings accounting.settings.read "
     "accounting.contacts accounting.contacts.read accounting.attachments "
     "accounting.attachments.read assets projects "
-    "payroll.employees payroll.payruns payroll.payslip payroll.timesheets payroll.settings paymentservices",
+    "payroll.employees payroll.payruns payroll.payslip payroll.timesheets payroll.settings ",
 )  # type: OAuth2Application
 
 

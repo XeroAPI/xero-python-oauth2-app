@@ -2175,7 +2175,7 @@ def accounting_currency_create():
 # EMPLOYEES TODO
 # getEmployees x
 # createEmployees x
-# updateOrCreateEmployees
+# updateOrCreateEmployees x
 # getEmployee x
 
 @app.route("/accounting_employee_read_all")

@@ -1579,8 +1579,8 @@ def accounting_contact_read_one_by_contact_number():
 # getContactGroups x
 # createContactGroup x
 # getContactGroup x
-# updateContactGroup
-# createContactGroupContacts
+# updateContactGroup x
+# createContactGroupContacts x
 # deleteContactGroupContacts
 # deleteContactGroupContact
 
@@ -1682,12 +1682,113 @@ def accounting_contact_group_create():
         "output.html",  title="Contact Groups", code=code, output=output, json=json, len = 0,  set="accounting", endpoint="contact_group", action="create"
     )
 
+@app.route("/accounting_contact_group_contacts_create")
+@xero_token_required
+def accounting_contact_group_contacts_create():
+    code = get_code_snippet("CONTACTGROUPCONTACTS","CREATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_contact_groups = accounting_api.get_contact_groups(
+            xero_tenant_id
+        )
+        contact_group_id = getvalue(read_contact_groups, "contact_groups.0.contact_group_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    try:
+        read_contacts = accounting_api.get_contacts(
+            xero_tenant_id
+        ) 
+        contact_id = getvalue(read_contacts, "contacts.0.contact_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[CONTACTGROUPCONTACTS:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    contact_group_id = contact_group_id
+
+    contact = Contact(
+        contact_id = contact_id)
+
+    contacts = Contacts(
+        contacts = [contact])
+
+    try:
+        created_contact_group_contact = accounting_api.create_contact_group_contacts(
+            xero_tenant_id, contact_group_id, contacts
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Contact group contact {} created.".format(
+            getvalue(created_contact_group_contact, "contacts.0.contact_id", "")
+        )
+        json = serialize_model(created_contact_group_contact)    
+    #[/CONTACTGROUPCONTACTS:CREATE]
+    
+    return render_template(
+        "output.html",  title="Contact Groups", code=code, output=output, json=json, len = 0,  set="accounting", endpoint="contact_group", action="create_contact"
+    )
+
+@app.route("/accounting_contact_group_update")
+@xero_token_required
+def accounting_contact_group_update():
+    code = get_code_snippet("CONTACTGROUPS","UPDATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_contact_groups = accounting_api.get_contact_groups(
+            xero_tenant_id
+        ) 
+        contact_group_id = getvalue(read_contact_groups, "contact_groups.0.contact_group_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[CONTACTGROUPS:UPDATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    contact_group_id = contact_group_id
+
+    contact_group = ContactGroup(
+        name = "Vendor " + get_random_num())
+
+    contact_groups = ContactGroups(
+        contact_groups = [contact_group])
+
+    try:
+        updated_contact_groups = accounting_api.update_contact_group(
+            xero_tenant_id, contact_group_id, contact_groups=contact_groups
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Contact group {} updated.".format(
+            getvalue(updated_contact_groups, "contact_groups.0.name", "")
+        )
+        json = serialize_model(updated_contact_groups)
+    #[/CONTACTGROUPS:UPDATE]
+    
+    return render_template(
+        "output.html", title="Contact Groups", code=code, json=json, output=output, len = 0, set="accounting", endpoint="contact_group", action="update"
+    )
+
 # CREDIT NOTES TODO
 # getCreditNotes x
 # createCreditNotes x
-# updateOrCreateCreditNotes
+# updateOrCreateCreditNotes x
 # getCreditNote x
-# updateCreditNote
+# updateCreditNote x
 # getCreditNoteAttachments
 # getCreditNoteAttachmentById
 # getCreditNoteAttachmentByFileName
@@ -1853,6 +1954,158 @@ def accounting_credit_note_create():
     
     return render_template(
         "output.html",  title="Credit Notes", code=code, output=output, json=json, len = 0,  set="accounting", endpoint="credit_note", action="create"
+    )
+
+@app.route("/accounting_credit_note_update_or_create")
+@xero_token_required
+def accounting_credit_note_update_or_create():
+    code = get_code_snippet("CREDITNOTES","UPDATECREATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_contacts = accounting_api.get_contacts(
+            xero_tenant_id
+        ) 
+        contact_id = getvalue(read_contacts, "contacts.0.contact_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    where = "Type==\"SALES\"&&Status==\"ACTIVE\""
+    try:
+        read_accounts = accounting_api.get_accounts(
+            xero_tenant_id, where=where
+        ) 
+        account_code = getvalue(read_accounts, "accounts.0.account_code", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[CREDITNOTES:UPDATECREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    curr_date = dateutil.parser.parse('2021-01-19T00:00:00Z')
+
+    contact = Contact(
+        contact_id = contact_id)
+
+    line_item = LineItem(
+        description = "Foobar",
+        quantity = 1.0,
+        unit_amount = 20.0,
+        account_code = account_code)
+    line_items = []
+    line_items.append(line_item)
+
+    credit_note = CreditNote(
+        type = "ACCPAYCREDIT",
+        contact = contact,
+        date = curr_date,
+        line_items = line_items)
+
+    credit_notes = CreditNotes(
+        credit_notes = [credit_note])
+
+    try:
+        update_or_created_credit_note = accounting_api.update_or_create_credit_notes(
+            xero_tenant_id, credit_notes=credit_notes
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Credit note created or updated with id {} .".format(
+            getvalue(update_or_created_credit_note, "credit_notes.0.credit_note_id", "")
+        )
+        json = serialize_model(update_or_created_credit_note)    
+    #[/CREDITNOTES:UPDATECREATE]
+    
+    return render_template(
+        "output.html",  title="Credit Notes", code=code, output=output, json=json, len = 0,  set="accounting", endpoint="credit_note", action="update_or_create"
+    )
+
+@app.route("/accounting_credit_note_update")
+@xero_token_required
+def accounting_credit_note_update():
+    code = get_code_snippet("CREDITNOTES","UPDATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_contacts = accounting_api.get_contacts(
+            xero_tenant_id
+        ) 
+        contact_id = getvalue(read_contacts, "contacts.0.contact_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    where = "Type==\"SALES\"&&Status==\"ACTIVE\""
+    try:
+        read_accounts = accounting_api.get_accounts(
+            xero_tenant_id, where=where
+        ) 
+        account_code = getvalue(read_accounts, "accounts.0.account_code", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    where = "Status==\"SUBMITTED\""
+    try:
+        read_credit_notes = accounting_api.get_credit_notes(
+            xero_tenant_id
+        ) 
+        credit_note_id = getvalue(read_credit_notes, "credit_notes.0.credit_note_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[CREDITNOTES:UPDATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    credit_note_id = credit_note_id
+    curr_date = dateutil.parser.parse('2021-01-19T00:00:00Z')
+
+    contact = Contact(
+        contact_id = contact_id)
+
+    line_item = LineItem(
+        description = "Foobar",
+        quantity = 1.0,
+        unit_amount = 20.0,
+        account_code = account_code)
+    line_items = []
+    line_items.append(line_item)
+
+    credit_note = CreditNote(
+        type = "ACCPAYCREDIT",
+        status = "AUTHORISED",
+        reference = "My ref.",
+        contact = contact,
+        date = curr_date,
+        line_items = line_items)
+
+    credit_notes = CreditNotes(
+        credit_notes = [credit_note])
+
+    try:
+        updated_credit_note = accounting_api.update_credit_note(
+            xero_tenant_id, credit_note_id, credit_notes=credit_notes
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Credit note updated with id {} .".format(
+            getvalue(updated_credit_note, "credit_notes.0.credit_note_id", "")
+        )
+        json = serialize_model(updated_credit_note)    
+    #[/CREDITNOTES:UPDATE]
+    
+    return render_template(
+        "output.html",  title="Credit Notes", code=code, output=output, json=json, len = 0,  set="accounting", endpoint="credit_note", action="update"
     )
 
 # CURRENCIES TODO
@@ -2022,6 +2275,40 @@ def accounting_employee_create():
     
     return render_template(
         "output.html", title="Employees", code=code, json=json, output=output, len = 0, set="accounting", endpoint="employee", action="create"
+    )
+
+@app.route("/accounting_employee_update_or_create")
+@xero_token_required
+def accounting_employee_update_or_create():
+    code = get_code_snippet("EMPLOYEES","UPDATEORCREATE")
+
+    #[EMPLOYEES:UPDATEORCREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    employee = Employee(
+        first_name="First " + get_random_num(),
+        last_name="Last " + get_random_num()
+    )
+
+    employees = Employees(employees=[employee])
+
+    try:
+        updated_or_created_employee = accounting_api.update_or_create_employees(
+            xero_tenant_id, employees
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Employee updated or created with id {} .".format(
+            getvalue(updated_or_created_employee, "employees.0.employee_id", "")
+        )
+        json = serialize_model(updated_or_created_employee)
+    #[/EMPLOYEES:UPDATEORCREATE]
+    
+    return render_template(
+        "output.html", title="Employees", code=code, json=json, output=output, len = 0, set="accounting", endpoint="employee", action="update_or_create"
     )
 
 # EXPENSE CLAIMS (DEPRECATED) TODO

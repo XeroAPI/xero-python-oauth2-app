@@ -748,6 +748,138 @@
             </a>
           </div>
 
+          <!-- JOURNALS -->
+          <a href="#journals" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Journals</span>
+            </div>
+          </a>
+          <div id="journals" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_journals_read_all" href="{{ url_for('accounting_journals_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="accounting_journals_read_one" href="{{ url_for('accounting_journals_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+          </div>
+
+          <!-- LINKED TRANSACTIONS -->
+          <a href="#linked_transactions" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Linked Transactions</span>
+            </div>
+          </a>
+          <div id="linked_transactions" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_linked_transactions_read_all" href="{{ url_for('accounting_linked_transactions_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="accounting_linked_transactions_read_one" href="{{ url_for('accounting_linked_transactions_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+          </div>
+
+          <!-- MANUAL JOURNALS -->
+          <a href="#manual_journals" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Manual Journals</span>
+            </div>
+          </a>
+          <div id="manual_journals" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_manual_journals_read_all" href="{{ url_for('accounting_manual_journals_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="accounting_manual_journals_read_one" href="{{ url_for('accounting_manual_journals_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+          </div>
+
+          <!-- ORGANISATIONS -->
+          <a href="#organisations" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Organisations</span>
+            </div>
+          </a>
+          <div id="organisations" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_organisations_read_all" href="{{ url_for('accounting_organisations_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+          </div>
+        
+          <!-- OVERPAYMENTS -->
+          <a href="#overpayments" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Overpayments</span>
+            </div>
+          </a>
+          <div id="overpayments" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_overpayments_read_all" href="{{ url_for('accounting_overpayments_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="accounting_overpayments_read_one" href="{{ url_for('accounting_overpayments_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+          </div>
+
+          <!-- PAYMENTS -->
+          <a href="#payments" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Payments</span>
+            </div>
+          </a>
+          <div id="payments" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_payments_read_all" href="{{ url_for('accounting_payments_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="accounting_payments_read_one" href="{{ url_for('accounting_payments_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+          </div>
+
           <!-- PAYMENT SERVICES -->
           <a href="#payment_service" data-toggle="collapse" aria-expanded="false"
             class="list-group-item list-group-item-action flex-column align-items-start">
@@ -757,11 +889,40 @@
             </div>
           </a>
           <div id="payment_service" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_payment_services_read_all" href="{{ url_for('accounting_payment_services_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
             <a id="accounting_payment_service_create" href="{{ url_for('accounting_payment_service_create') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Create</span>
+            </a>
+          </div>
+
+          <!-- PREPAYMENTS -->
+          <a href="#prepayments" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Prepayments</span>
+            </div>
+          </a>
+          <div id="prepayments" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_prepayments_read_all" href="{{ url_for('accounting_prepayments_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="accounting_prepayments_orders_read_one" href="{{ url_for('accounting_prepayments_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
             </a>
           </div>
 

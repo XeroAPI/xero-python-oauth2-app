@@ -3267,7 +3267,7 @@ def accounting_purchase_orders_read_one():
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
 
-    #[PURCHASE_ORDER:READ_ONE]
+    #[PURCHASE_ORDERS:READ_ONE]
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
 
@@ -3283,7 +3283,7 @@ def accounting_purchase_orders_read_one():
             getvalue(read_purchase_orders, "purchase_orders.0.purchase_order_id", "")
         )
         json = serialize_model(read_one_purchase_order)
-    #[/PURCHASE_ORDER:READ_ONE]
+    #[/PURCHASE_ORDERS:READ_ONE]
 
     return render_template(
         "output.html", title="Purchase Orders", code=code, json=json, output=output, len = 0, set="accounting", endpoint="purchase_orders", action="read_one"

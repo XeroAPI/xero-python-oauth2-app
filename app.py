@@ -15,7 +15,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Phone, Purchase, TaxType
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, Allocation, Allocations, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, ExpenseClaim, ExpenseClaims, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Phone, Purchase, Receipt, Receipts, TaxType, User, Users
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -62,6 +62,7 @@ xero = oauth.remote_app(
     "accounting.journals.read accounting.settings accounting.settings.read "
     "accounting.contacts accounting.contacts.read accounting.attachments "
     "accounting.attachments.read assets projects "
+    "paymentservices "
     "payroll.employees payroll.payruns payroll.payslip payroll.timesheets payroll.settings",
 )  # type: OAuth2Application
 
@@ -1149,7 +1150,7 @@ def accounting_batch_payment_create():
 # BRANDING THEMES TODO
 # getBrandingThemes x
 # getBrandingTheme x
-# getBrandingThemePaymentServices
+# getBrandingThemePaymentServices x
 # createBrandingThemePaymentServices x
 
 @app.route("/accounting_branding_theme_read_all")
@@ -1217,10 +1218,48 @@ def accounting_branding_theme_read_one():
         "output.html", title="Branding Themes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="branding_theme", action="read_one"
     )
 
+@app.route("/accounting_branding_theme_payment_service_read_all")
+@xero_token_required
+def accounting_branding_theme_payment_service_read_all():
+    code = get_code_snippet("BRANDINGTHEMEPAYMENTSERVICES","READ_ALL")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_branding_themes = accounting_api.get_branding_themes(
+            xero_tenant_id
+        )
+        branding_theme_id = getvalue(read_branding_themes, "branding_themes.0.branding_theme_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[BRANDINGTHEMEPAYMENTSERVICES:READ_ALL]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_branding_theme_payment_services = accounting_api.get_branding_theme_payment_services(
+            xero_tenant_id, branding_theme_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Branding Theme Payment Services read {} total".format(
+            len(read_branding_theme_payment_services.payment_services)
+        )
+        json = serialize_model(read_branding_theme_payment_services)
+    #[/BRANDINGTHEMEPAYMENTSERVICES:READ_ALL]
+
+    return render_template(
+        "output.html", title="Branding Themes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="branding_theme_payment_service", action="read_all"
+    )
+
 @app.route("/accounting_branding_theme_payment_service_create")
 @xero_token_required
 def accounting_branding_theme_payment_service_create():
-    code = get_code_snippet("BRANDINGTHEMES","CREATE")
+    code = get_code_snippet("BRANDINGTHEMEPAYMENTSERVICES","CREATE")
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
 
@@ -1252,7 +1291,7 @@ def accounting_branding_theme_payment_service_create():
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
 
-    #[BRANDINGTHEMES:CREATE]
+    #[BRANDINGTHEMEPAYMENTSERVICES:CREATE]
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
 
@@ -1270,10 +1309,10 @@ def accounting_branding_theme_payment_service_create():
             getvalue(created_branding_theme_payment_service, "payment_services.0.payment_service_id", "")
         )
         json = serialize_model(created_branding_theme_payment_service)
-    #[/BRANDINGTHEMES:CREATE]
+    #[/BRANDINGTHEMEPAYMENTSERVICES:CREATE]
 
     return render_template(
-        "output.html", title="Branding Themes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="branding_theme", action="create"
+        "output.html", title="Branding Themes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="branding_theme_payment_service", action="create"
     )
 
 # BUDGETS TODO
@@ -1789,13 +1828,13 @@ def accounting_contact_group_update():
 # updateOrCreateCreditNotes x
 # getCreditNote x
 # updateCreditNote x
+# createCreditNoteAllocation x
 # getCreditNoteAttachments
 # getCreditNoteAttachmentById
 # getCreditNoteAttachmentByFileName
 # updateCreditNoteAttachmentByFileName
 # createCreditNoteAttachmentByFileName
 # getCreditNoteAsPdf
-# createCreditNoteAllocation
 # getCreditNoteHistory
 # createCreditNoteHistory
 
@@ -2108,6 +2147,65 @@ def accounting_credit_note_update():
         "output.html",  title="Credit Notes", code=code, output=output, json=json, len = 0,  set="accounting", endpoint="credit_note", action="update"
     )
 
+@app.route("/accounting_credit_note_allocation_create")
+@xero_token_required
+def accounting_credit_note_allocation_create():
+    code = get_code_snippet("CREDITNOTES","CREATE_ALLOCATION")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_credit_notes = accounting_api.get_credit_notes(
+            xero_tenant_id
+        )
+        credit_note_id = getvalue(read_credit_notes, "credit_notes.0.credit_note_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    try:
+        read_invoices = accounting_api.get_invoices(
+            xero_tenant_id
+        )
+        invoice_id = getvalue(read_invoices, "invoices.0.invoice_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[CREDITNOTES:CREATE_ALLOCATION]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    curr_date = dateutil.parser.parse('2021-02-23T00:00:00Z')
+
+    invoice = Invoice(
+        invoice_id = invoice_id)
+    
+    allocation = Allocation(
+        amount = 1.0,
+        date = curr_date,
+        invoice = invoice)
+    
+    allocations = Allocations(    
+        allocations = [allocation])
+
+    try:
+        created_credit_note_allocation = accounting_api.create_credit_note_allocation(
+            xero_tenant_id, credit_note_id, allocations
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Credit note allocation created with id {} .".format(
+            getvalue(created_credit_note_allocation, "allocations.0.allocation_id", "")
+        )
+        json = serialize_model(created_credit_note_allocation)
+    #[/CREDITNOTES:CREATE_ALLOCATION]
+
+    return render_template(
+        "output.html", title="Credit Notes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="credit_note_allocation", action="create"
+    )
+
 # CURRENCIES TODO
 # getCurrencies x
 # createCurrency x
@@ -2313,9 +2411,9 @@ def accounting_employee_update_or_create():
 
 # EXPENSE CLAIMS (DEPRECATED) TODO
 # getExpenseClaims x
-# createExpenseClaims
 # getExpenseClaim x
-# updateExpenseClaim
+# createExpenseClaims x
+# updateExpenseClaim x
 # getExpenseClaimHistory
 # createExpenseClaimHistory
 
@@ -2384,12 +2482,155 @@ def accounting_expense_claim_read_one():
         "output.html", title="Expense Claims", code=code, json=json, output=output, len = 0, set="accounting", endpoint="expense_claim", action="read_one"
     )
 
+@app.route("/accounting_expense_claim_create")
+@xero_token_required
+def accounting_expense_claim_create():
+    code = get_code_snippet("EXPENSECLAIMS","CREATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_users = accounting_api.get_users(
+            xero_tenant_id
+        )
+        user_id = getvalue(read_users, "users.0.user_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    try:
+        read_receipts = accounting_api.get_receipts(
+            xero_tenant_id
+        )
+        receipt_id = getvalue(read_receipts, "receipts.0.receipt_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[EXPENSECLAIMS:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    curr_date = dateutil.parser.parse('2020-12-03T00:00:00Z')
+
+    user = User(
+        user_id = user_id)
+    
+    receipt = Receipt(
+        receipt_id = receipt_id,
+        date = curr_date)
+    
+    receipts = []
+    receipts.append(receipt)
+    
+    expense_claim = ExpenseClaim(
+        status = "SUBMITTED",
+        user = user,
+        receipts = receipts)
+    
+    expense_claims = ExpenseClaims(    
+        expense_claims = [expense_claim])
+
+    try:
+        created_expense_claims = accounting_api.create_expense_claims(
+            xero_tenant_id, expense_claims
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Expense claim created with id {} ".format(
+            getvalue(created_expense_claims, "expense_claims.0.expense_claim_id", "")
+        )
+        json = serialize_model(created_expense_claims)
+    #[/EXPENSECLAIMS:CREATE]
+
+    return render_template(
+        "output.html", title="Expense Claims", code=code, json=json, output=output, len = 0, set="accounting", endpoint="expense_claim", action="create"
+    )
+
+@app.route("/accounting_expense_claim_update")
+@xero_token_required
+def accounting_expense_claim_update():
+    code = get_code_snippet("EXPENSECLAIMS","UPDATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_users = accounting_api.get_users(
+            xero_tenant_id
+        )
+        user_id = getvalue(read_users, "users.0.user_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    try:
+        read_receipts = accounting_api.get_receipts(
+            xero_tenant_id
+        )
+        receipt_id = getvalue(read_receipts, "receipts.0.receipt_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    try:
+        read_expense_claims = accounting_api.get_expense_claims(
+            xero_tenant_id
+        )
+        expense_claim_id = getvalue(read_expense_claims, "expense_claims.0.expense_claim_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[EXPENSECLAIMS:UPDATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+    curr_date = dateutil.parser.parse('2020-12-03T00:00:00Z')
+
+    user = User(
+        user_id = user_id)
+    
+    receipt = Receipt(
+        receipt_id = receipt_id,
+        date = curr_date)
+    
+    receipts = []
+    receipts.append(receipt)
+    
+    expense_claim = ExpenseClaim(
+        status = "PAID",
+        user = user,
+        receipts = receipts)
+    
+    expense_claims = ExpenseClaims(    
+        expense_claims = [expense_claim])
+
+    print(xero_tenant_id, expense_claim_id, expense_claims)
+
+    try:
+        updated_expense_claims = accounting_api.update_expense_claim(
+            xero_tenant_id, expense_claim_id, expense_claims
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Expense claim updated with id {} ".format(
+            getvalue(updated_expense_claims, "expense_claims.0.expense_claim_id", "")
+        )
+        json = serialize_model(updated_expense_claims)
+    #[/EXPENSECLAIMS:UPDATE]
+
+    return render_template(
+        "output.html", title="Expense Claims", code=code, json=json, output=output, len = 0, set="accounting", endpoint="expense_claim", action="update"
+    )
+
 # INVOICES TODO
 # getInvoices x
-# createInvoices x
-# updateOrCreateInvoices
 # getInvoice x
+# createInvoices x
 # updateInvoice
+# updateOrCreateInvoices
 # getInvoiceAsPdf
 # getInvoiceAttachments
 # getInvoiceAttachmentById

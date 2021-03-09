@@ -2843,7 +2843,7 @@ def accounting_invoice_attachment_create_by_file_name():
 
     include_online = True
     file_name = "helo-heros.jpg"
-    path_to_upload = attachment_image()
+    path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
     open_file = open(path_to_upload, 'rb')
     body = open_file.read()
 

@@ -434,6 +434,13 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Update</span>
             </a>
+            <a id="accounting_bank_transaction_attachment_create_by_file_name"
+              href="{{ url_for('accounting_bank_transaction_attachment_create_by_file_name') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create Attachment (by file name)</span>
+            </a>
           </div>
 
           <!-- BANK TRANSFERS -->
@@ -508,6 +515,13 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Read (one)</span>
+            </a>
+            <a id="accounting_branding_theme_payment_service_read_all"
+              href="{{ url_for('accounting_branding_theme_payment_service_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read payment services</span>
             </a>
             <a id="accounting_branding_theme_payment_service_create"
               href="{{ url_for('accounting_branding_theme_payment_service_create') }}"
@@ -654,6 +668,13 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Update</span>
             </a>
+            <a id="accounting_credit_note_allocation_create"
+              href="{{ url_for('accounting_credit_note_allocation_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create allocation</span>
+            </a>
           </div>
 
           <!-- CURRENCIES -->
@@ -735,6 +756,18 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Read (one)</span>
             </a>
+            <a id="accounting_expense_claim_create" href="{{ url_for('accounting_expense_claim_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
+            <a id="accounting_expense_claim_update" href="{{ url_for('accounting_expense_claim_update') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Update</span>
+            </a>
           </div>
 
           <!-- INVOICES -->
@@ -763,6 +796,13 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Create</span>
+            </a>
+            <a id="accounting_invoice_attachment_create_by_file_name"
+              href="{{ url_for('accounting_invoice_attachment_create_by_file_name') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create Attachment (by file name)</span>
             </a>
           </div>
 
@@ -844,13 +884,15 @@
             </div>
           </a>
           <div id="linked_transactions" class="collapse sidebar-submenu" data-parent="#accounting">
-            <a id="accounting_linked_transactions_read_all" href="{{ url_for('accounting_linked_transactions_read_all') }}"
+            <a id="accounting_linked_transactions_read_all"
+              href="{{ url_for('accounting_linked_transactions_read_all') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Read (all)</span>
             </a>
-            <a id="accounting_linked_transactions_read_one" href="{{ url_for('accounting_linked_transactions_read_one') }}"
+            <a id="accounting_linked_transactions_read_one"
+              href="{{ url_for('accounting_linked_transactions_read_one') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
@@ -897,7 +939,7 @@
               <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
-        
+
           <!-- OVERPAYMENTS -->
           <a href="#overpayments" data-toggle="collapse" aria-expanded="false"
             class="list-group-item list-group-item-action flex-column align-items-start">
@@ -1068,13 +1110,15 @@
             </div>
           </a>
           <div id="repeating_invoices" class="collapse sidebar-submenu" data-parent="#accounting">
-            <a id="accounting_repeating_invoices_read_all" href="{{ url_for('accounting_repeating_invoices_read_all') }}"
+            <a id="accounting_repeating_invoices_read_all"
+              href="{{ url_for('accounting_repeating_invoices_read_all') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Read (all)</span>
             </a>
-            <a id="accounting_repeating_invoices_read_one" href="{{ url_for('accounting_repeating_invoices_read_one') }}"
+            <a id="accounting_repeating_invoices_read_one"
+              href="{{ url_for('accounting_repeating_invoices_read_one') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
@@ -1099,7 +1143,7 @@
             </a>
           </div>
 
-          <!-- TRACKING CATEGORIES --> 
+          <!-- TRACKING CATEGORIES -->
           <a href="#tracking_categories" data-toggle="collapse" aria-expanded="false"
             class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-start align-items-center">
@@ -1108,13 +1152,15 @@
             </div>
           </a>
           <div id="tracking_categories" class="collapse sidebar-submenu" data-parent="#accounting">
-            <a id="accounting_tracking_categories_read_all" href="{{ url_for('accounting_tracking_categories_read_all') }}"
+            <a id="accounting_tracking_categories_read_all"
+              href="{{ url_for('accounting_tracking_categories_read_all') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Read (all)</span>
             </a>
-            <a id="accounting_tracking_categories_read_one" href="{{ url_for('accounting_tracking_categories_read_one') }}"
+            <a id="accounting_tracking_categories_read_one"
+              href="{{ url_for('accounting_tracking_categories_read_one') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>

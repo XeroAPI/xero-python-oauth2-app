@@ -3,6 +3,7 @@ import os
 import time
 import dateutil.parser
 import re
+import mimetypes
 
 from dateutil.parser import parse
 from pathlib import Path
@@ -534,7 +535,7 @@ def accounting_account_delete():
 # getBankTransactionAttachmentById
 # getBankTransactionAttachmentByFileName
 # updateBankTransactionAttachmentByFileName
-# createBankTransactionAttachmentByFileName
+# createBankTransactionAttachmentByFileName x
 # getBankTransactionsHistory
 # createBankTransactionHistoryRecord
 
@@ -849,6 +850,50 @@ def accounting_bank_transaction_update():
 
     return render_template(
         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="update"
+    )
+
+@app.route("/accounting_bank_transaction_attachment_create_by_file_name")
+@xero_token_required
+def accounting_bank_transaction_attachment_create_by_file_name():
+    code = get_code_snippet("BANKTRANSACTIONATTACHMENTS","CREATEBYFILENAME")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_bank_transactions = accounting_api.get_bank_transactions(
+            xero_tenant_id
+        )
+        bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    file_name = "helo-heros.jpg"
+    path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+    open_file = open(path_to_upload, 'rb')
+    body = open_file.read()
+
+    try:
+        created_bank_transaction_attachments_by_file_name = accounting_api.create_bank_transaction_attachment_by_file_name(
+            xero_tenant_id, bank_transaction_id, file_name, body
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Bank transaction attachment created with url {} .".format(
+            getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
+        )
+        json = serialize_model(created_bank_transaction_attachments_by_file_name)
+    
+    #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+
+    return render_template(
+        "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="create_attachment_by_file_name"
     )
 
 # BANK TRANSFERS TODO
@@ -2636,7 +2681,7 @@ def accounting_expense_claim_update():
 # getInvoiceAttachmentById
 # getInvoiceAttachmentByFileName
 # updateInvoiceAttachmentByFileName
-# createInvoiceAttachmentByFileName
+# createInvoiceAttachmentByFileName x
 # getOnlineInvoice
 # emailInvoice
 # getInvoiceHistory
@@ -2774,6 +2819,51 @@ def accounting_invoice_create():
 
     return render_template(
         "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="create"
+    )
+
+@app.route("/accounting_invoice_attachment_create_by_file_name")
+@xero_token_required
+def accounting_invoice_attachment_create_by_file_name():
+    code = get_code_snippet("INVOICEATTACHMENTS","CREATEBYFILENAME")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_invoices = accounting_api.get_invoices(
+            xero_tenant_id
+        )
+        invoice_id = getvalue(read_invoices, "invoices.0.invoice_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[INVOICEATTACHMENTS:CREATEBYFILENAME]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    include_online = True
+    file_name = "helo-heros.jpg"
+    path_to_upload = attachment_image()
+    open_file = open(path_to_upload, 'rb')
+    body = open_file.read()
+
+    try:
+        created_invoice_attachments_by_file_name = accounting_api.create_invoice_attachment_by_file_name(
+            xero_tenant_id, invoice_id, file_name, body, include_online
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Invoice attachment created with url {} .".format(
+            getvalue(created_invoice_attachments_by_file_name, "attachments.0.url", "")
+        )
+        json = serialize_model(created_invoice_attachments_by_file_name)
+    
+    #[/INVOICEATTACHMENTS:CREATEBYFILENAME]
+
+    return render_template(
+        "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="create_attachment_by_file_name"
     )
 
 # INVOICE REMINDERS TODO

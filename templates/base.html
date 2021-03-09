@@ -356,23 +356,43 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Read (one)</span>
             </a>
-            <a id="accounting_account_get_attachments" href="{{ url_for('accounting_account_get_attachments') }}"
-              class="list-group-item list-group-item-action bg-dark text-white">
-              <span class="fa fa-user fa-fw mr-3"></span>
-              <span class="fa fa-user fa-fw mr-3"></span>
-              <span class="menu-collapsed">Read (attachments)</span>
-            </a>
             <a id="accounting_account_create" href="{{ url_for('accounting_account_create') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Create</span>
             </a>
+            <a id="accounting_account_get_attachments" href="{{ url_for('accounting_account_get_attachments') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (attachments)</span>
+            </a>
+            <a id="accounting_account_get_attachment_by_id"
+              href="{{ url_for('accounting_account_get_attachment_by_id') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (attachment by ID)</span>
+            </a>
+            <a id="accounting_account_get_attachment_by_file_name"
+              href="{{ url_for('accounting_account_get_attachment_by_file_name') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (attachment by file name)</span>
+            </a>
             <a id="accounting_account_create_attachment" href="{{ url_for('accounting_account_create_attachment') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Create (attachment)</span>
+            </a>
+            <a id="accounting_account_update_attachment" href="{{ url_for('accounting_account_update_attachment') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Update (attachment)</span>
             </a>
             <a id="accounting_account_update" href="{{ url_for('accounting_account_update') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
@@ -797,12 +817,38 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Create</span>
             </a>
+            <a id="accounting_invoice_get_attachments" href="{{ url_for('accounting_invoice_get_attachments') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (attachments)</span>
+            </a>
+            <a id="accounting_invoice_get_attachment_by_id"
+              href="{{ url_for('accounting_invoice_get_attachment_by_id') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (attachment by ID)</span>
+            </a>
+            <a id="accounting_invoice_get_attachment_by_file_name"
+              href="{{ url_for('accounting_invoice_get_attachment_by_file_name') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (attachment by file name)</span>
+            </a>
             <a id="accounting_invoice_attachment_create_by_file_name"
               href="{{ url_for('accounting_invoice_attachment_create_by_file_name') }}"
               class="list-group-item list-group-item-action bg-dark text-white">
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Create Attachment (by file name)</span>
+            </a>
+            <a id="accounting_invoice_update_attachment" href="{{ url_for('accounting_invoice_update_attachment') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Update Attachment (by file name)</span>
             </a>
           </div>
 

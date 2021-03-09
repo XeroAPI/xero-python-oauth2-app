@@ -158,7 +158,7 @@ def tenants():
 # getAccount x
 # updateAccount x
 # deleteAccount x
-# getAccountAttachments
+# getAccountAttachments x
 # getAccountAttachmentById
 # getAccountAttachmentByFileName
 # updateAccountAttachmentByFileName
@@ -255,14 +255,17 @@ def accounting_account_get_attachments():
     else:
         try:
             include_online = True
-            myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
-            with myimage.open("rb") as image:
-                account_attachment_created = accounting_api.create_account_attachment_by_file_name(
-                    xero_tenant_id,
-                    account_id,
-                    file_name=myimage.name,
-                    body=image.read(),
-                )
+            file_name = "helo-heros.jpg"
+            path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+            open_file = open(path_to_upload, 'rb')
+            body = open_file.read()
+            content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+            account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+                xero_tenant_id,
+                account_id,
+                file_name,
+                body,
+            )
         except AccountingBadRequestException as exception:
             output = "Error: " + exception.reason
             json = jsonify(exception.error_data)
@@ -288,6 +291,136 @@ def accounting_account_get_attachments():
 
     return render_template(
         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+    )
+
+@app.route("/accounting_account_get_attachment_by_id")
+@xero_token_required
+def accounting_account_get_attachment_by_id():
+    code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS_BY_ID")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    # CREATE ACCOUNT
+    account = Account(
+        name="FooBar" + get_random_num(),
+        code=get_random_num(),
+        description="My Foobar",
+        type=AccountType.EXPENSE,
+    )
+
+    try:
+        created_accounts = accounting_api.create_account(
+            xero_tenant_id, account
+        )
+        account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        try:
+            include_online = True
+            file_name = "helo-heros.jpg"
+            path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+            open_file = open(path_to_upload, 'rb')
+            body = open_file.read()
+            content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+            account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+                xero_tenant_id,
+                account_id,
+                file_name,
+                body,
+            )
+            attachment_id = getvalue(account_attachment_created, "attachments.0.attachment_id", "")
+        except AccountingBadRequestException as exception:
+            output = "Error: " + exception.reason
+            json = jsonify(exception.error_data)
+
+    # GET ACCOUNT ATTACHMENTS
+    #[ACCOUNTS:GET_ATTACHMENTS_BY_ID]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_account_attachments = accounting_api.get_account_attachment_by_id(
+            xero_tenant_id, account_id, attachment_id, content_type
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Account attachment read with ID {} ".format(
+            getvalue(read_account_attachments, "attachments.0.attachment_id", "")
+        )
+        json = serialize_model(read_account_attachments)
+    #[/ACCOUNTS:GET_ATTACHMENTS_BY_ID]
+
+    return render_template(
+        "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachment_by_id"
+    )
+
+@app.route("/accounting_account_get_attachment_by_file_name")
+@xero_token_required
+def accounting_account_get_attachment_by_file_name():
+    code = get_code_snippet("ACCOUNTS","GET_ATTACHMENT_BY_FILE_NAME")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    # CREATE ACCOUNT
+    account = Account(
+        name="FooBar" + get_random_num(),
+        code=get_random_num(),
+        description="My Foobar",
+        type=AccountType.EXPENSE,
+    )
+
+    try:
+        created_accounts = accounting_api.create_account(
+            xero_tenant_id, account
+        )
+        account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        try:
+            include_online = True
+            file_name = "helo-heros.jpg"
+            path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+            open_file = open(path_to_upload, 'rb')
+            body = open_file.read()
+            content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+            account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+                xero_tenant_id,
+                account_id,
+                file_name,
+                body,
+            )
+            file_name = getvalue(account_attachment_created, "attachments.0.file_name", "")
+        except AccountingBadRequestException as exception:
+            output = "Error: " + exception.reason
+            json = jsonify(exception.error_data)
+
+    # GET ACCOUNT ATTACHMENTS
+    #[ACCOUNTS:GET_ATTACHMENT_BY_FILE_NAME]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_account_attachments = accounting_api.get_account_attachment_by_file_name(
+            xero_tenant_id, account_id, file_name, content_type
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Account attachment read with file name {} ".format(
+            getvalue(read_account_attachments, "attachments.0.file_name", "")
+        )
+        json = serialize_model(read_account_attachments)
+    #[/ACCOUNTS:GET_ATTACHMENT_BY_FILE_NAME]
+
+    return render_template(
+        "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachment_by_file_name"
     )
 
 @app.route("/accounting_account_create")
@@ -407,14 +540,17 @@ def accounting_account_create_attachment():
 
     try:
         include_online = True
-        myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
-        with myimage.open("rb") as image:
-            account_attachment_created = accounting_api.create_account_attachment_by_file_name(
-                xero_tenant_id,
-                account_id,
-                file_name=myimage.name,
-                body=image.read(),
-            )
+        file_name = "helo-heros.jpg"
+        path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+        open_file = open(path_to_upload, 'rb')
+        body = open_file.read()
+        content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+        account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+            xero_tenant_id,
+            account_id,
+            file_name,
+            body,
+        )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
@@ -427,6 +563,80 @@ def accounting_account_create_attachment():
 
     return render_template(
         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+    )
+
+@app.route("/accounting_account_update_attachment")
+@xero_token_required
+def accounting_account_update_attachment():
+    code = get_code_snippet("ACCOUNTS","UPDATE_ATTACHMENT")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    # CREATE ACCOUNT
+    account = Account(
+        name="FooBar" + get_random_num(),
+        code=get_random_num(),
+        description="My Foobar",
+        type=AccountType.EXPENSE,
+    )
+
+    try:
+        created_accounts = accounting_api.create_account(
+            xero_tenant_id, account
+        )
+        account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        try:
+            include_online = True
+            file_name = "helo-heros.jpg"
+            path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+            open_file = open(path_to_upload, 'rb')
+            body = open_file.read()
+            content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+            account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+                xero_tenant_id,
+                account_id,
+                file_name,
+                body,
+            )
+            file_name = getvalue(account_attachment_created, "attachments.0.file_name", "")
+        except AccountingBadRequestException as exception:
+            output = "Error: " + exception.reason
+            json = jsonify(exception.error_data)
+
+    # UPDATE ACCOUNT ATTACHMENT
+    #[ACCOUNTS:UPDATE_ATTACHMENT]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        include_online = True
+        file_name = file_name
+        path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+        open_file = open(path_to_upload, 'rb')
+        body = open_file.read()
+        content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+        account_attachment_updated = accounting_api.update_account_attachment_by_file_name(
+            xero_tenant_id,
+            account_id,
+            file_name,
+            body,
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Attachment name '{}' updated.".format(
+            getvalue(account_attachment_updated, "attachments.0.file_name", "")
+        )
+        json = serialize_model(account_attachment_updated)
+    #[/ACCOUNTS:UPDATE_ATTACHMENT]
+
+    return render_template(
+        "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="update_attachment"
     )
 
 @app.route("/accounting_account_archive")
@@ -852,6 +1062,189 @@ def accounting_bank_transaction_update():
         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="update"
     )
 
+# @app.route("/accounting_account_get_attachments")
+# @xero_token_required
+# def accounting_account_get_attachments():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_id")
+# @xero_token_required
+# def accounting_account_get_attachment_by_id():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_file_name")
+# @xero_token_required
+# def accounting_account_get_attachment_by_file_name():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
 @app.route("/accounting_bank_transaction_attachment_create_by_file_name")
 @xero_token_required
 def accounting_bank_transaction_attachment_create_by_file_name():
@@ -895,6 +1288,59 @@ def accounting_bank_transaction_attachment_create_by_file_name():
     return render_template(
         "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="create_attachment_by_file_name"
     )
+
+# @app.route("/accounting_account_update_attachment")
+# @xero_token_required
+# def accounting_account_update_attachment():
+#     code = get_code_snippet("ACCOUNTS","CREATE_ATTACHMENT")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     # CREATE ACCOUNT ATTACHMENT
+#     #[ACCOUNTS:CREATE_ATTACHMENT]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         include_online = True
+#         myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#         with myimage.open("rb") as image:
+#             account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                 xero_tenant_id,
+#                 account_id,
+#                 file_name=myimage.name,
+#                 body=image.read(),
+#             )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Attachment url '{}' created.".format(
+#             getvalue(account_attachment_created, "attachments.0.url", "")
+#         )
+#         json = serialize_model(account_attachment_created)
+#     #[/ACCOUNTS:CREATE_ATTACHMENT]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+#     )
 
 # BANK TRANSFERS TODO
 # getBankTransfers x
@@ -1045,6 +1491,286 @@ def accounting_bank_transfer_create():
     return render_template(
         "output.html", title="Bank Transfers", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transfer", action="create"
     )
+
+# @app.route("/accounting_account_get_attachments")
+# @xero_token_required
+# def accounting_account_get_attachments():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_id")
+# @xero_token_required
+# def accounting_account_get_attachment_by_id():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_file_name")
+# @xero_token_required
+# def accounting_account_get_attachment_by_file_name():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_bank_transaction_attachment_create_by_file_name")
+# @xero_token_required
+# def accounting_bank_transaction_attachment_create_by_file_name():
+#     code = get_code_snippet("BANKTRANSACTIONATTACHMENTS","CREATEBYFILENAME")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     file_name = "helo-heros.jpg"
+#     path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+#     open_file = open(path_to_upload, 'rb')
+#     body = open_file.read()
+
+#     try:
+#         created_bank_transaction_attachments_by_file_name = accounting_api.create_bank_transaction_attachment_by_file_name(
+#             xero_tenant_id, bank_transaction_id, file_name, body
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction attachment created with url {} .".format(
+#             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
+#         )
+#         json = serialize_model(created_bank_transaction_attachments_by_file_name)
+    
+#     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="create_attachment_by_file_name"
+#     )
+
+# @app.route("/accounting_account_update_attachment")
+# @xero_token_required
+# def accounting_account_update_attachment():
+#     code = get_code_snippet("ACCOUNTS","CREATE_ATTACHMENT")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     # CREATE ACCOUNT ATTACHMENT
+#     #[ACCOUNTS:CREATE_ATTACHMENT]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         include_online = True
+#         myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#         with myimage.open("rb") as image:
+#             account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                 xero_tenant_id,
+#                 account_id,
+#                 file_name=myimage.name,
+#                 body=image.read(),
+#             )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Attachment url '{}' created.".format(
+#             getvalue(account_attachment_created, "attachments.0.url", "")
+#         )
+#         json = serialize_model(account_attachment_created)
+#     #[/ACCOUNTS:CREATE_ATTACHMENT]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+#     )
 
 # BATCH PAYMENTS TODO
 # getBatchPayments x
@@ -1659,6 +2385,286 @@ def accounting_contact_read_one_by_contact_number():
         "output.html", title="Contacts", code=code, json=json, output=output, len = 0, set="accounting", endpoint="contact", action="read_one_by_number"
     )
 
+# @app.route("/accounting_account_get_attachments")
+# @xero_token_required
+# def accounting_account_get_attachments():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_id")
+# @xero_token_required
+# def accounting_account_get_attachment_by_id():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_file_name")
+# @xero_token_required
+# def accounting_account_get_attachment_by_file_name():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_bank_transaction_attachment_create_by_file_name")
+# @xero_token_required
+# def accounting_bank_transaction_attachment_create_by_file_name():
+#     code = get_code_snippet("BANKTRANSACTIONATTACHMENTS","CREATEBYFILENAME")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     file_name = "helo-heros.jpg"
+#     path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+#     open_file = open(path_to_upload, 'rb')
+#     body = open_file.read()
+
+#     try:
+#         created_bank_transaction_attachments_by_file_name = accounting_api.create_bank_transaction_attachment_by_file_name(
+#             xero_tenant_id, bank_transaction_id, file_name, body
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction attachment created with url {} .".format(
+#             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
+#         )
+#         json = serialize_model(created_bank_transaction_attachments_by_file_name)
+    
+#     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="create_attachment_by_file_name"
+#     )
+
+# @app.route("/accounting_account_update_attachment")
+# @xero_token_required
+# def accounting_account_update_attachment():
+#     code = get_code_snippet("ACCOUNTS","CREATE_ATTACHMENT")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     # CREATE ACCOUNT ATTACHMENT
+#     #[ACCOUNTS:CREATE_ATTACHMENT]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         include_online = True
+#         myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#         with myimage.open("rb") as image:
+#             account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                 xero_tenant_id,
+#                 account_id,
+#                 file_name=myimage.name,
+#                 body=image.read(),
+#             )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Attachment url '{}' created.".format(
+#             getvalue(account_attachment_created, "attachments.0.url", "")
+#         )
+#         json = serialize_model(account_attachment_created)
+#     #[/ACCOUNTS:CREATE_ATTACHMENT]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+#     )
+
 # CONTACT GROUPS TODO
 # getContactGroups x
 # createContactGroup x
@@ -2251,6 +3257,286 @@ def accounting_credit_note_allocation_create():
         "output.html", title="Credit Notes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="credit_note_allocation", action="create"
     )
 
+# @app.route("/accounting_account_get_attachments")
+# @xero_token_required
+# def accounting_account_get_attachments():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_id")
+# @xero_token_required
+# def accounting_account_get_attachment_by_id():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_file_name")
+# @xero_token_required
+# def accounting_account_get_attachment_by_file_name():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_bank_transaction_attachment_create_by_file_name")
+# @xero_token_required
+# def accounting_bank_transaction_attachment_create_by_file_name():
+#     code = get_code_snippet("BANKTRANSACTIONATTACHMENTS","CREATEBYFILENAME")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     file_name = "helo-heros.jpg"
+#     path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+#     open_file = open(path_to_upload, 'rb')
+#     body = open_file.read()
+
+#     try:
+#         created_bank_transaction_attachments_by_file_name = accounting_api.create_bank_transaction_attachment_by_file_name(
+#             xero_tenant_id, bank_transaction_id, file_name, body
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction attachment created with url {} .".format(
+#             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
+#         )
+#         json = serialize_model(created_bank_transaction_attachments_by_file_name)
+    
+#     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="create_attachment_by_file_name"
+#     )
+
+# @app.route("/accounting_account_update_attachment")
+# @xero_token_required
+# def accounting_account_update_attachment():
+#     code = get_code_snippet("ACCOUNTS","CREATE_ATTACHMENT")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     # CREATE ACCOUNT ATTACHMENT
+#     #[ACCOUNTS:CREATE_ATTACHMENT]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         include_online = True
+#         myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#         with myimage.open("rb") as image:
+#             account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                 xero_tenant_id,
+#                 account_id,
+#                 file_name=myimage.name,
+#                 body=image.read(),
+#             )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Attachment url '{}' created.".format(
+#             getvalue(account_attachment_created, "attachments.0.url", "")
+#         )
+#         json = serialize_model(account_attachment_created)
+#     #[/ACCOUNTS:CREATE_ATTACHMENT]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+#     )
+
 # CURRENCIES TODO
 # getCurrencies x
 # createCurrency x
@@ -2821,6 +4107,178 @@ def accounting_invoice_create():
         "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="create"
     )
 
+@app.route("/accounting_invoice_get_attachments")
+@xero_token_required
+def accounting_invoice_get_attachments():
+    code = get_code_snippet("INVOICES","GET_ATTACHMENTS")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_invoices = accounting_api.get_invoices(
+            xero_tenant_id
+        )
+        invoice_id = getvalue(read_invoices, "invoices.0.invoice_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        try:
+            include_online = True
+            file_name = "helo-heros.jpg"
+            path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+            open_file = open(path_to_upload, 'rb')
+            body = open_file.read()
+            content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+            invoice_attachment_created = accounting_api.create_invoice_attachment_by_file_name(
+                xero_tenant_id,
+                invoice_id,
+                file_name,
+                body,
+                include_online,
+            )
+        except AccountingBadRequestException as exception:
+            output = "Error: " + exception.reason
+            json = jsonify(exception.error_data)
+
+    # GET INVOICE ATTACHMENTS
+    #[INVOICES:GET_ATTACHMENTS]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_invoice_attachments = accounting_api.get_invoice_attachments(
+            xero_tenant_id, invoice_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Invoice attachments read {} total".format(
+            len(read_invoice_attachments.attachments)
+        )
+        json = serialize_model(read_invoice_attachments)
+    #[/INVOICES:GET_ATTACHMENTS]
+
+    return render_template(
+        "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="get_attachments"
+    )
+
+@app.route("/accounting_invoice_get_attachment_by_id")
+@xero_token_required
+def accounting_invoice_get_attachment_by_id():
+    code = get_code_snippet("INVOICES","GET_ATTACHMENTS_BY_ID")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_invoices = accounting_api.get_invoices(
+            xero_tenant_id
+        )
+        invoice_id = getvalue(read_invoices, "invoices.0.invoice_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        try:
+            include_online = True
+            file_name = "helo-heros.jpg"
+            path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+            open_file = open(path_to_upload, 'rb')
+            body = open_file.read()
+            content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+            invoice_attachment_created = accounting_api.create_invoice_attachment_by_file_name(
+                xero_tenant_id,
+                invoice_id,
+                file_name,
+                body,
+                include_online,
+            )
+            attachment_id = getvalue(invoice_attachment_created, "attachments.0.attachment_id", "")
+        except AccountingBadRequestException as exception:
+            output = "Error: " + exception.reason
+            json = jsonify(exception.error_data)
+
+    # GET INVOICE ATTACHMENTS
+    #[INVOICES:GET_ATTACHMENTS_BY_ID]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_invoice_attachments = accounting_api.get_invoice_attachment_by_id(
+            xero_tenant_id, invoice_id, attachment_id, content_type
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Invoice attachment read with ID {} ".format(
+            getvalue(read_invoice_attachments, "attachments.0.attachment_id", "")
+        )
+        json = serialize_model(read_invoice_attachments)
+    #[/INVOICES:GET_ATTACHMENTS_BY_ID]
+
+    return render_template(
+        "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="get_attachment_by_id"
+    )
+
+@app.route("/accounting_invoice_get_attachment_by_file_name")
+@xero_token_required
+def accounting_invoice_get_attachment_by_file_name():
+    code = get_code_snippet("INVOICES","GET_ATTACHMENT_BY_FILE_NAME")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_invoices = accounting_api.get_invoices(
+            xero_tenant_id
+        )
+        invoice_id = getvalue(read_invoices, "invoices.0.invoice_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        try:
+            include_online = True
+            file_name = "helo-heros.jpg"
+            path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+            open_file = open(path_to_upload, 'rb')
+            body = open_file.read()
+            content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+            invoice_attachment_created = accounting_api.create_invoice_attachment_by_file_name(
+                xero_tenant_id,
+                invoice_id,
+                file_name,
+                body,
+            )
+            file_name = getvalue(invoice_attachment_created, "attachments.0.file_name", "")
+        except AccountingBadRequestException as exception:
+            output = "Error: " + exception.reason
+            json = jsonify(exception.error_data)
+
+    # GET INVOICE ATTACHMENTS
+    #[INVOICES:GET_ATTACHMENT_BY_FILE_NAME]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_invoice_attachments = accounting_api.get_invoice_attachment_by_file_name(
+            xero_tenant_id, invoice_id, file_name, content_type
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Invoice attachment read with file name {} ".format(
+            getvalue(read_invoice_attachments, "attachments.0.file_name", "")
+        )
+        json = serialize_model(read_invoice_attachments)
+    #[/INVOICES:GET_ATTACHMENT_BY_FILE_NAME]
+
+    return render_template(
+        "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="get_attachment_by_file_name"
+    )
+
 @app.route("/accounting_invoice_attachment_create_by_file_name")
 @xero_token_required
 def accounting_invoice_attachment_create_by_file_name():
@@ -2846,10 +4304,15 @@ def accounting_invoice_attachment_create_by_file_name():
     path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
     open_file = open(path_to_upload, 'rb')
     body = open_file.read()
+    content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
 
     try:
         created_invoice_attachments_by_file_name = accounting_api.create_invoice_attachment_by_file_name(
-            xero_tenant_id, invoice_id, file_name, body, include_online
+            xero_tenant_id,
+            invoice_id,
+            file_name,
+            body,
+            include_online,
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
@@ -2864,6 +4327,73 @@ def accounting_invoice_attachment_create_by_file_name():
 
     return render_template(
         "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="create_attachment_by_file_name"
+    )
+
+@app.route("/accounting_invoice_update_attachment")
+@xero_token_required
+def accounting_invoice_update_attachment():
+    code = get_code_snippet("ACCOUNTS","UPDATE_ATTACHMENT")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_invoices = accounting_api.get_invoices(
+            xero_tenant_id
+        )
+        invoice_id = getvalue(read_invoices, "invoices.0.invoice_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        try:
+            include_online = True
+            file_name = "helo-heros.jpg"
+            path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+            open_file = open(path_to_upload, 'rb')
+            body = open_file.read()
+            content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+            invoice_attachment_created = accounting_api.create_invoice_attachment_by_file_name(
+                xero_tenant_id,
+                invoice_id,
+                file_name,
+                body,
+                include_online,
+            )
+            file_name = getvalue(invoice_attachment_created, "attachments.0.file_name", "")
+        except AccountingBadRequestException as exception:
+            output = "Error: " + exception.reason
+            json = jsonify(exception.error_data)
+
+    # UPDATE INVOICE ATTACHMENT
+    #[INVOICES:UPDATE_ATTACHMENT]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        include_online = True
+        file_name = file_name
+        path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+        open_file = open(path_to_upload, 'rb')
+        body = open_file.read()
+        content_type = mimetypes.MimeTypes().guess_type(file_name)[0]
+        invoice_attachment_updated = accounting_api.update_invoice_attachment_by_file_name(
+            xero_tenant_id,
+            invoice_id,
+            file_name,
+            body,
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Attachment name '{}' updated.".format(
+            getvalue(invoice_attachment_updated, "attachments.0.file_name", "")
+        )
+        json = serialize_model(invoice_attachment_updated)
+    #[/INVOICES:UPDATE_ATTACHMENT]
+
+    return render_template(
+        "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="update_attachment"
     )
 
 # INVOICE REMINDERS TODO
@@ -3234,6 +4764,286 @@ def accounting_manual_journals_read_one():
     return render_template(
         "output.html", title="Manual Journals", code=code, json=json, output=output, len = 0, set="accounting", endpoint="manual_journals", action="read_one"
     )
+
+# @app.route("/accounting_account_get_attachments")
+# @xero_token_required
+# def accounting_account_get_attachments():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_id")
+# @xero_token_required
+# def accounting_account_get_attachment_by_id():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_file_name")
+# @xero_token_required
+# def accounting_account_get_attachment_by_file_name():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_bank_transaction_attachment_create_by_file_name")
+# @xero_token_required
+# def accounting_bank_transaction_attachment_create_by_file_name():
+#     code = get_code_snippet("BANKTRANSACTIONATTACHMENTS","CREATEBYFILENAME")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     file_name = "helo-heros.jpg"
+#     path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+#     open_file = open(path_to_upload, 'rb')
+#     body = open_file.read()
+
+#     try:
+#         created_bank_transaction_attachments_by_file_name = accounting_api.create_bank_transaction_attachment_by_file_name(
+#             xero_tenant_id, bank_transaction_id, file_name, body
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction attachment created with url {} .".format(
+#             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
+#         )
+#         json = serialize_model(created_bank_transaction_attachments_by_file_name)
+    
+#     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="create_attachment_by_file_name"
+#     )
+
+# @app.route("/accounting_account_update_attachment")
+# @xero_token_required
+# def accounting_account_update_attachment():
+#     code = get_code_snippet("ACCOUNTS","CREATE_ATTACHMENT")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     # CREATE ACCOUNT ATTACHMENT
+#     #[ACCOUNTS:CREATE_ATTACHMENT]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         include_online = True
+#         myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#         with myimage.open("rb") as image:
+#             account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                 xero_tenant_id,
+#                 account_id,
+#                 file_name=myimage.name,
+#                 body=image.read(),
+#             )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Attachment url '{}' created.".format(
+#             getvalue(account_attachment_created, "attachments.0.url", "")
+#         )
+#         json = serialize_model(account_attachment_created)
+#     #[/ACCOUNTS:CREATE_ATTACHMENT]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+#     )
 
 # ORGANISATION TODO
 # getOrganisations x
@@ -3699,6 +5509,286 @@ def accounting_quotes_read_one():
         "output.html", title="Quotes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="quotes", action="read_one"
     )
 
+# @app.route("/accounting_account_get_attachments")
+# @xero_token_required
+# def accounting_account_get_attachments():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_id")
+# @xero_token_required
+# def accounting_account_get_attachment_by_id():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_file_name")
+# @xero_token_required
+# def accounting_account_get_attachment_by_file_name():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_bank_transaction_attachment_create_by_file_name")
+# @xero_token_required
+# def accounting_bank_transaction_attachment_create_by_file_name():
+#     code = get_code_snippet("BANKTRANSACTIONATTACHMENTS","CREATEBYFILENAME")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     file_name = "helo-heros.jpg"
+#     path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+#     open_file = open(path_to_upload, 'rb')
+#     body = open_file.read()
+
+#     try:
+#         created_bank_transaction_attachments_by_file_name = accounting_api.create_bank_transaction_attachment_by_file_name(
+#             xero_tenant_id, bank_transaction_id, file_name, body
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction attachment created with url {} .".format(
+#             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
+#         )
+#         json = serialize_model(created_bank_transaction_attachments_by_file_name)
+    
+#     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="create_attachment_by_file_name"
+#     )
+
+# @app.route("/accounting_account_update_attachment")
+# @xero_token_required
+# def accounting_account_update_attachment():
+#     code = get_code_snippet("ACCOUNTS","CREATE_ATTACHMENT")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     # CREATE ACCOUNT ATTACHMENT
+#     #[ACCOUNTS:CREATE_ATTACHMENT]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         include_online = True
+#         myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#         with myimage.open("rb") as image:
+#             account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                 xero_tenant_id,
+#                 account_id,
+#                 file_name=myimage.name,
+#                 body=image.read(),
+#             )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Attachment url '{}' created.".format(
+#             getvalue(account_attachment_created, "attachments.0.url", "")
+#         )
+#         json = serialize_model(account_attachment_created)
+#     #[/ACCOUNTS:CREATE_ATTACHMENT]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+#     )
+
 # RECEIPTS (DEPRECATED) TODO
 # getReceipts x
 # createReceipt
@@ -3776,6 +5866,286 @@ def accounting_receipts_read_one():
         "output.html", title="Receipts", code=code, json=json, output=output, len = 0, set="accounting", endpoint="receipts", action="read_one"
     )
 
+# @app.route("/accounting_account_get_attachments")
+# @xero_token_required
+# def accounting_account_get_attachments():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_id")
+# @xero_token_required
+# def accounting_account_get_attachment_by_id():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_file_name")
+# @xero_token_required
+# def accounting_account_get_attachment_by_file_name():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_bank_transaction_attachment_create_by_file_name")
+# @xero_token_required
+# def accounting_bank_transaction_attachment_create_by_file_name():
+#     code = get_code_snippet("BANKTRANSACTIONATTACHMENTS","CREATEBYFILENAME")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     file_name = "helo-heros.jpg"
+#     path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+#     open_file = open(path_to_upload, 'rb')
+#     body = open_file.read()
+
+#     try:
+#         created_bank_transaction_attachments_by_file_name = accounting_api.create_bank_transaction_attachment_by_file_name(
+#             xero_tenant_id, bank_transaction_id, file_name, body
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction attachment created with url {} .".format(
+#             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
+#         )
+#         json = serialize_model(created_bank_transaction_attachments_by_file_name)
+    
+#     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="create_attachment_by_file_name"
+#     )
+
+# @app.route("/accounting_account_update_attachment")
+# @xero_token_required
+# def accounting_account_update_attachment():
+#     code = get_code_snippet("ACCOUNTS","CREATE_ATTACHMENT")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     # CREATE ACCOUNT ATTACHMENT
+#     #[ACCOUNTS:CREATE_ATTACHMENT]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         include_online = True
+#         myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#         with myimage.open("rb") as image:
+#             account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                 xero_tenant_id,
+#                 account_id,
+#                 file_name=myimage.name,
+#                 body=image.read(),
+#             )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Attachment url '{}' created.".format(
+#             getvalue(account_attachment_created, "attachments.0.url", "")
+#         )
+#         json = serialize_model(account_attachment_created)
+#     #[/ACCOUNTS:CREATE_ATTACHMENT]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+#     )
+
 # REPEATING INVOICES TODO
 # getRepeatingInvoices x
 # getRepeatingInvoice x
@@ -3850,6 +6220,286 @@ def accounting_repeating_invoices_read_one():
     return render_template(
         "output.html", title="Repeating Invoices", code=code, json=json, output=output, len = 0, set="accounting", endpoint="repeating_invoices", action="read_one"
     )
+
+# @app.route("/accounting_account_get_attachments")
+# @xero_token_required
+# def accounting_account_get_attachments():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_id")
+# @xero_token_required
+# def accounting_account_get_attachment_by_id():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_account_get_attachment_by_file_name")
+# @xero_token_required
+# def accounting_account_get_attachment_by_file_name():
+#     code = get_code_snippet("ACCOUNTS","GET_ATTACHMENTS")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         try:
+#             include_online = True
+#             myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#             with myimage.open("rb") as image:
+#                 account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                     xero_tenant_id,
+#                     account_id,
+#                     file_name=myimage.name,
+#                     body=image.read(),
+#                 )
+#         except AccountingBadRequestException as exception:
+#             output = "Error: " + exception.reason
+#             json = jsonify(exception.error_data)
+
+#     # GET ACCOUNT ATTACHMENTS
+#     #[ACCOUNTS:GET_ATTACHMENTS]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_account_attachments = accounting_api.get_account_attachments(
+#             xero_tenant_id, account_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Account attachments read {} total".format(
+#             len(read_account_attachments.attachments)
+#         )
+#         json = serialize_model(read_account_attachments)
+#     #[/ACCOUNTS:GET_ATTACHMENTS]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="get_attachments"
+#     )
+
+# @app.route("/accounting_bank_transaction_attachment_create_by_file_name")
+# @xero_token_required
+# def accounting_bank_transaction_attachment_create_by_file_name():
+#     code = get_code_snippet("BANKTRANSACTIONATTACHMENTS","CREATEBYFILENAME")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     file_name = "helo-heros.jpg"
+#     path_to_upload = Path(__file__).resolve().parent.joinpath(file_name)
+#     open_file = open(path_to_upload, 'rb')
+#     body = open_file.read()
+
+#     try:
+#         created_bank_transaction_attachments_by_file_name = accounting_api.create_bank_transaction_attachment_by_file_name(
+#             xero_tenant_id, bank_transaction_id, file_name, body
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction attachment created with url {} .".format(
+#             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
+#         )
+#         json = serialize_model(created_bank_transaction_attachments_by_file_name)
+    
+#     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="create_attachment_by_file_name"
+#     )
+
+# @app.route("/accounting_account_update_attachment")
+# @xero_token_required
+# def accounting_account_update_attachment():
+#     code = get_code_snippet("ACCOUNTS","CREATE_ATTACHMENT")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     # CREATE ACCOUNT
+#     account = Account(
+#         name="FooBar" + get_random_num(),
+#         code=get_random_num(),
+#         description="My Foobar",
+#         type=AccountType.EXPENSE,
+#     )
+
+#     try:
+#         created_accounts = accounting_api.create_account(
+#             xero_tenant_id, account
+#         )
+#         account_id = getvalue(created_accounts, "accounts.0.account_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     # CREATE ACCOUNT ATTACHMENT
+#     #[ACCOUNTS:CREATE_ATTACHMENT]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         include_online = True
+#         myimage = Path(__file__).resolve().parent.joinpath("helo-heros.jpg")
+#         with myimage.open("rb") as image:
+#             account_attachment_created = accounting_api.create_account_attachment_by_file_name(
+#                 xero_tenant_id,
+#                 account_id,
+#                 file_name=myimage.name,
+#                 body=image.read(),
+#             )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Attachment url '{}' created.".format(
+#             getvalue(account_attachment_created, "attachments.0.url", "")
+#         )
+#         json = serialize_model(account_attachment_created)
+#     #[/ACCOUNTS:CREATE_ATTACHMENT]
+
+#     return render_template(
+#         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+#     )
 
 # REPORTS TODO
 # getReportTenNinetyNine

@@ -152,16 +152,16 @@ def tenants():
         len=0
     )
 
-# ACCOUNTS TODO
+# ACCOUNTS
 # getAccounts x
 # createAccount x
 # getAccount x
 # updateAccount x
 # deleteAccount x
 # getAccountAttachments x
-# getAccountAttachmentById
-# getAccountAttachmentByFileName
-# updateAccountAttachmentByFileName
+# getAccountAttachmentById x
+# getAccountAttachmentByFileName x
+# updateAccountAttachmentByFileName x
 # createAccountAttachmentByFileName x
 
 @app.route("/accounting_account_read_all")
@@ -3963,10 +3963,10 @@ def accounting_expense_claim_update():
 # updateInvoice
 # updateOrCreateInvoices
 # getInvoiceAsPdf
-# getInvoiceAttachments
-# getInvoiceAttachmentById
-# getInvoiceAttachmentByFileName
-# updateInvoiceAttachmentByFileName
+# getInvoiceAttachments x
+# getInvoiceAttachmentById x
+# getInvoiceAttachmentByFileName x
+# updateInvoiceAttachmentByFileName x
 # createInvoiceAttachmentByFileName x
 # getOnlineInvoice
 # emailInvoice

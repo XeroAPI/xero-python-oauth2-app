@@ -16,7 +16,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, Allocation, Allocations, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, ExpenseClaim, ExpenseClaims, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Phone, Purchase, Receipt, Receipts, TaxType, User, Users
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, Allocation, Allocations, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, ExpenseClaim, ExpenseClaims, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Phone, Purchase, Receipt, Receipts, TaxComponent, TaxRate, TaxRates, TaxType, TrackingCategory, TrackingCategories, TrackingOption, TrackingOptions, User, Users
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -4828,7 +4828,6 @@ def accounting_journals_read_one():
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
 
-    print(journal_id)
     try:
         read_one_journal = accounting_api.get_journal(
             xero_tenant_id, journal_id
@@ -6745,8 +6744,8 @@ def accounting_repeating_invoices_read_one():
 
 # TAX RATES TODO
 # getTaxRates x
-# createTaxRates
-# updateTaxRate
+# createTaxRates x
+# updateTaxRate 
 @app.route("/accounting_tax_rate_read_all")
 @xero_token_required
 def accounting_tax_rate_read_all():
@@ -6774,15 +6773,57 @@ def accounting_tax_rate_read_all():
         "output.html", title="Tax Rates", code=code, json=json, output=output, len = 0, set="accounting", endpoint="tax_rate", action="read_all"
     )
 
+@app.route("/accounting_tax_rate_create")
+@xero_token_required
+def accounting_tax_rate_create():
+    code = get_code_snippet("TAX_RATES","CREATE")
+
+    #[TAX_RATES:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    tax_component = TaxComponent(
+        name = "Example Tax",
+        rate = 20.00)
+
+    #report_tax_type is invalid for US orgs.
+    
+    tax_rate = TaxRate(
+        name = "Example Tax Rate",  
+        report_tax_type = "INPUT", 
+        tax_components = [tax_component])
+    
+    tax_rates = TaxRates(    
+        tax_rates = [tax_rate])
+
+    try:
+        create_tax_rates = accounting_api.create_tax_rates(
+            xero_tenant_id, tax_rates
+        )
+
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Tax Rate created with name {}.".format(
+            getvalue(create_tax_rates, "tax_rates.0.name", "")
+        )
+        json = serialize_model(create_tax_rates)
+    #[/TAX_RATES:CREATE]
+
+    return render_template(
+        "output.html", title="Tax Rates", code=code, json=json, output=output, len = 0, set="accounting", endpoint="tax_rate", action="create"
+    )
+
 # TRACKING CATEGORIES TODO
 # getTrackingCategories x
-# createTrackingCategory
+# createTrackingCategory x
 # getTrackingCategory x
-# updateTrackingCategory
-# deleteTrackingCategory
-# createTrackingOptions
-# updateTrackingOptions
-# deleteTrackingOptions
+# updateTrackingCategory x
+# deleteTrackingCategory x
+# createTrackingOptions x
+# updateTrackingOptions x
+# deleteTrackingOptions x
 @app.route("/accounting_tracking_categories_read_all")
 @xero_token_required
 def accounting_tracking_categories_read_all():
@@ -6846,6 +6887,215 @@ def accounting_tracking_categories_read_one():
 
     return render_template(
         "output.html", title="Tracking Category", code=code, json=json, output=output, len = 0, set="accounting", endpoint="tracking_categories", action="read_one"
+    )
+
+@app.route("/accounting_tracking_categories_create")
+@xero_token_required
+def accounting_tracking_categories_create():
+    code = get_code_snippet("TRACKING_CATEGORIES","CREATE")
+
+    #[TRACKING_CATEGORIES:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    tracking_category = TrackingCategory(
+        name = "Foobar" + get_random_num())
+
+    try:
+        created_tracking_category = accounting_api.create_tracking_category(
+            xero_tenant_id, tracking_category
+        )
+        account_id = getvalue(created_tracking_category, "tracking_categories.0.tracking_category_id", "")
+
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Tracking Category created with ID {} .".format(
+            getvalue(created_tracking_category, "tracking_categories.0.tracking_category_id", "")
+        )
+        json = serialize_model(created_tracking_category)
+    #[/TRACKING_CATEGORIES:CREATE]
+
+    return render_template(
+        "output.html", title="Tracking Categories", code=code, output=output, json=json, len = 0, set="accounting", endpoint="tracking_categories", action="create"
+    )
+
+@app.route("/accounting_tracking_categories_update")
+@xero_token_required
+def accounting_tracking_categories_update():
+    code = get_code_snippet("TRACKING_CATEGORIES","UPDATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    tracking_category = accounting_api.get_tracking_categories(
+            xero_tenant_id
+        )
+    tracking_category_id = getvalue(tracking_category, "tracking_categories.0.tracking_category_id", "")
+
+    tracking_category = TrackingCategory(
+        name = "Foobar" + get_random_num())
+
+    #[TRACKING_CATEGORIES:UPDATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        updated_tracking_category = accounting_api.update_tracking_category(
+            xero_tenant_id, tracking_category_id, tracking_category
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Tracking Category updated."
+        json = serialize_model(updated_tracking_category)
+    #[/TRACKING_CATEGORIES:UPDATE]
+
+    return render_template(
+        "output.html", title="Tracking Categories", code=code, output=output, json=json, len = 0, set="accounting", endpoint="tracking_categories", action="update"
+    )
+
+@app.route("/accounting_tracking_categories_delete")
+@xero_token_required
+def accounting_tracking_categories_delete():
+    code = get_code_snippet("TRACKING_CATEGORIES","DELETE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    tracking_category = accounting_api.get_tracking_categories(
+            xero_tenant_id
+        )
+    tracking_category_id = getvalue(tracking_category, "tracking_categories.1.tracking_category_id", "")
+
+    #[TRACKING_CATEGORIES:DELETE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        deleted_tracking_category = accounting_api.delete_tracking_category(
+            xero_tenant_id, tracking_category_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Tracking Category deleted."
+        json = serialize_model(deleted_tracking_category)
+    #[/TRACKING_CATEGORIES:DELETE]
+
+    return render_template(
+        "output.html", title="Tracking Categories", code=code, output=output, json=json, len = 0, set="accounting", endpoint="tracking_categories", action="delete"
+    )
+
+@app.route("/accounting_tracking_categories_create_options")
+@xero_token_required
+def accounting_tracking_categories_create_options():
+    code = get_code_snippet("TRACKING_OPTIONS","CREATE")
+
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    tracking_category = accounting_api.get_tracking_categories(
+            xero_tenant_id
+        )
+    tracking_category_id = getvalue(tracking_category, "tracking_categories.0.tracking_category_id", "")
+
+    #[TRACKING_OPTIONS:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    tracking_option = TrackingOption(
+        name = "Foobar" + get_random_num())
+
+    try:
+        created_tracking_option = accounting_api.create_tracking_options(
+            xero_tenant_id, tracking_category_id, tracking_option
+        )
+
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Tracking Option created with name {} .".format(
+            tracking_option.name
+        )
+        json = serialize_model(created_tracking_option)
+    #[/TRACKING_OPTIONS:CREATE]
+
+    return render_template(
+        "output.html", title="Tracking Options", code=code, output=output, json=json, len = 0, set="accounting", endpoint="tracking_categories", action="create_options"
+    )
+
+@app.route("/accounting_tracking_categories_update_options")
+@xero_token_required
+def accounting_tracking_categories_update_options():
+    code = get_code_snippet("TRACKING_OPTIONS","UPDATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    tracking_category = accounting_api.get_tracking_categories(
+            xero_tenant_id
+        )
+    tracking_category_id = getvalue(tracking_category, "tracking_categories.0.tracking_category_id", "")
+
+    tracking_option_id = getvalue(tracking_category, "tracking_categories.0.options.0.tracking_option_id", "")
+
+    tracking_option = TrackingOption(
+        name = "Foobar" + get_random_num())
+
+    #[TRACKING_OPTIONS:UPDATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        updated_tracking_option = accounting_api.update_tracking_options(
+            xero_tenant_id, tracking_category_id, tracking_option_id, tracking_option
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Tracking Category updated."
+        json = serialize_model(updated_tracking_option)
+    #[/TRACKING_OPTIONS:UPDATE]
+
+    return render_template(
+        "output.html", title="Tracking Options", code=code, output=output, json=json, len = 0, set="accounting", endpoint="tracking_categories", action="update_options"
+    )
+
+@app.route("/accounting_tracking_categories_delete_options")
+@xero_token_required
+def accounting_tracking_categories_delete_options():
+    code = get_code_snippet("TRACKING_OPTIONS","DELETE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    tracking_category = accounting_api.get_tracking_categories(
+            xero_tenant_id
+        )
+    tracking_category_id = getvalue(tracking_category, "tracking_categories.0.tracking_category_id", "")
+
+    tracking_option_id = getvalue(tracking_category, "tracking_categories.0.options.0.tracking_option_id", "")
+
+    #[TRACKING_OPTIONS:DELETE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        deleted_tracking_option = accounting_api.delete_tracking_options(
+            xero_tenant_id, tracking_category_id, tracking_option_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Tracking Option deleted."
+        json = serialize_model(deleted_tracking_option)
+    #[/TRACKING_OPTIONS:DELETE]
+
+    return render_template(
+        "output.html", title="Tracking Options", code=code, output=output, json=json, len = 0, set="accounting", endpoint="tracking_categories", action="delete_options"
     )
 
 # USERS TODO

@@ -16,7 +16,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, Allocation, Allocations, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, ExpenseClaim, ExpenseClaims, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Phone, Purchase, Receipt, Receipts, TaxComponent, TaxRate, TaxRates, TaxType, TrackingCategory, TrackingCategories, TrackingOption, TrackingOptions, User, Users
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, Allocation, Allocations, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, ExpenseClaim, ExpenseClaims, HistoryRecord, HistoryRecords, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Phone, Purchase, Receipt, Receipts, TaxComponent, TaxRate, TaxRates, TaxType, TrackingCategory, TrackingCategories, TrackingOption, TrackingOptions, User, Users
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -735,7 +735,7 @@ def accounting_account_delete():
         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="delete"
     )
 
-# BANK TRANSACTIONS TODO
+# BANK TRANSACTIONS
 # getBankTransactions x
 # createBankTransactions x
 # updateOrCreateBankTransactions x
@@ -746,8 +746,8 @@ def accounting_account_delete():
 # getBankTransactionAttachmentByFileName x
 # updateBankTransactionAttachmentByFileName x
 # createBankTransactionAttachmentByFileName x
-# getBankTransactionsHistory
-# createBankTransactionHistoryRecord
+# getBankTransactionsHistory x
+# createBankTransactionHistoryRecord x
 
 @app.route("/accounting_bank_transaction_read_all")
 @xero_token_required
@@ -1345,6 +1345,90 @@ def accounting_bank_transaction_update_attachment():
 
     return render_template(
         "output.html", title="Bank Transactions", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transaction", action="update_attachment"
+    )
+
+@app.route("/accounting_bank_transaction_history_read")
+@xero_token_required
+def accounting_bank_transaction_history_read():
+    code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_bank_transactions = accounting_api.get_bank_transactions(
+            xero_tenant_id
+        )
+        bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[BANKTRANSACTIONHISTORY:READ]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+            xero_tenant_id, bank_transaction_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Bank Transaction History read {} total".format(
+            len(read_bank_transaction_history.history_records)
+        )
+        json = serialize_model(read_bank_transaction_history)
+    #[/BANKTRANSACTIONHISTORY:READ]
+
+    return render_template(
+        "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+    )
+
+@app.route("/accounting_bank_transaction_history_create")
+@xero_token_required
+def accounting_bank_transaction_history_create():
+    code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_bank_transactions = accounting_api.get_bank_transactions(
+            xero_tenant_id
+        )
+        bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[BANKTRANSACTIONHISTORY:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    history_record = HistoryRecord(
+        details = "I'm a history record " + get_random_num()
+    )
+
+    history_records = HistoryRecords(
+        history_records = [history_record]
+    )
+
+    try:
+        create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+            xero_tenant_id, bank_transaction_id, history_records
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Bank transaction history added with details {} .".format(
+            getvalue(create_bank_transaction_history, "history_records.0.details", "")
+        )
+        json = serialize_model(create_bank_transaction_history)
+    #[/BANKTRANSACTIONHISTORY:CREATE]
+
+    return render_template(
+        "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
     )
 
 # BANK TRANSFERS TODO
@@ -2001,6 +2085,90 @@ def accounting_bank_transfer_update_attachment():
         "output.html", title="Bank Transfers", code=code, output=output, json=json, len = 0, set="accounting", endpoint="bank_transfer", action="update_attachment"
     )
 
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
+
 # BATCH PAYMENTS TODO
 # getBatchPayments x
 # createBatchPayment x
@@ -2147,7 +2315,91 @@ def accounting_batch_payment_create():
         "output.html", title="Batch Payments", code=code, json=json, output=output, len = 0, set="accounting", endpoint="batch_payment", action="create"
     )
 
-# BRANDING THEMES TODO
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
+
+# BRANDING THEMES
 # getBrandingThemes x
 # getBrandingTheme x
 # getBrandingThemePaymentServices x
@@ -2892,6 +3144,90 @@ def accounting_contact_read_one_by_contact_number():
 
 #     return render_template(
 #         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
 #     )
 
 # CONTACT GROUPS TODO
@@ -3766,7 +4102,91 @@ def accounting_credit_note_allocation_create():
 #         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
 #     )
 
-# CURRENCIES TODO
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
+
+# CURRENCIES
 # getCurrencies x
 # createCurrency x
 
@@ -3830,7 +4250,7 @@ def accounting_currency_create():
         "output.html", title="Currencies", code=code, json=json, output=output, len = 0, set="accounting", endpoint="currency", action="create"
     )
 
-# EMPLOYEES TODO
+# EMPLOYEES
 # getEmployees x
 # createEmployees x
 # updateOrCreateEmployees x
@@ -4184,6 +4604,90 @@ def accounting_expense_claim_update():
     return render_template(
         "output.html", title="Expense Claims", code=code, json=json, output=output, len = 0, set="accounting", endpoint="expense_claim", action="update"
     )
+
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
 
 # INVOICES TODO
 # getInvoices x
@@ -4625,7 +5129,91 @@ def accounting_invoice_update_attachment():
         "output.html", title="Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="invoice", action="update_attachment"
     )
 
-# INVOICE REMINDERS TODO
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
+
+# INVOICE REMINDERS
 # getInvoiceReminders x
 
 @app.route("/accounting_invoice_reminder_read_all")
@@ -4778,9 +5366,93 @@ def accounting_item_create():
         "output.html", title="Items", code=code, json=json, output=output, len = 0, set="accounting", endpoint="item", action="create"
     )
 
-# JOURNALS TODO
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
+
+# JOURNALS
 # getJournals x
-# getJournal
+# getJournal x
 @app.route("/accounting_journals_read_all")
 @xero_token_required
 def accounting_journals_read_all():
@@ -5374,6 +6046,90 @@ def accounting_overpayments_read_one():
         "output.html", title="Overpayments", code=code, json=json, output=output, len = 0, set="accounting", endpoint="overpayments", action="read_one"
     )
 
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
+
 # PAYMENTS TODO
 # getPayments x
 # createPayments
@@ -5447,7 +6203,91 @@ def accounting_payments_read_one():
         "output.html", title="Payments", code=code, json=json, output=output, len = 0, set="accounting", endpoint="payments", action="read_one"
     )
 
-# PAYMENT SERVICES TODO
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
+
+# PAYMENT SERVICES
 # getPaymentServices x
 # createPaymentService x
 @app.route("/accounting_payment_services_read_all")
@@ -5583,6 +6423,90 @@ def accounting_prepayments_read_one():
         "output.html", title="Prepayments", code=code, json=json, output=output, len = 0, set="accounting", endpoint="prepayments", action="read_one"
     )
 
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
+
 # PURCHASE ORDERS TODO
 # getPurchaseOrders x
 # createPurchaseOrders
@@ -5657,6 +6581,90 @@ def accounting_purchase_orders_read_one():
     return render_template(
         "output.html", title="Purchase Orders", code=code, json=json, output=output, len = 0, set="accounting", endpoint="purchase_orders", action="read_one"
     )
+
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
 
 # QUOTES TODO
 # getQuotes x
@@ -5736,6 +6744,90 @@ def accounting_quotes_read_one():
     return render_template(
         "output.html", title="Quotes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="quotes", action="read_one"
     )
+
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
 
 # @app.route("/accounting_account_get_attachments")
 # @xero_token_required
@@ -6374,6 +7466,90 @@ def accounting_receipts_read_one():
 #         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
 #     )
 
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
+#     )
+
 # REPEATING INVOICES TODO
 # getRepeatingInvoices x
 # getRepeatingInvoice x
@@ -6727,6 +7903,90 @@ def accounting_repeating_invoices_read_one():
 
 #     return render_template(
 #         "output.html", title="Accounts", code=code, output=output, json=json, len = 0, set="accounting", endpoint="account", action="create_attachment"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_read")
+# @xero_token_required
+# def accounting_bank_transaction_history_read():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:READ]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
+#             xero_tenant_id, bank_transaction_id
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank Transaction History read {} total".format(
+#             len(read_bank_transaction_history.history_records)
+#         )
+#         json = serialize_model(read_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:READ]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
+#     )
+
+# @app.route("/accounting_bank_transaction_history_create")
+# @xero_token_required
+# def accounting_bank_transaction_history_create():
+#     code = get_code_snippet("BANKTRANSACTIONHISTORY","CREATE")
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     try:
+#         read_bank_transactions = accounting_api.get_bank_transactions(
+#             xero_tenant_id
+#         )
+#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+
+#     #[BANKTRANSACTIONHISTORY:CREATE]
+#     xero_tenant_id = get_xero_tenant_id()
+#     accounting_api = AccountingApi(api_client)
+
+#     history_record = HistoryRecord(
+#         details = "I'm a history record " + get_random_num()
+#     )
+
+#     history_records = HistoryRecords(
+#         history_records = [history_record]
+#     )
+
+#     try:
+#         create_bank_transaction_history = accounting_api.create_bank_transaction_history_record(
+#             xero_tenant_id, bank_transaction_id, history_records
+#         )
+#     except AccountingBadRequestException as exception:
+#         output = "Error: " + exception.reason
+#         json = jsonify(exception.error_data)
+#     else:
+#         output = "Bank transaction history added with details {} .".format(
+#             getvalue(create_bank_transaction_history, "history_records.0.details", "")
+#         )
+#         json = serialize_model(create_bank_transaction_history)
+#     #[/BANKTRANSACTIONHISTORY:CREATE]
+
+#     return render_template(
+#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="create_history"
 #     )
 
 # REPORTS TODO

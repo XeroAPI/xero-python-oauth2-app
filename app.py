@@ -11121,6 +11121,18 @@ def refresh_token():
         code=jsonify({"Old Token": xero_token, "New token": new_token}),
         sub_title="token refreshed",
     )
+@app.route("/revoke-token")
+@xero_token_required
+def revoke_token():
+    xero_token = obtain_xero_oauth2_token()
+    new_token = api_client.revoke_oauth2_token()
+    session.pop('token', None)
+    return render_template(
+        "output.html",
+        title="Xero OAuth2 token",
+        code=jsonify({"Old Token": xero_token, "New token": new_token}),
+        sub_title="token revoked",
+    )
 
 
 def get_connection_id():

@@ -11068,7 +11068,7 @@ def login():
 
 @app.route("/callback")
 def oauth_callback():
-    if request.args.get("state") == session["state"]:
+    if request.args.get("state") != session["state"]:
         return "Error, state doesn't match, no token for you."
     try:
         response = xero.authorized_response()

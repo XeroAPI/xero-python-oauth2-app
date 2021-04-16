@@ -13,7 +13,7 @@ from functools import wraps
 from io import BytesIO
 from logging.config import dictConfig
 
-from flask import Flask, url_for, render_template, session, redirect, json, send_file
+from flask import Flask, url_for, render_template, session, redirect, json, send_file, request
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
 from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, Allocation, Allocations, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, ExpenseClaim, ExpenseClaims, HistoryRecord, HistoryRecords, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Phone, Purchase, Receipt, Receipts, TaxComponent, TaxRate, TaxRates, TaxType, TrackingCategory, TrackingCategories, TrackingOption, TrackingOptions, User, Users
@@ -11061,18 +11061,20 @@ def payroll_uk_tracking_categories_uk_read_all():
 @app.route("/login")
 def login():
     redirect_url = url_for("oauth_callback", _external=True)
-    response = xero.authorize(callback_uri=redirect_url)
+    session["state"] = app.config["STATE"]
+    response = xero.authorize(callback_uri=redirect_url, state=session["state"])
     return response
 
 
 @app.route("/callback")
 def oauth_callback():
+    if request.args.get("state") == session["state"]:
+        return "Error, state doesn't match, no token for you."
     try:
         response = xero.authorized_response()
     except Exception as e:
         print(e)
         raise
-    # todo validate state value
     if response is None or response.get("access_token") is None:
         return "Access denied: response=%s" % response
     store_xero_oauth2_token(response)

@@ -2613,9 +2613,97 @@
               <span class="menu-collapsed">Read (all)</span>
             </a>
           </div>
-
-
         </div>
+
+         <!-- FILES BUTTON -->
+         <a id="files_menu" href="#files" data-toggle="collapse" aria-expanded="false"
+          class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-start align-items-center">
+            <span class="fa fa-user fa-fw mr-3"></span>
+            <span class="menu-collapsed">Files</span>
+          </div>
+        </a>
+       <!-- FILES SUBMENU --->
+       <div id="files" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+         <a href="#file" data-toggle="collapse" aria-expanded="false"
+           class="list-group-item list-group-item-action flex-column align-items-start">
+           <div class="d-flex w-100 justify-content-start align-items-center">
+             <span class="fa fa-user fa-fw mr-3"></span>
+             <span class="menu-collapsed">File</span>
+           </div>
+         </a>
+         <div id="file" class="collapse sidebar-submenu" data-parent="#files">
+          <a id="files_file_read_all" href="{{ url_for('files_file_read_all') }}"
+            class="list-group-item list-group-item-action bg-dark text-white">
+            <span class="fa fa-user fa-fw mr-3"></span>
+            <span class="fa fa-user fa-fw mr-3"></span>
+            <span class="menu-collapsed">Read (all)</span>
+          </a>
+          <a id="files_file_read_one" href="{{ url_for('files_file_read_one') }}"
+            class="list-group-item list-group-item-action bg-dark text-white">
+            <span class="fa fa-user fa-fw mr-3"></span>
+            <span class="fa fa-user fa-fw mr-3"></span>
+            <span class="menu-collapsed">Read (one)</span>
+          </a>
+          <a id="files_file_upload" href="{{ url_for('files_file_upload') }}"
+             class="list-group-item list-group-item-action bg-dark text-white">
+             <span class="fa fa-user fa-fw mr-3"></span>
+             <span class="fa fa-user fa-fw mr-3"></span>
+             <span class="menu-collapsed">Upload</span>
+          </a>
+          
+         </div>
+
+          <!-- FOLDERS SUBMENU --->
+          <a href="#folder" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Folder</span>
+            </div>
+          </a>
+
+          <div id="folder" class="collapse sidebar-submenu" data-parent="#files">
+            <a id="files_folder_read_all" href="{{ url_for('files_folder_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (all)</span>
+            </a>
+            <a id="files_folder_read_one" href="{{ url_for('files_folder_read_one') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (one)</span>
+            </a>
+
+            <a id="files_folder_read_inbox" href="{{ url_for('files_folder_read_inbox') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read (inbox)</span>
+            </a>
+          </div>
+
+
+       <!-- FOLDERS CLOSING DIV --->
+        </div>
+         <!--
+           
+           updateFile -> by ID
+           deleteFile -> by ID
+           getFileContent -> by ID
+
+           getFileAssociations
+           createFileAssociation
+           deleteFileAssociation
+           getAssociationsByObject
+
+           createFolder
+           updateFolder -> by ID
+           deleteFolder
+
+         -->
       </ul>
     </div>
 

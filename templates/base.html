@@ -222,7 +222,9 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('refresh_token') }}">Refresh Token </a>
           </li>
-
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('revoke_token') }}">Revoke Token </a>
+          </li>
           <!-- notification -->
           <!--
         <li class="nav-item dropdown"> <a id="notifications" rel="nofollow" data-target="#" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link"><i class="fa fa-bell-o"></i><span class="badge bg-red">12</span></a>
@@ -488,6 +490,20 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Update (attachment)</span>
+            </a>
+            <a id="accounting_bank_transaction_history_read"
+              href="{{ url_for('accounting_bank_transaction_history_read') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read History</span>
+            </a>
+            <a id="accounting_bank_transaction_history_create"
+              href="{{ url_for('accounting_bank_transaction_history_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read History</span>
             </a>
           </div>
 
@@ -1250,6 +1266,12 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Read (all)</span>
             </a>
+            <a id="accounting_tax_rate_create" href="{{ url_for('accounting_tax_rate_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
           </div>
 
           <!-- TRACKING CATEGORIES -->
@@ -1274,6 +1296,45 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Read (one)</span>
+            </a>
+            <a id="accounting_tracking_categories_create" href="{{ url_for('accounting_tracking_categories_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create Category</span>
+            </a>
+            <a id="accounting_tracking_categories_update" href="{{ url_for('accounting_tracking_categories_update') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Update Category</span>
+            </a>
+            <a id="accounting_tracking_categories_delete" href="{{ url_for('accounting_tracking_categories_delete') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Delete Category</span>
+            </a>
+            <a id="accounting_tracking_categories_create_options"
+              href="{{ url_for('accounting_tracking_categories_create_options') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create Option</span>
+            </a>
+            <a id="accounting_tracking_categories_update_options"
+              href="{{ url_for('accounting_tracking_categories_update_options') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Update Option</span>
+            </a>
+            <a id="accounting_tracking_categories_delete_options"
+              href="{{ url_for('accounting_tracking_categories_delete_options') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Delete Option</span>
             </a>
           </div>
 

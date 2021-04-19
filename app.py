@@ -22,6 +22,7 @@ from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, Pro
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
 from xero_python.payrolluk import PayrollUkApi, Employees, Employee, Address, Employment
 from xero_python.payrollnz import PayrollNzApi, Employees, Employee, Address, Employment, EmployeeLeaveSetup
+from xero_python.file import FilesApi
 from xero_python.api_client import ApiClient, serialize
 from xero_python.api_client.configuration import Configuration
 from xero_python.api_client.oauth2 import OAuth2Token
@@ -63,7 +64,7 @@ xero = oauth.remote_app(
     "accounting.journals.read accounting.settings accounting.settings.read "
     "accounting.contacts accounting.contacts.read accounting.attachments "
     "accounting.attachments.read assets projects "
-    "paymentservices "
+    "files "
     "payroll.employees payroll.payruns payroll.payslip payroll.timesheets payroll.settings",
 )  # type: OAuth2Application
 
@@ -9546,6 +9547,190 @@ def payroll_uk_tracking_categories_uk_read_all():
 
     return render_template(
         "output.html", title="Tracking categories", code=code, output=output, json=json, len = 0, set="payroll_uk", endpoint="tracking_categories_uk", action="read_all"
+    )
+
+@app.route("/files_file_read_all")
+@xero_token_required
+def files_file_read_all():
+    code = get_code_snippet("FILE","READ_ALL")
+
+    xero_tenant_id = get_xero_tenant_id()
+    files_api = FilesApi(api_client)
+    accounting_api = AccountingApi(api_client)
+
+    #[FILE:READ_ALL]
+    try:
+        read_files = files_api.get_files(
+            xero_tenant_id, 
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "File Read (all)"
+        json = serialize_model(read_files)
+    #[/FILE:READ_ALL]
+
+    return render_template(
+        "output.html", title="File Read (all)", code=code, output=output, json=json, len = 0, set="files", endpoint="file", action="read_all"
+    )
+
+@app.route("/files_file_read_one")
+@xero_token_required
+def files_file_read_one():
+    code = get_code_snippet("FILE","READ_ONE")
+
+    xero_tenant_id = get_xero_tenant_id()
+    files_api = FilesApi(api_client)
+    accounting_api = AccountingApi(api_client)
+    
+    try:
+        read_files = files_api.get_files(
+            xero_tenant_id, 
+        )
+        file_id = getvalue(read_files, "items.0.id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    #[FILE:READ_ONE]
+    try:
+        read_file = files_api.get_file(
+            xero_tenant_id, file_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "File Read (one)"
+        json = serialize_model(read_file)
+    #[/FILE:READ_ONE]
+
+    return render_template(
+        "output.html", title="File Read (one)", code=code, output=output, json=json, len = 0, set="files", endpoint="file", action="read_one"
+    )
+
+@app.route("/files_file_upload")
+@xero_token_required
+def files_file_upload():
+    code = get_code_snippet("FILE","UPLOAD")
+
+    xero_tenant_id = get_xero_tenant_id()
+    files_api = FilesApi(api_client)
+    accounting_api = AccountingApi(api_client)
+
+    #[FILE:UPLOAD]
+    name = "helo-heros"
+    filename= "helo-heros.jpg"
+    mime_type = "image/jpg"
+    with open('helo-heros.jpg', 'rb') as f:
+        body = f.read()
+
+    try:
+        file_object = files_api.upload_file(
+            xero_tenant_id, 
+            name = name, 
+            filename= filename, 
+            mime_type = mime_type,
+            body=body
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "File upload"
+        json = serialize_model(file_object)
+    #[/FILE:UPLOAD]
+
+    return render_template(
+        "output.html", title="File upload", code=code, output=output, json=json, len = 0, set="files", endpoint="file", action="upload"
+    )
+
+@app.route("/files_folder_read_all")
+@xero_token_required
+def files_folder_read_all():
+    code = get_code_snippet("FOLDER","READ_ALL")
+
+    xero_tenant_id = get_xero_tenant_id()
+    files_api = FilesApi(api_client)
+    accounting_api = AccountingApi(api_client)
+
+    #[FOLDER:READ_ALL]
+    try:
+        folders = files_api.get_folders(
+            xero_tenant_id, 
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Folder Read (all)"
+        json = serialize_model(folders)
+    #[/FOLDER:READ_ALL]
+
+    return render_template(
+        "output.html", title="Folder Read (all)", code=code, output=output, json=json, len = 0, set="files", endpoint="folder", action="read_all"
+    )
+
+@app.route("/files_folder_read_one")
+@xero_token_required
+def files_folder_read_one():
+    code = get_code_snippet("FOLDER","READ_ONE")
+
+    xero_tenant_id = get_xero_tenant_id()
+    files_api = FilesApi(api_client)
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_folders = files_api.get_folders(
+            xero_tenant_id, 
+        )
+        folder_id = getvalue(read_folders, "1.id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+        
+    #[FOLDER:READ_ONE]
+    try:
+        read_folder = files_api.get_folder(
+            xero_tenant_id, folder_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Folder Read (one)"
+        json = serialize_model(read_folder)
+    #[/FOLDER:READ_ONE]
+
+    return render_template(
+        "output.html", title="Folder Read (one)", code=code, output=output, json=json, len = 0, set="files", endpoint="folder", action="read_one"
+    )
+
+@app.route("/files_folder_read_inbox")
+@xero_token_required
+def files_folder_read_inbox():
+    code = get_code_snippet("FOLDER","READ_INBOX")
+
+    xero_tenant_id = get_xero_tenant_id()
+    files_api = FilesApi(api_client)
+    accounting_api = AccountingApi(api_client)
+
+    #[FOLDER:READ_INBOX]
+    try:
+        read_inbox = files_api.get_inbox(
+            xero_tenant_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Inbox Read"
+        json = serialize_model(read_inbox)
+    #[/FOLDER:READ_INBOX]
+
+    return render_template(
+        "output.html", title="Inbox Read", code=code, output=output, json=json, len = 0, set="files", endpoint="folder", action="read_inbox"
     )
 
 @app.route("/login")

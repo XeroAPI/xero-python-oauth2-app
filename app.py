@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import time
+import datetime
 import dateutil.parser
 import re
 import mimetypes
@@ -28,6 +29,9 @@ from xero_python.api_client.oauth2 import OAuth2Token
 from xero_python.exceptions import AccountingBadRequestException, PayrollUkBadRequestException
 from xero_python.identity import IdentityApi
 from xero_python.utils import getvalue
+
+import jwt
+from jwt import PyJWKClient
 
 import logging_settings
 from utils import jsonify, serialize_model
@@ -11068,7 +11072,7 @@ def login():
 
 @app.route("/callback")
 def oauth_callback():
-    if request.args.get("state") == session["state"]:
+    if request.args.get("state") != session["state"]:
         return "Error, state doesn't match, no token for you."
     try:
         response = xero.authorized_response()
@@ -11077,6 +11081,11 @@ def oauth_callback():
         raise
     if response is None or response.get("access_token") is None:
         return "Access denied: response=%s" % response
+    try:
+        token_verified = verify_token(response)
+    except Exception as e:
+        print(e)
+        raise
     store_xero_oauth2_token(response)
     return redirect(url_for("index", _external=True))
 
@@ -11117,6 +11126,11 @@ def export_token():
 def refresh_token():
     xero_token = obtain_xero_oauth2_token()
     new_token = api_client.refresh_oauth2_token()
+    try:
+        token_verified = verify_token(new_token)
+    except Exception as e:
+        print(e)
+        raise
     return render_template(
         "output.html",
         title="Xero OAuth2 token",
@@ -11153,6 +11167,28 @@ def get_xero_tenant_id():
         if connection.tenant_type == "ORGANISATION":
             return connection.tenant_id
 
+def verify_token(token):
+    access_token = token.get("access_token")
+    id_token = token.get("id_token")
+    url = "https://identity.xero.com/.well-known/openid-configuration/jwks"
+    jwks_client = PyJWKClient(url)
+    access_token_signing_key = jwks_client.get_signing_key_from_jwt(access_token)
+    id_token_signing_key = jwks_client.get_signing_key_from_jwt(id_token)
+    decoded_access_token = jwt.decode(
+        access_token,
+        access_token_signing_key.key,
+        leeway=datetime.timedelta(seconds=10),
+        algorithms=["RS256"],
+        audience="https://identity.xero.com/resources",
+    )
+    decoded_id_token = jwt.decode(
+        id_token,
+        id_token_signing_key.key,
+        leeway=datetime.timedelta(seconds=10),
+        algorithms=["RS256"],
+        audience=app.config["CLIENT_ID"],
+    )
+    return
 
 if __name__ == "__main__":
     app.run(host='localhost', port=5000)

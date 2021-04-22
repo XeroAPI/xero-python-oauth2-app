@@ -1224,6 +1224,12 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Read (one)</span>
             </a>
+            <a id="accounting_receipts_create" href="{{ url_for('accounting_receipts_create') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create</span>
+            </a>
           </div>
 
           <!-- REPEATING INVOICES -->
@@ -1249,7 +1255,109 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Read (one)</span>
             </a>
+            <a id="accounting_repeating_invoices_read_history"
+              href="{{ url_for('accounting_repeating_invoices_read_history') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Read History</span>
+            </a>
+            <a id="accounting_repeating_invoices_create_history"
+              href="{{ url_for('accounting_repeating_invoices_create_history') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Create History</span>
+            </a>
           </div>
+
+          <!-- REPORTS -->
+          <a href="#reports" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Reports</span>
+            </div>
+          </a>
+          <div id="reports" class="collapse sidebar-submenu" data-parent="#accounting">
+            <a id="accounting_reports_read_ten_ninety_nine"
+              href="{{ url_for('accounting_reports_read_ten_ninety_nine') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">1099 (US)</span>
+            </a>
+            <a id="accounting_reports_read_aged_receivables_by_contact"
+              href="{{ url_for('accounting_reports_read_aged_receivables_by_contact') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Aged Receivables</span>
+            </a>
+            <a id="accounting_reports_read_aged_payables_by_contact"
+              href="{{ url_for('accounting_reports_read_aged_payables_by_contact') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Aged Payables</span>
+            </a>
+            <a id="accounting_reports_read_balance_sheet"
+              href="{{ url_for('accounting_reports_read_balance_sheet') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Balance Sheet</span>
+            </a>
+            <a id="accounting_reports_read_bank_summary"
+              href="{{ url_for('accounting_reports_read_bank_summary') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Bank Summary</span>
+            </a>
+            <a id="accounting_reports_read_ba_sor_gst"
+              href="{{ url_for('accounting_reports_read_ba_sor_gst') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">BAS or GST</span>
+            </a>
+            <a id="accounting_reports_read_ba_sor_gst_list"
+              href="{{ url_for('accounting_reports_read_ba_sor_gst_list') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">BAS or GST List</span>
+            </a>
+            <a id="accounting_reports_read_budget_summary"
+              href="{{ url_for('accounting_reports_read_budget_summary') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Budget Summary</span>
+            </a>
+            <a id="accounting_reports_read_executive_summary"
+              href="{{ url_for('accounting_reports_read_executive_summary') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Executive Summary</span>
+            </a>
+            <a id="accounting_reports_read_profit_and_loss"
+              href="{{ url_for('accounting_reports_read_profit_and_loss') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Profit & Loss</span>
+            </a>
+            <a id="accounting_reports_read_trial_balance"
+              href="{{ url_for('accounting_reports_read_trial_balance') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Trial Balance</span>
+            </a>
+           </div> 
 
           <!-- TAX RATES -->
           <a href="#tax_rate" data-toggle="collapse" aria-expanded="false"
@@ -1271,6 +1379,12 @@
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="fa fa-user fa-fw mr-3"></span>
               <span class="menu-collapsed">Create</span>
+            </a>
+            <a id="accounting_tax_rate_update" href="{{ url_for('accounting_tax_rate_update') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Update</span>
             </a>
           </div>
 

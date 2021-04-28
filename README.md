@@ -56,6 +56,7 @@ To obtain your API keys, follow these steps and create a Xero app
 ```python
 CLIENT_ID = "...client id string..."
 CLIENT_SECRET = "...client secret string..."
+STATE = "...my super secure state..."
 ```
 
 ## Take it for a spin

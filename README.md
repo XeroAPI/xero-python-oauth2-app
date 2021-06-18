@@ -59,6 +59,8 @@ CLIENT_SECRET = "...client secret string..."
 STATE = "...my super secure state..."
 ```
 
+Currently state is required. An empty string is not valid.
+
 ## Take it for a spin
 
 * Make sure your python virtual environment activated `source venv/bin/activate`

@@ -8305,64 +8305,64 @@ def accounting_reports_read_bank_summary():
         "output.html", title="Reports - Bank Summary", code=code, json=json, output=output, len = 0, set="accounting", endpoint="reports", action="read_bank_summary"
     )
 
-@app.route("/accounting_reports_read_ba_sor_gst_list")
+@app.route("/accounting_report_get_reports_list")
 @xero_token_required
-def accounting_reports_read_ba_sor_gst_list():
-    code = get_code_snippet("REPORTS_BA_SOR_GST_LIST","READ")
+def accounting_report_get_reports_list():
+    code = get_code_snippet("GET_REPORTS_LIST","READ")
 
     #This report is sepcific to AU (BAS) and NZ (GST) Xero Organisations
 
-    #[REPORTS_BA_SOR_GST_LIST:READ]
+    #[GET_REPORTS_LIST:READ]
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
 
     try:
-        read_report_ba_sor_gst_list = accounting_api.get_report_ba_sor_gst_list(
-            xero_tenant_id
+        get_reports_list = accounting_api.get_reports_list(
+            xero_tenant_id,
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
-        output = "BAS or GST List Report Read"
-        json = serialize_model(read_report_ba_sor_gst_list)
-    #[/REPORTS_BA_SOR_GST_LIST:READ]
+        output = "List Report Read"
+        json = serialize_model(get_reports_list)
+    #[/GET_REPORTS_LIST:READ]
 
     return render_template(
-        "output.html", title="Reports - BAS or GST List", code=code, json=json, output=output, len = 0, set="accounting", endpoint="reports", action="read_ba_sor_gst_list"
+        "output.html", title="Reports - List", code=code, json=json, output=output, len = 0, set="accounting", endpoint="reports", action="get_reports_list"
     )
 
-@app.route("/accounting_reports_read_ba_sor_gst")
+@app.route("/accounting_report_get_report_from_id")
 @xero_token_required
-def accounting_reports_read_ba_sor_gst():
-    code = get_code_snippet("REPORTS_BA_SOR_GST","READ")
+def accounting_report_get_report_from_id():
+    code = get_code_snippet("REPORT_FROM_ID","READ")
 
     #This report is sepcific to AU (BAS) and NZ (GST) Xero Organisations
 
-    #[REPORTS_BA_SOR_GST:READ]
+    #[REPORT_FROM_ID:READ]
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
 
-    read_ba_sor_gst = accounting_api.get_report_ba_sor_gst_list(
-            xero_tenant_id
-        )
+    get_reports_list = accounting_api.get_reports_list(
+        xero_tenant_id,
+    )
 
-    report_id = getvalue(read_ba_sor_gst, "reports.0.report_id", "")
+    report_id = getvalue(get_reports_list, "reports.0.report_id", "")
 
     try:
-        read_report_ba_sor_gst = accounting_api.get_report_ba_sor_gst(
+        read_report = accounting_api.get_report_from_id(
             xero_tenant_id, report_id
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
-        output = "BAS or GST Report Read"
-        json = serialize_model(read_report_ba_sor_gst)
-    #[/REPORTS_BA_SOR_GST:READ]
+        output = "Report Read"
+        json = serialize_model(read_report)
+    #[/REPORT_FROM_ID:READ]
 
     return render_template(
-        "output.html", title="Reports - BAS or GST Report", code=code, json=json, output=output, len = 0, set="accounting", endpoint="reports", action="read_ba_sor_gst"
+        "output.html", title="Reports - Report", code=code, json=json, output=output, len = 0, set="accounting", endpoint="reports", action="get_report_from_id"
     )
 
 @app.route("/accounting_reports_read_budget_summary")

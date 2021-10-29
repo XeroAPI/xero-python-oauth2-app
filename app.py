@@ -11873,193 +11873,189 @@ def finance_accounting_activities_user_activities_read_all():
         "output.html", title="Accounting Activity User Activities", code=code, json=json, output=output, len = 0, set="finance", endpoint="accounting_activities", action="user_activities_read_all"
     )
 
-@app.route("/cash_validation_read_all")
+@app.route("/finance_cash_validation_read_all")
 @xero_token_required
-def cash_validation_read_all():
-    code = get_code_snippet("ACCOUNTINGACTIVITYACCOUNTUSAGE","READ_ALL")
+def finance_cash_validation_read_all():
+    code = get_code_snippet("CASHVALIDATION","READ_ALL")
 
-    #[ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+    #[CASHVALIDATION:READ_ALL]
     xero_tenant_id = get_xero_tenant_id()
     finance_api = FinanceApi(api_client)
 
     try:
-        read_accounting_activity_account_usage = finance_api.get_accounting_activity_account_usage(
+        read_cash_validation = finance_api.get_cash_validation(
             xero_tenant_id
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
-        output = "Accounting activity account usage for org ID {} ".format(
-            getvalue(read_accounting_activity_account_usage, "organisation_id", "")
-        )
-        json = serialize_model(read_accounting_activity_account_usage)
-    #[/ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+        output = "Cash validation found for {} accounts".format( len(read_cash_validation) )
+        json = serialize_model(read_cash_validation)
+    #[/CASHVALIDATION:READ_ALL]
 
     return render_template(
-        "output.html", title="Accounting Activity Account Usage", code=code, json=json, output=output, len = 0, set="finance", endpoint="accounting_activites", action="read_all"
+        "output.html", title="Cash Validation", code=code, json=json, output=output, len = 0, set="finance", endpoint="cash_validation", action="read_all"
     )
 
-@app.route("/financial_statement_balance_sheet_read_all")
+@app.route("/finance_financial_statements_balance_sheet_read_all")
 @xero_token_required
-def financial_statement_balance_sheet_read_all():
-    code = get_code_snippet("ACCOUNTINGACTIVITYACCOUNTUSAGE","READ_ALL")
+def finance_financial_statements_balance_sheet_read_all():
+    code = get_code_snippet("BALANCESHEET","READ_ALL")
 
-    #[ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+    #[BALANCESHEET:READ_ALL]
     xero_tenant_id = get_xero_tenant_id()
     finance_api = FinanceApi(api_client)
 
     try:
-        read_accounting_activity_account_usage = finance_api.get_accounting_activity_account_usage(
+        read_financial_statement_balance_sheet = finance_api.get_financial_statement_balance_sheet(
             xero_tenant_id
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
-        output = "Accounting activity account usage for org ID {} ".format(
-            getvalue(read_accounting_activity_account_usage, "organisation_id", "")
+        output = "Balance sheet as of {} ".format(
+            getvalue(read_financial_statement_balance_sheet, "balance_date", "")
         )
-        json = serialize_model(read_accounting_activity_account_usage)
-    #[/ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+        json = serialize_model(read_financial_statement_balance_sheet)
+    #[/BALANCESHEET:READ_ALL]
 
     return render_template(
-        "output.html", title="Accounting Activity Account Usage", code=code, json=json, output=output, len = 0, set="finance", endpoint="accounting_activites", action="read_all"
+        "output.html", title="Financial Statements Balance Sheet", code=code, json=json, output=output, len = 0, set="finance", endpoint="financial_statements", action="balance_sheet_read_all"
     )
 
-@app.route("/financial_statement_cashflow_read_all")
+@app.route("/finance_financial_statements_cashflow_read_all")
 @xero_token_required
-def financial_statement_cashflow_read_all():
-    code = get_code_snippet("ACCOUNTINGACTIVITYACCOUNTUSAGE","READ_ALL")
+def finance_financial_statements_cashflow_read_all():
+    code = get_code_snippet("CASHFLOW","READ_ALL")
 
-    #[ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+    #[CASHFLOW:READ_ALL]
     xero_tenant_id = get_xero_tenant_id()
     finance_api = FinanceApi(api_client)
 
     try:
-        read_accounting_activity_account_usage = finance_api.get_accounting_activity_account_usage(
+        read_financial_statement_cashflow = finance_api.get_financial_statement_cashflow(
             xero_tenant_id
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
-        output = "Accounting activity account usage for org ID {} ".format(
-            getvalue(read_accounting_activity_account_usage, "organisation_id", "")
+        output = "Cash flow ending {} ".format(
+            getvalue(read_financial_statement_cashflow, "end_date", "")
         )
-        json = serialize_model(read_accounting_activity_account_usage)
-    #[/ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+        json = serialize_model(read_financial_statement_cashflow)
+    #[/CASHFLOW:READ_ALL]
 
     return render_template(
-        "output.html", title="Accounting Activity Account Usage", code=code, json=json, output=output, len = 0, set="finance", endpoint="accounting_activites", action="read_all"
+        "output.html", title="Financial Statements Cash Flow", code=code, json=json, output=output, len = 0, set="finance", endpoint="financial_statements", action="cashflow_read_all"
     )
 
-@app.route("/financial_statement_contacts_expense_read_all")
+@app.route("/finance_financial_statements_contacts_expense_read_all")
 @xero_token_required
-def financial_statement_contacts_expense_read_all():
-    code = get_code_snippet("ACCOUNTINGACTIVITYACCOUNTUSAGE","READ_ALL")
+def finance_financial_statements_contacts_expense_read_all():
+    code = get_code_snippet("CONTACTSEXPENSE","READ_ALL")
 
-    #[ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+    #[CONTACTSEXPENSE:READ_ALL]
     xero_tenant_id = get_xero_tenant_id()
     finance_api = FinanceApi(api_client)
 
     try:
-        read_accounting_activity_account_usage = finance_api.get_accounting_activity_account_usage(
+        read_financial_statement_contacts_expense = finance_api.get_financial_statement_contacts_expense(
             xero_tenant_id
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
-        output = "Accounting activity account usage for org ID {} ".format(
-            getvalue(read_accounting_activity_account_usage, "organisation_id", "")
+        output = "Contact expenses total of {} ".format(
+            getvalue(read_financial_statement_contacts_expense, "total", "")
         )
-        json = serialize_model(read_accounting_activity_account_usage)
-    #[/ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+        json = serialize_model(read_financial_statement_contacts_expense)
+    #[/CONTACTSEXPENSE:READ_ALL]
 
     return render_template(
-        "output.html", title="Accounting Activity Account Usage", code=code, json=json, output=output, len = 0, set="finance", endpoint="accounting_activites", action="read_all"
+        "output.html", title="Financial Statements Contacts Expense", code=code, json=json, output=output, len = 0, set="finance", endpoint="financial_statements", action="contacts_expense_read_all"
     )
 
-@app.route("/financial_statement_contacts_revenue_read_all")
+@app.route("/finance_financial_statements_contacts_revenue_read_all")
 @xero_token_required
-def financial_statement_contacts_revenue_read_all():
-    code = get_code_snippet("ACCOUNTINGACTIVITYACCOUNTUSAGE","READ_ALL")
+def finance_financial_statements_contacts_revenue_read_all():
+    code = get_code_snippet("CONTACTSREVENUE","READ_ALL")
 
-    #[ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+    #[CONTACTSREVENUE:READ_ALL]
     xero_tenant_id = get_xero_tenant_id()
     finance_api = FinanceApi(api_client)
 
     try:
-        read_accounting_activity_account_usage = finance_api.get_accounting_activity_account_usage(
+        read_financial_statement_contacts_revenue = finance_api.get_financial_statement_contacts_revenue(
             xero_tenant_id
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
-        output = "Accounting activity account usage for org ID {} ".format(
-            getvalue(read_accounting_activity_account_usage, "organisation_id", "")
+        output = "Contact revenues total of {} ".format(
+            getvalue(read_financial_statement_contacts_revenue, "total", "")
         )
-        json = serialize_model(read_accounting_activity_account_usage)
-    #[/ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+        json = serialize_model(read_financial_statement_contacts_revenue)
+    #[/CONTACTSREVENUE:READ_ALL]
 
     return render_template(
-        "output.html", title="Accounting Activity Account Usage", code=code, json=json, output=output, len = 0, set="finance", endpoint="accounting_activites", action="read_all"
+        "output.html", title="Financial Statements Contacts Revenue", code=code, json=json, output=output, len = 0, set="finance", endpoint="financial_statements", action="contacts_revenue_read_all"
     )
 
-@app.route("/financial_statement_profit_and_loss_read_all")
+@app.route("/finance_financial_statements_profit_and_loss_read_all")
 @xero_token_required
-def financial_statement_profit_and_loss_read_all():
-    code = get_code_snippet("ACCOUNTINGACTIVITYACCOUNTUSAGE","READ_ALL")
+def finance_financial_statements_profit_and_loss_read_all():
+    code = get_code_snippet("PROFITANDLOSS","READ_ALL")
 
-    #[ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+    #[PROFITANDLOSS:READ_ALL]
     xero_tenant_id = get_xero_tenant_id()
     finance_api = FinanceApi(api_client)
 
     try:
-        read_accounting_activity_account_usage = finance_api.get_accounting_activity_account_usage(
+        read_financial_statement_profit_and_loss = finance_api.get_financial_statement_profit_and_loss(
             xero_tenant_id
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
-        output = "Accounting activity account usage for org ID {} ".format(
-            getvalue(read_accounting_activity_account_usage, "organisation_id", "")
+        output = "Net profit and loss of {} ".format(
+            getvalue(read_financial_statement_profit_and_loss, "net_profit_loss", "")
         )
-        json = serialize_model(read_accounting_activity_account_usage)
-    #[/ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+        json = serialize_model(read_financial_statement_profit_and_loss)
+    #[/PROFITANDLOSS:READ_ALL]
 
     return render_template(
-        "output.html", title="Accounting Activity Account Usage", code=code, json=json, output=output, len = 0, set="finance", endpoint="accounting_activites", action="read_all"
+        "output.html", title="Financial Statements Profit and Loss", code=code, json=json, output=output, len = 0, set="finance", endpoint="financial_statements", action="profit_and_loss_read_all"
     )
 
-@app.route("/financial_statement_trial_balance_read_all")
+@app.route("/finance_financial_statements_trial_balance_read_all")
 @xero_token_required
-def financial_statement_trial_balance_read_all():
-    code = get_code_snippet("ACCOUNTINGACTIVITYACCOUNTUSAGE","READ_ALL")
+def finance_financial_statements_trial_balance_read_all():
+    code = get_code_snippet("TRIALBALANCE","READ_ALL")
 
-    #[ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+    #[TRIALBALANCE:READ_ALL]
     xero_tenant_id = get_xero_tenant_id()
     finance_api = FinanceApi(api_client)
 
     try:
-        read_accounting_activity_account_usage = finance_api.get_accounting_activity_account_usage(
+        read_financial_statement_trial_balance = finance_api.get_financial_statement_trial_balance(
             xero_tenant_id
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
     else:
-        output = "Accounting activity account usage for org ID {} ".format(
-            getvalue(read_accounting_activity_account_usage, "organisation_id", "")
-        )
-        json = serialize_model(read_accounting_activity_account_usage)
-    #[/ACCOUNTINGACTIVITYACCOUNTUSAGE:READ_ALL]
+        output = "Trial balance for {} accounts".format( len(read_financial_statement_trial_balance.accounts) )
+        json = serialize_model(read_financial_statement_trial_balance)
+    #[/TRIALBALANCE:READ_ALL]
 
     return render_template(
-        "output.html", title="Accounting Activity Account Usage", code=code, json=json, output=output, len = 0, set="finance", endpoint="accounting_activites", action="read_all"
+        "output.html", title="Financial Statements Trial Balance", code=code, json=json, output=output, len = 0, set="finance", endpoint="financial_statements", action="trial_balance_read_all"
     )
 
 @app.route("/login")

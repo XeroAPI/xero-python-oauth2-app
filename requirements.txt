@@ -1,4 +1,4 @@
 flask
 flask-session==0.3.2
 flask-oauthlib==0.9.6
-xero-python==v1.8.0
+xero-python==v1.11.0b1

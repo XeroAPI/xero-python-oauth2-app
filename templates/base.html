@@ -106,6 +106,14 @@
         $('#projects .collapse').collapse('hide');
         $('#payroll_au .collapse').collapse('hide');
       });
+      $("#finance_menu").on("click", function () {
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark");
+        $('#accounting .collapse').collapse('hide');
+        $('#assets .collapse').collapse('hide');
+        $('#projects .collapse').collapse('hide');
+        $('#payroll_au .collapse').collapse('hide');
+      });
     });
 
 
@@ -2818,6 +2826,52 @@
            deleteFolder
 
          -->
+
+        <!-- FINANCE BUTTON -->
+        <a id="finance_menu" href="#finance" data-toggle="collapse" aria-expanded="false"
+        class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-start align-items-center">
+          <span class="fa fa-user fa-fw mr-3"></span>
+          <span class="menu-collapsed">Finance</span>
+        </div>
+        </a>
+        <!-- FINANCE SUBMENU-->
+        <div id="finance" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+          <!-- ACCOUNTING ACTIVITIES -->
+          <a href="#accounting_activities" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Accounting Activities</span>
+            </div>
+          </a>
+          <div id="accounting_activities" class="collapse sidebar-submenu" data-parent="#finance">
+            <a id="finance_accounting_activities_account_usage_read_all" href="{{ url_for('finance_accounting_activities_account_usage_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Account Usage</span>
+            </a>
+            <a id="finance_accounting_activities_lock_history_read_all" href="{{ url_for('finance_accounting_activities_lock_history_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Lock History</span>
+            </a>
+            <a id="finance_accounting_activities_report_history_read_all" href="{{ url_for('finance_accounting_activities_report_history_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Report History</span>
+            </a>
+            <a id="finance_accounting_activities_user_activities_read_all" href="{{ url_for('finance_accounting_activities_user_activities_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">User Activities</span>
+            </a>
+          </div>
+        </div>
       </ul>
     </div>
 

@@ -106,6 +106,14 @@
         $('#projects .collapse').collapse('hide');
         $('#payroll_au .collapse').collapse('hide');
       });
+      $("#finance_menu").on("click", function () {
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').removeClass("menu-selected");
+        $('#{{ set }}_{{ endpoint }}_{{ action }}').addClass("bg-dark");
+        $('#accounting .collapse').collapse('hide');
+        $('#assets .collapse').collapse('hide');
+        $('#projects .collapse').collapse('hide');
+        $('#payroll_au .collapse').collapse('hide');
+      });
     });
 
 
@@ -2818,6 +2826,114 @@
            deleteFolder
 
          -->
+
+        <!-- FINANCE BUTTON -->
+        <a id="finance_menu" href="#finance" data-toggle="collapse" aria-expanded="false"
+        class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-start align-items-center">
+          <span class="fa fa-user fa-fw mr-3"></span>
+          <span class="menu-collapsed">Finance</span>
+        </div>
+        </a>
+        <!-- FINANCE SUBMENU-->
+        <div id="finance" class="collapse sidebar-submenu" data-parent="#sidebar-container">
+          <!-- ACCOUNTING ACTIVITIES -->
+          <a href="#accounting_activities" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Accounting Activities</span>
+            </div>
+          </a>
+          <div id="accounting_activities" class="collapse sidebar-submenu" data-parent="#finance">
+            <a id="finance_accounting_activities_account_usage_read_all" href="{{ url_for('finance_accounting_activities_account_usage_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Account Usage (GET)</span>
+            </a>
+            <a id="finance_accounting_activities_lock_history_read_all" href="{{ url_for('finance_accounting_activities_lock_history_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Lock History (GET)</span>
+            </a>
+            <a id="finance_accounting_activities_report_history_read_all" href="{{ url_for('finance_accounting_activities_report_history_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Report History (GET)</span>
+            </a>
+            <a id="finance_accounting_activities_user_activities_read_all" href="{{ url_for('finance_accounting_activities_user_activities_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">User Activities (GET)</span>
+            </a>
+          </div>
+          <!-- CASH VALIDATION -->
+          <a href="#cash_validation" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Cash Validation</span>
+            </div>
+          </a>
+          <div id="cash_validation" class="collapse sidebar-submenu" data-parent="#finance">
+            <a id="finance_cash_validation_read_all" href="{{ url_for('finance_cash_validation_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Cash Validation (GET)</span>
+            </a>
+          </div>
+          <!-- FINANCIAL STATEMENTS -->
+          <a href="#financial_statements" data-toggle="collapse" aria-expanded="false"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-start align-items-center">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Financial Statements</span>
+            </div>
+          </a>
+          <div id="financial_statements" class="collapse sidebar-submenu" data-parent="#finance">
+            <a id="finance_financial_statements_balance_sheet_read_all" href="{{ url_for('finance_financial_statements_balance_sheet_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Balance Sheet (GET)</span>
+            </a>
+            <a id="finance_financial_statements_cashflow_read_all" href="{{ url_for('finance_financial_statements_cashflow_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Cash Flow (GET)</span>
+            </a>
+            <a id="finance_financial_statements_contacts_expense_read_all" href="{{ url_for('finance_financial_statements_contacts_expense_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Contacts Expense (GET)</span>
+            </a>
+            <a id="finance_financial_statements_contacts_revenue_read_all" href="{{ url_for('finance_financial_statements_contacts_revenue_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Contacts Revenue (GET)</span>
+            </a>
+            <a id="finance_financial_statements_profit_and_loss_read_all" href="{{ url_for('finance_financial_statements_profit_and_loss_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Profit and Loss (GET)</span>
+            </a>
+            <a id="finance_financial_statements_trial_balance_read_all" href="{{ url_for('finance_financial_statements_trial_balance_read_all') }}"
+              class="list-group-item list-group-item-action bg-dark text-white">
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="fa fa-user fa-fw mr-3"></span>
+              <span class="menu-collapsed">Trial Balance (GET)</span>
+            </a>
+          </div>
+        </div>
       </ul>
     </div>
 

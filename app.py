@@ -68,9 +68,9 @@ xero = oauth.remote_app(
     "accounting.contacts accounting.contacts.read accounting.attachments "
     "accounting.attachments.read assets projects "
     "files "
-    "payroll.employees payroll.payruns payroll.payslip payroll.timesheets payroll.settings"
+    "payroll.employees payroll.payruns payroll.payslip payroll.timesheets payroll.settings",
     # "paymentservices "
-    # "finance.accountingactivity.read finance.cashvalidation.read finance.statements.read",
+    # "finance.bankstatementsplus.read finance.cashvalidation.read finance.statements.read finance.accountingactivity.read",
 )  # type: OAuth2Application
 
 
@@ -12056,6 +12056,43 @@ def finance_financial_statements_trial_balance_read_all():
 
     return render_template(
         "output.html", title="Financial Statements Trial Balance", code=code, json=json, output=output, len = 0, set="finance", endpoint="financial_statements", action="trial_balance_read_all"
+    )
+
+@app.route("/finance_bank_statement_accounting")
+@xero_token_required
+def finance_bank_statement_accounting_read():
+    code = get_code_snippet("BANKSTATEMENTSPLUS","READ")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    where = "Status==\"ACTIVE\" AND Type==\"BANK\""
+    try:
+        read_accounts_for_valid_status = accounting_api.get_accounts(
+            xero_tenant_id, where=where
+        )
+        account_id = getvalue(read_accounts_for_valid_status, "accounts.0.account_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[BANKSTATEMENTSPLUS:READ]
+    xero_tenant_id = get_xero_tenant_id()
+    finance_api = FinanceApi(api_client)
+
+    try:
+        read_bank_statements_plus = finance_api.get_bank_statement_accounting(
+            xero_tenant_id, account_id, from_date="2021-04-01", to_date="2022-03-01"
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Bank Statement Data for Account ID: {}".format(account_id)
+        json = serialize_model(read_bank_statements_plus)
+    #[/BANKSTATEMENTSPLUS:READ]
+
+    return render_template(
+        "output.html", title="Bank Statement Accounting", code=code, json=json, output=output, len = 0, set="finance", endpoint="financial_statements", action="bank_statements_plus_read"
     )
 
 @app.route("/login")

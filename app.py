@@ -12058,7 +12058,7 @@ def finance_financial_statements_trial_balance_read_all():
         "output.html", title="Financial Statements Trial Balance", code=code, json=json, output=output, len = 0, set="finance", endpoint="financial_statements", action="trial_balance_read_all"
     )
 
-@app.route("/finance_bank_statement_accounting")
+@app.route("/finance_bank_statement_accounting_read")
 @xero_token_required
 def finance_bank_statement_accounting_read():
     code = get_code_snippet("BANKSTATEMENTSPLUS","READ")

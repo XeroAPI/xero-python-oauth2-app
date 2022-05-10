@@ -5490,7 +5490,7 @@ def accounting_journals_read_all():
 @app.route("/accounting_journals_read_one")
 @xero_token_required
 def accounting_journals_read_one():
-    code = get_code_snippet("JOURNALS","READ_ONE")
+    code = get_code_snippet("JOURNAL","READ_ONE")
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
 
@@ -5503,7 +5503,7 @@ def accounting_journals_read_one():
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
 
-    #[JOURNALS:READ_ONE]
+    #[JOURNAL:READ_ONE]
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
 
@@ -5523,6 +5523,44 @@ def accounting_journals_read_one():
 
     return render_template(
         "output.html", title="Journals", code=code, json=json, output=output, len = 0, set="accounting", endpoint="journals", action="read_one"
+    )
+
+@app.route("/accounting_journals_read_one_by_number")
+@xero_token_required
+def accounting_journals_read_one_by_number():
+    code = get_code_snippet("JOURNAL","READ_ONE_BY_NUMBER")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_journals = accounting_api.get_journals(
+            xero_tenant_id
+        )
+        journal_number = getvalue(read_journals, "journals.0.journal_number", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[JOURNAL:READ_ONE_BY_NUMBER]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_one_journal = accounting_api.get_journal_by_number(
+            xero_tenant_id, journal_number
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Journal read with number {} ".format(
+            getvalue(read_journals, "journals.0.journal_number", "")
+        )
+        json = serialize_model(read_one_journal)
+    #[/JOURNAL:READ_ONE_BY_NUMBER]
+
+    return render_template(
+        "output.html", title="Journals", code=code, json=json, output=output, len = 0, set="accounting", endpoint="journals", action="read_one_by_number"
     )
 
 # LINKED TRANSACTIONS TODO

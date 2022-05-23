@@ -20,7 +20,7 @@ from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
 from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, Allocation, Allocations, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, ExpenseClaim, ExpenseClaims, HistoryRecord, HistoryRecords, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Phone, Purchase, Receipt, Receipts, TaxComponent, TaxRate, TaxRates, TaxType, TrackingCategory, TrackingCategories, TrackingOption, TrackingOptions, User, Users
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
-from xero_python.project import ProjectApi, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, TimeEntryCreateOrUpdate
+from xero_python.project import ProjectApi, Amount, ChargeType, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, Task, TaskCreateOrUpdate, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
 from xero_python.payrolluk import PayrollUkApi, Employees, Employee, Address, Employment
 from xero_python.payrollnz import PayrollNzApi, Employees, Employee, Address, Employment, EmployeeLeaveSetup
@@ -9470,6 +9470,190 @@ def projects_task_read_one():
 
     return render_template(
         "output.html", title="Tasks", code=code, output=output, json=json, len = 0, set="projects", endpoint="task", action="read_one"
+    )
+
+@app.route("/projects_task_create")
+@xero_token_required
+def projects_task_create():
+    code = get_code_snippet("TASKS","CREATE")
+    xero_tenant_id = get_xero_tenant_id()
+    project_api = ProjectApi(api_client)
+
+    try:
+        read_projects = project_api.get_projects(
+            xero_tenant_id
+        )
+        project_id = getvalue(read_projects, "items.0.project_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[TASKS:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    project_api = ProjectApi(api_client)
+
+    rate = Amount(
+        currency=CurrencyCode.USD,
+        value=99.99
+    )
+    task_create_or_update = TaskCreateOrUpdate(
+        name="Deep Fryer",
+        rate=rate,
+        charge_type=ChargeType.TIME,
+        estimate_minutes=120
+    )
+
+    try:
+        created_task = project_api.create_task(
+            xero_tenant_id, project_id, task_create_or_update=task_create_or_update
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Task create success"
+        json = "201 no response"
+
+    #[/TASKS:CREATE]
+    return render_template(
+        "output.html", title="Tasks", code=code, output=output, json=json, len = 0, set="projects", endpoint="task", action="create"
+    )
+
+@app.route("/projects_task_update")
+@xero_token_required
+def projects_task_update():
+    code = get_code_snippet("TASKS","UPDATE")
+    xero_tenant_id = get_xero_tenant_id()
+    project_api = ProjectApi(api_client)
+
+    try:
+        read_projects = project_api.get_projects(
+            xero_tenant_id
+        )
+        project_id = getvalue(read_projects, "items.0.project_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    rate = Amount(
+        currency=CurrencyCode.USD,
+        value=99.99
+    )
+    task_create_or_update = TaskCreateOrUpdate(
+        name="Deep Fryer",
+        rate=rate,
+        charge_type=ChargeType.TIME,
+        estimate_minutes=120
+    )
+
+    try:
+        created_task = project_api.create_task(
+            xero_tenant_id, project_id, task_create_or_update=task_create_or_update
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    try:
+        read_tasks = project_api.get_tasks(
+            xero_tenant_id, project_id=project_id
+        )
+        task_id = getvalue(read_tasks, "items.0.task_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[TASKS:UPDATE]
+    xero_tenant_id = get_xero_tenant_id()
+    project_api = ProjectApi(api_client)
+
+    task_create_or_update = TaskCreateOrUpdate(
+        name=get_random_num(),
+        rate=read_tasks.items[0].rate,
+        charge_type=read_tasks.items[0].charge_type,
+        estimate_minutes=read_tasks.items[0].estimate_minutes
+    )
+
+    try:
+        updated_task = project_api.update_task(
+            xero_tenant_id, project_id, task_id, task_create_or_update
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Task update success"
+        json = "204 no response"
+
+    #[/TASKS:UPDATE]
+    return render_template(
+        "output.html", title="Tasks", code=code, output=output, json=json, len = 0, set="projects", endpoint="task", action="update"
+    )
+
+@app.route("/projects_task_delete")
+@xero_token_required
+def projects_task_delete():
+    code = get_code_snippet("TASKS","DELETE")
+    xero_tenant_id = get_xero_tenant_id()
+    project_api = ProjectApi(api_client)
+
+    try:
+        read_projects = project_api.get_projects(
+            xero_tenant_id
+        )
+        project_id = getvalue(read_projects, "items.0.project_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    rate = Amount(
+        currency=CurrencyCode.USD,
+        value=99.99
+    )
+    task_create_or_update = TaskCreateOrUpdate(
+        name="Deep Fryer",
+        rate=rate,
+        charge_type=ChargeType.TIME,
+        estimate_minutes=120
+    )
+
+    try:
+        created_task = project_api.create_task(
+            xero_tenant_id, project_id, task_create_or_update=task_create_or_update
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    
+    try:
+        read_tasks = project_api.get_tasks(
+            xero_tenant_id, project_id=project_id
+        )
+        task_id = getvalue(read_tasks, "items.0.task_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[TASKS:DELETE]
+    xero_tenant_id = get_xero_tenant_id()
+    project_api = ProjectApi(api_client)
+
+    try:
+        deleted_task = project_api.delete_task(
+            xero_tenant_id, project_id, task_id
+        )
+    except AccountingBadRequestException as exception:
+        # If you are encountering {"Message":"A validation exception occurred"}
+        # Note that if the task has a service associated or has a status INVOICED, it will not be removed.
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Task delete success"
+        json = "204 no response"
+
+    #[/TASKS:DELETE]
+    return render_template(
+        "output.html", title="Tasks", code=code, output=output, json=json, len = 0, set="projects", endpoint="task", action="delete"
     )
 
 @app.route("/projects_time_read_all")

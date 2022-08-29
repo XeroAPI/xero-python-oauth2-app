@@ -18,7 +18,7 @@ from logging.config import dictConfig
 from flask import Flask, url_for, render_template, session, redirect, json, send_file, request
 from flask_oauthlib.contrib.client import OAuth, OAuth2Application
 from flask_session import Session
-from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, Allocation, Allocations, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, ExpenseClaim, ExpenseClaims, HistoryRecord, HistoryRecords, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Phone, Purchase, Receipt, Receipts, TaxComponent, TaxRate, TaxRates, TaxType, TrackingCategory, TrackingCategories, TrackingOption, TrackingOptions, User, Users
+from xero_python.accounting import AccountingApi, Account, Accounts, AccountType, Allocation, Allocations, BatchPayment, BatchPayments, BankTransaction, BankTransactions, BankTransfer, BankTransfers, Contact, Contacts, ContactGroup, ContactGroups, ContactPerson, CreditNote, CreditNotes, Currency, Currencies, CurrencyCode, Employee, Employees, ExpenseClaim, ExpenseClaims, HistoryRecord, HistoryRecords, Invoice, Invoices, Item, Items, LineAmountTypes, LineItem, Payment, Payments, PaymentService, PaymentServices, Phone, Purchase, Quote, Quotes, Receipt, Receipts, RepeatingInvoice, RepeatingInvoices, Schedule, TaxComponent, TaxRate, TaxRates, TaxType, TrackingCategory, TrackingCategories, TrackingOption, TrackingOptions, User, Users
 from xero_python.assets import AssetApi, Asset, AssetStatus, AssetStatusQueryParam, AssetType, BookDepreciationSetting
 from xero_python.project import ProjectApi, Amount, ChargeType, Projects, ProjectCreateOrUpdate, ProjectPatch, ProjectStatus, ProjectUsers, Task, TaskCreateOrUpdate, TimeEntryCreateOrUpdate
 from xero_python.payrollau import PayrollAuApi, Employees, Employee, EmployeeStatus,State, HomeAddress
@@ -4813,7 +4813,7 @@ def accounting_invoice_create():
     )
 
     line_item = LineItem(
-        account_code=account_id,
+        account_id=account_id,
         description= "Consulting",
         quantity=1.0,
         unit_amount=10.0,
@@ -6790,43 +6790,72 @@ def accounting_quotes_read_one():
         "output.html", title="Quotes", code=code, json=json, output=output, len = 0, set="accounting", endpoint="quotes", action="read_one"
     )
 
-# @app.route("/accounting_bank_transaction_history_read")
-# @xero_token_required
-# def accounting_bank_transaction_history_read():
-#     code = get_code_snippet("BANKTRANSACTIONHISTORY","READ")
-#     xero_tenant_id = get_xero_tenant_id()
-#     accounting_api = AccountingApi(api_client)
+@app.route("/accounting_quotes_create")
+@xero_token_required
+def accounting_quotes_create():
+    code = get_code_snippet("QUOTES","CREATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
 
-#     try:
-#         read_bank_transactions = accounting_api.get_bank_transactions(
-#             xero_tenant_id
-#         )
-#         bank_transaction_id = getvalue(read_bank_transactions, "bank_transactions.0.bank_transaction_id", "")
-#     except AccountingBadRequestException as exception:
-#         output = "Error: " + exception.reason
-#         json = jsonify(exception.error_data)
+    # READ CONTACT
+    try:
+        read_contacts = accounting_api.get_contacts(
+            xero_tenant_id
+        )
+        contact_id = getvalue(read_contacts, "contacts.0.contact_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
-#     #[BANKTRANSACTIONHISTORY:READ]
-#     xero_tenant_id = get_xero_tenant_id()
-#     accounting_api = AccountingApi(api_client)
+    # READ ACCOUNT
+    where = "Type==\"SALES\"&&Status==\"ACTIVE\""
+    try:
+        read_accounts = accounting_api.get_accounts(
+            xero_tenant_id, where=where
+        )
+        account_id = getvalue(read_accounts, "accounts.0.account_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
 
-#     try:
-#         read_bank_transaction_history = accounting_api.get_bank_transactions_history(
-#             xero_tenant_id, bank_transaction_id
-#         )
-#     except AccountingBadRequestException as exception:
-#         output = "Error: " + exception.reason
-#         json = jsonify(exception.error_data)
-#     else:
-#         output = "Bank Transaction History read {} total".format(
-#             len(read_bank_transaction_history.history_records)
-#         )
-#         json = serialize_model(read_bank_transaction_history)
-#     #[/BANKTRANSACTIONHISTORY:READ]
+    #[QUOTES:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
 
-#     return render_template(
-#         "output.html", title="Bank Transactions", code=code, json=json, output=output, len = 0, set="accounting", endpoint="bank_transaction", action="read_history"
-#     )
+    contact = Contact(
+        contact_id=contact_id
+    )
+
+    line_item = LineItem(
+        account_id=account_id,
+        description= "Consulting",
+    )
+
+    quote = Quote(
+        line_items=[line_item],
+        contact=contact,
+        date= dateutil.parser.parse("2022-08-29T00:00:00Z"),
+    )
+
+    quotes = Quotes(quotes=[quote])
+
+    try:
+        created_quotes = accounting_api.create_quotes(
+            xero_tenant_id, quotes=quotes
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "New quote created with ID: '{}'.".format(
+            getvalue(created_quotes, "quotes.0.quote_id", "")
+        )
+        json = serialize_model(created_quotes)
+    #[/QUOTES:CREATE]
+
+    return render_template(
+        "output.html", title="Quotes", code=code, output=output, json=json, len = 0, set="accounting", endpoint="quotes", action="create"
+    )
 
 # @app.route("/accounting_bank_transaction_history_create")
 # @xero_token_required
@@ -7737,6 +7766,87 @@ def accounting_repeating_invoices_read_one():
 
     return render_template(
         "output.html", title="Repeating Invoices", code=code, json=json, output=output, len = 0, set="accounting", endpoint="repeating_invoices", action="read_one"
+    )
+
+@app.route("/accounting_repeating_invoices_create")
+@xero_token_required
+def accounting_repeating_invoices_create():
+    code = get_code_snippet("REPEATING_INVOICES","CREATE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    # READ CONTACT
+    try:
+        read_contacts = accounting_api.get_contacts(
+            xero_tenant_id
+        )
+        contact_id = getvalue(read_contacts, "contacts.0.contact_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    # READ ACCOUNT
+    where = "Type==\"SALES\"&&Status==\"ACTIVE\""
+    try:
+        read_accounts = accounting_api.get_accounts(
+            xero_tenant_id, where=where
+        )
+        account_id = getvalue(read_accounts, "accounts.0.account_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[REPEATING_INVOICES:CREATE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    contact = Contact(
+        contact_id=contact_id
+    )
+
+    line_item = LineItem(
+        account_id=account_id,
+        description= "Consulting",
+        quantity=1.0,
+        unit_amount=10.0,
+    )
+
+    schedule = Schedule(
+        period=1,
+        unit="MONTHLY",
+        due_date=31,
+        due_date_type= "OFCURRENTMONTH",
+        start_date=dateutil.parser.parse("2022-08-30T00:00:00"),
+        next_scheduled_date=dateutil.parser.parse("2022-09-06T00:00:00")
+    )
+
+    repeating_invoice = RepeatingInvoice(
+        line_items=[line_item],
+        contact=contact,
+        schedule=schedule,
+        type="ACCREC",
+        approved_for_sending=False,
+        status="DRAFT"
+    )
+
+    repeating_invoices = RepeatingInvoices(repeating_invoices=[repeating_invoice])
+
+    try:
+        created_repeating_invoices = accounting_api.create_repeating_invoices(
+            xero_tenant_id, repeating_invoices=repeating_invoices
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "New repeating invoice created with ID '{}'.".format(
+            getvalue(created_repeating_invoices, "repeating_invoices.0.repeating_invoice_id", "")
+        )
+        json = serialize_model(created_repeating_invoices)
+    #[/REPEATING_INVOICES:CREATE]
+
+    return render_template(
+        "output.html", title="Repeating Invoices", code=code, output=output, json=json, len = 0, set="accounting", endpoint="repeating_invoices", action="create"
     )
 
 @app.route("/accounting_repeating_invoices_read_history")

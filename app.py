@@ -2209,6 +2209,44 @@ def accounting_batch_payment_read_all():
         "output.html", title="Batch Payments", code=code, json=json, output=output, len = 0, set="accounting", endpoint="batch_payment", action="read_all"
     )
 
+@app.route("/accounting_batch_payment_read_one")
+@xero_token_required
+def accounting_batch_payment_read_one():
+    code = get_code_snippet("BATCHPAYMENTS","READ_ONE")
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_batch_payments = accounting_api.get_batch_payments(
+            xero_tenant_id
+        )
+        batch_payment_id = getvalue(read_batch_payments, "batch_payments.0.batch_payment_id", "")
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+
+    #[BATCHPAYMENTS:READ_ONE]
+    xero_tenant_id = get_xero_tenant_id()
+    accounting_api = AccountingApi(api_client)
+
+    try:
+        read_one_batch_payment = accounting_api.get_batch_payment(
+            xero_tenant_id, batch_payment_id
+        )
+    except AccountingBadRequestException as exception:
+        output = "Error: " + exception.reason
+        json = jsonify(exception.error_data)
+    else:
+        output = "Batch Payment read with id {} ".format(
+            getvalue(read_one_batch_payment, "batch_payments.0.batch_payment_id", "")
+        )
+        json = serialize_model(read_one_batch_payment)
+    #[/BATCHPAYMENTS:READ_ONE]
+
+    return render_template(
+        "output.html", title="Batch Payments", code=code, json=json, output=output, len = 0, set="accounting", endpoint="batch_payment", action="read_one"
+    )
+
 @app.route("/accounting_batch_payment_create")
 @xero_token_required
 def accounting_batch_payment_create():
@@ -2234,7 +2272,7 @@ def accounting_batch_payment_create():
             xero_tenant_id, where
         )
         account_id = getvalue(accounts, "accounts.0.account_id", "")
-        account = Account(account_id)
+        account = Account(account_id=account_id)
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
@@ -2293,13 +2331,11 @@ def accounting_batch_payment_create():
         amount=7.25
     )
 
-    payments = Payments(payments=[payment_1, payment_2])
-
     batch_payment = BatchPayment(
         date=dateutil.parser.parse("2020-12-24"),
         reference="Something",
         account=account,
-        payments=payments
+        payments=[payment_1, payment_2]
     )
 
     batch_payments = BatchPayments(batch_payments=[batch_payment])
@@ -9603,7 +9639,7 @@ def projects_task_create():
     project_api = ProjectApi(api_client)
 
     rate = Amount(
-        currency=CurrencyCode.USD,
+        currency=CurrencyCode.AUD,
         value=99.99
     )
     task_create_or_update = TaskCreateOrUpdate(
@@ -9622,7 +9658,7 @@ def projects_task_create():
         json = jsonify(exception.error_data)
     else:
         output = "Task create success"
-        json = "201 no response"
+        json = serialize_model(created_task)
 
     #[/TASKS:CREATE]
     return render_template(

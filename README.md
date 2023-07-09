@@ -64,6 +64,7 @@ Currently state is required. An empty string is not valid.
 ## Take it for a spin
 
 * Make sure your python virtual environment activated `source venv/bin/activate`
+* Install packages the app is dependent on `pip install -r requirements.txt`
 * Start flask application `python3 app.py`
 * Launch your browser and navigate to http://localhost:5000/login 
 * You should be redirected to Xero login page.

@@ -62,13 +62,11 @@ xero = oauth.remote_app(
     authorization_url="https://login.xero.com/identity/connect/authorize",
     access_token_url="https://identity.xero.com/connect/token",
     refresh_token_url="https://identity.xero.com/connect/token",
-    scope="offline_access openid profile email accounting.transactions "
-    "accounting.transactions.read accounting.reports.read "
-    "accounting.journals.read accounting.settings accounting.settings.read "
-    "accounting.contacts accounting.contacts.read accounting.attachments "
-    "accounting.attachments.read assets projects "
-    "files "
-    "payroll.employees payroll.payruns payroll.payslip payroll.timesheets payroll.settings",
+    scope="accounting.contacts accounting.attachments.read payroll.payslip assets accounting.attachments "
+    "accounting.contacts.read email projects.read payroll.settings assets.read accounting.transactions.read "
+    "files.read accounting.settings openid payroll.timesheets profile projects offline_access "
+    "accounting.reports.read accounting.journals.read payroll.employees accounting.budgets.read "
+    "accounting.settings.read files payroll.payruns accounting.transactions",
     # "paymentservices "
     # "finance.bankstatementsplus.read finance.cashvalidation.read finance.statements.read finance.accountingactivity.read",
 )  # type: OAuth2Application

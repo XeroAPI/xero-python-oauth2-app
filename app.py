@@ -42,6 +42,7 @@ dictConfig(logging_settings.default_settings)
 app = Flask(__name__)
 app.config.from_object("default_settings")
 app.config.from_pyfile("config.py", silent=True)
+os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 if app.config["ENV"] != "production":
     # allow oauth2 loop to run over http (used for local testing only)

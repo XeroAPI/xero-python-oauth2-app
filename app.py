@@ -63,6 +63,7 @@ xero = oauth.remote_app(
     access_token_url="https://identity.xero.com/connect/token",
     refresh_token_url="https://identity.xero.com/connect/token",
     scope="files.read profile files accounting.contacts.read payroll.settings accounting.attachments accounting.journals.read accounting.attachments.read projects.read accounting.transactions.read accounting.settings.read payroll.payslip payroll.payruns payroll.employees accounting.transactions assets accounting.contacts accounting.budgets.read offline_access assets.read payroll.timesheets projects openid email accounting.reports.read accounting.settings",
+    #accounting.reports.bankstatement.read
     # "paymentservices "
     # "finance.bankstatementsplus.read finance.cashvalidation.read finance.statements.read finance.accountingactivity.read",
 )  # type: OAuth2Application
@@ -95,9 +96,31 @@ def xero_token_required(function):
     @wraps(function)
     def decorator(*args, **kwargs):
         xero_token = obtain_xero_oauth2_token()
+        print('xero_token', xero_token)
         if not xero_token:
             return redirect(url_for("login", _external=True))
 
+        from app2 import find_or_create_bank_transaction
+        from datetime import date
+        target_date = date(2025, 5, 30)
+        target_amount = '2000.00'
+        xero_tenant_id = get_xero_tenant_id()
+        # matches, error = find_or_create_bank_transaction(
+        #     xero_tenant_id=xero_tenant_id,
+        #     api_client=api_client,
+        #     target_date=target_date,
+        #     target_amount=target_amount,
+        # )
+        # print('matches', matches)
+        # print('error', error)
+        bank, inv = find_or_create_bank_transaction(
+            xero_tenant_id=xero_tenant_id,
+            api_client=api_client,
+            target_date=date(2025, 6, 3),
+            target_amount='1000.00',
+        )
+        # if either set, its reconcilated.
+        import ipdb; ipdb.set_trace()
         return function(*args, **kwargs)
 
     return decorator
@@ -170,7 +193,7 @@ def accounting_account_read_all():
     code = get_code_snippet("ACCOUNTS","READ_ALL")
 
     #[ACCOUNTS:READ_ALL]
-    xero_tenant_id = get_xero_tenant_id()
+    xero_tenant_id = get_xero_tenant_id(kwargs=True)
     accounting_api = AccountingApi(api_client)
     order = 'Name ASC'
 
@@ -1275,7 +1298,7 @@ def accounting_bank_transaction_attachment_create_by_file_name():
             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
         )
         json = serialize_model(created_bank_transaction_attachments_by_file_name)
-    
+
     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
 
     return render_template(
@@ -1970,7 +1993,7 @@ def accounting_bank_transfer_attachment_create_by_file_name():
             getvalue(created_bank_transfer_attachments_by_file_name, "attachments.0.url", "")
         )
         json = serialize_model(created_bank_transfer_attachments_by_file_name)
-    
+
     #[/BANKTRANSFERATTACHMENTS:CREATEBYFILENAME]
 
     return render_template(
@@ -2513,7 +2536,7 @@ def accounting_branding_theme_payment_service_read_all():
     code = get_code_snippet("BRANDINGTHEMEPAYMENTSERVICES","READ_ALL")
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
-    
+
     try:
         read_branding_themes = accounting_api.get_branding_themes(
             xero_tenant_id
@@ -3123,7 +3146,7 @@ def accounting_contact_read_one_by_contact_number():
 #             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
 #         )
 #         json = serialize_model(created_bank_transaction_attachments_by_file_name)
-    
+
 #     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
 
 #     return render_template(
@@ -3832,13 +3855,13 @@ def accounting_credit_note_allocation_create():
 
     invoice = Invoice(
         invoice_id = invoice_id)
-    
+
     allocation = Allocation(
         amount = 1.0,
         date = curr_date,
         invoice = invoice)
-    
-    allocations = Allocations(    
+
+    allocations = Allocations(
         allocations = [allocation])
 
     try:
@@ -4079,7 +4102,7 @@ def accounting_credit_note_allocation_create():
 #             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
 #         )
 #         json = serialize_model(created_bank_transaction_attachments_by_file_name)
-    
+
 #     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
 
 #     return render_template(
@@ -4514,7 +4537,7 @@ def accounting_expense_claim_create():
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
-    
+
     try:
         read_receipts = accounting_api.get_receipts(
             xero_tenant_id
@@ -4531,20 +4554,20 @@ def accounting_expense_claim_create():
 
     user = User(
         user_id = user_id)
-    
+
     receipt = Receipt(
         receipt_id = receipt_id,
         date = curr_date)
-    
+
     receipts = []
     receipts.append(receipt)
-    
+
     expense_claim = ExpenseClaim(
         status = "SUBMITTED",
         user = user,
         receipts = receipts)
-    
-    expense_claims = ExpenseClaims(    
+
+    expense_claims = ExpenseClaims(
         expense_claims = [expense_claim])
 
     try:
@@ -4580,7 +4603,7 @@ def accounting_expense_claim_update():
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
-    
+
     try:
         read_receipts = accounting_api.get_receipts(
             xero_tenant_id
@@ -4589,7 +4612,7 @@ def accounting_expense_claim_update():
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
-    
+
     try:
         read_expense_claims = accounting_api.get_expense_claims(
             xero_tenant_id
@@ -4606,20 +4629,20 @@ def accounting_expense_claim_update():
 
     user = User(
         user_id = user_id)
-    
+
     receipt = Receipt(
         receipt_id = receipt_id,
         date = curr_date)
-    
+
     receipts = []
     receipts.append(receipt)
-    
+
     expense_claim = ExpenseClaim(
         status = "PAID",
         user = user,
         receipts = receipts)
-    
-    expense_claims = ExpenseClaims(    
+
+    expense_claims = ExpenseClaims(
         expense_claims = [expense_claim])
 
     print(xero_tenant_id, expense_claim_id, expense_claims)
@@ -5092,7 +5115,7 @@ def accounting_invoice_attachment_create_by_file_name():
             getvalue(created_invoice_attachments_by_file_name, "attachments.0.url", "")
         )
         json = serialize_model(created_invoice_attachments_by_file_name)
-    
+
     #[/INVOICEATTACHMENTS:CREATEBYFILENAME]
 
     return render_template(
@@ -5960,7 +5983,7 @@ def accounting_manual_journals_read_one():
 #             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
 #         )
 #         json = serialize_model(created_bank_transaction_attachments_by_file_name)
-    
+
 #     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
 
 #     return render_template(
@@ -7153,7 +7176,7 @@ def accounting_quotes_create():
 #             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
 #         )
 #         json = serialize_model(created_bank_transaction_attachments_by_file_name)
-    
+
 #     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
 
 #     return render_template(
@@ -7317,30 +7340,30 @@ def accounting_receipts_create():
     xero_tenant_id = get_xero_tenant_id()
     accounting_api = AccountingApi(api_client)
     unitdp = 4
-    
+
     contact = Contact(
         contact_id = getvalue(read_contacts, "contacts.0.contact_id", ""))
-    
+
     user = User(
         user_id = getvalue(read_users, "users.0.user_id", ""))
-    
+
     line_item = LineItem(
         description = "Foobar",
         quantity = 1.0,
         unit_amount = 20.0,
         account_code = "300")
-    
+
     line_items = []
     line_items.append(line_item)
-    
+
     receipt = Receipt(
         contact = contact,
         user = user,
         line_items = line_items,
         line_amount_types = LineAmountTypes.INCLUSIVE,
         status = "DRAFT")
-    
-    receipts = Receipts(    
+
+    receipts = Receipts(
         receipts = [receipt])
 
     try:
@@ -7579,7 +7602,7 @@ def accounting_receipts_create():
 #             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
 #         )
 #         json = serialize_model(created_bank_transaction_attachments_by_file_name)
-    
+
 #     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
 
 #     return render_template(
@@ -7938,7 +7961,7 @@ def accounting_repeating_invoices_create_history():
     history_record = HistoryRecord(
         details = "Hello World")
 
-    history_records = HistoryRecords( 
+    history_records = HistoryRecords(
         history_records = [history_record])
 
     try:
@@ -8177,7 +8200,7 @@ def accounting_repeating_invoices_create_history():
 #             getvalue(created_bank_transaction_attachments_by_file_name, "attachments.0.url", "")
 #         )
 #         json = serialize_model(created_bank_transaction_attachments_by_file_name)
-    
+
 #     #[/BANKTRANSACTIONATTACHMENTS:CREATEBYFILENAME]
 
 #     return render_template(
@@ -8328,7 +8351,7 @@ def accounting_repeating_invoices_create_history():
 # getReportBalanceSheet x
 # getReportBankSummary x
 # getReportBASorGSTList x
-# getReportBASorGST x  
+# getReportBASorGST x
 # getReportBudgetSummary x
 # getReportExecutiveSummary x
 # getReportProfitAndLoss x
@@ -8702,13 +8725,13 @@ def accounting_tax_rate_create():
         rate = 20.00)
 
     #report_tax_type is invalid for US orgs.
-    
+
     tax_rate = TaxRate(
-        name = "Example Tax Rate",  
-        report_tax_type = "INPUT", 
+        name = "Example Tax Rate",
+        report_tax_type = "INPUT",
         tax_components = [tax_component])
-    
-    tax_rates = TaxRates(    
+
+    tax_rates = TaxRates(
         tax_rates = [tax_rate])
 
     try:
@@ -8748,13 +8771,13 @@ def accounting_tax_rate_update():
         rate = 20.00)
 
     #report_tax_type is invalid for US orgs.
-    
+
     tax_rate = TaxRate(
-        name = getvalue(read_tax_rates, "tax_rates.0.name", ""), 
+        name = getvalue(read_tax_rates, "tax_rates.0.name", ""),
         tax_components = [updated_tax_component])
 
-    
-    tax_rates = TaxRates(    
+
+    tax_rates = TaxRates(
         tax_rates = [tax_rate])
 
     try:
@@ -9693,7 +9716,7 @@ def projects_task_update():
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
-    
+
     try:
         read_tasks = project_api.get_tasks(
             xero_tenant_id, project_id=project_id
@@ -9764,7 +9787,7 @@ def projects_task_delete():
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
-    
+
     try:
         read_tasks = project_api.get_tasks(
             xero_tenant_id, project_id=project_id
@@ -11955,7 +11978,7 @@ def files_file_read_all():
     #[FILE:READ_ALL]
     try:
         read_files = files_api.get_files(
-            xero_tenant_id, 
+            xero_tenant_id,
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
@@ -11977,16 +12000,16 @@ def files_file_read_one():
     xero_tenant_id = get_xero_tenant_id()
     files_api = FilesApi(api_client)
     accounting_api = AccountingApi(api_client)
-    
+
     try:
         read_files = files_api.get_files(
-            xero_tenant_id, 
+            xero_tenant_id,
         )
         file_id = getvalue(read_files, "items.0.id", "")
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
-    
+
     #[FILE:READ_ONE]
     try:
         read_file = files_api.get_file(
@@ -12022,9 +12045,9 @@ def files_file_upload():
 
     try:
         file_object = files_api.upload_file(
-            xero_tenant_id, 
-            name = name, 
-            filename= filename, 
+            xero_tenant_id,
+            name = name,
+            filename= filename,
             mime_type = mime_type,
             body=body
         )
@@ -12052,7 +12075,7 @@ def files_folder_read_all():
     #[FOLDER:READ_ALL]
     try:
         folders = files_api.get_folders(
-            xero_tenant_id, 
+            xero_tenant_id,
         )
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
@@ -12077,13 +12100,13 @@ def files_folder_read_one():
 
     try:
         read_folders = files_api.get_folders(
-            xero_tenant_id, 
+            xero_tenant_id,
         )
         folder_id = getvalue(read_folders, "1.id", "")
     except AccountingBadRequestException as exception:
         output = "Error: " + exception.reason
         json = jsonify(exception.error_data)
-        
+
     #[FOLDER:READ_ONE]
     try:
         read_folder = files_api.get_folder(

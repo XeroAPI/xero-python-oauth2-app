@@ -1,4 +1,5 @@
-flask
-flask-session==0.3.2
+werkzeug==2.0.3
+flask==2.0.3
+flask-session==0.4.0
 flask-oauthlib==0.9.6
 xero-python==6.1.0
